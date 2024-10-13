@@ -1,4 +1,7 @@
 {
     "comingSoon" : "Coming soon!!!",
-    "testing": "Testing"
+    "testing": "Testing",
+    "login/Register":"Login/Register",
+    "email":"Email",
+    "password":"Password"
 }

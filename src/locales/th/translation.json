@@ -1,4 +1,7 @@
 {
     "comingSoon": "เร็วๆนี้......",
-    "testing" : "ทดสอบ"
+    "testing" : "ทดสอบ",
+    "login/Register":"เข้าสู่ระบบ/สมัคร",
+    "email":"อีเมล",
+    "password":"รหัสผ่าน"
 }
