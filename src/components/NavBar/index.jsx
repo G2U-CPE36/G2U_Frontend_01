@@ -1,6 +1,7 @@
 import { Button } from "@mui/material"
 import LanguageSelector from "../languageSelector"
 import Translate from "../Translate"
+import AccountMenu from "@/components/UserProfile"
 
 export default function NavigationBar() {
 	return (
@@ -24,6 +25,7 @@ export default function NavigationBar() {
 						>
 							<Translate text="login/Register" className="text-white" />
 						</Button>
+						<AccountMenu />
 					</div>
 				</div>
 			</div>

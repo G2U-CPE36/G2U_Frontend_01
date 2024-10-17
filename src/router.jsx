@@ -1,5 +1,5 @@
 import { lazy } from "react"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 
 const Login = lazy(() => import("@/modules/Login"))
 const NotFound = lazy(() => import("@/modules/NotFound"))
@@ -14,7 +14,6 @@ const routes = [
 
 export default function Router() {
 	return (
-		<BrowserRouter>
 			<Routes>
 				{routes.map((route) => {
 					return <Route index={route.index} key={route.path} path={route.path} element={route.element} />
@@ -22,6 +21,5 @@ export default function Router() {
 
 				<Route path="*" element={<NotFound />} />
 			</Routes>
-		</BrowserRouter>
 	)
 }
