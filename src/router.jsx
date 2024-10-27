@@ -2,6 +2,7 @@ import { lazy } from "react"
 import { Route, Routes } from "react-router-dom"
 
 const Login = lazy(() => import("@/modules/Login"))
+const Register = lazy(() => import("@/modules/Register"))
 const NotFound = lazy(() => import("@/modules/NotFound"))
 const HomePage = lazy(() => import("@/modules/pages/HomePage"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
@@ -10,6 +11,7 @@ const routes = [
 	{ path: "/", element: <HomePage />, index: true },
 	{ path: "/login", element: <Login /> },
 	{ path: "/test", element: <TestPage /> },
+	{ path: "/register", element: <Register /> },
 ]
 
 export default function Router() {
