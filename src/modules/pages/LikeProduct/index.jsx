@@ -13,7 +13,7 @@ export default function LikeProductPages() {
 	useEffect(() => {
 		const fetchLikedProducts = async () => {
 			try {
-        // const response = await fetch("/api/liked-products")
+				// const response = await fetch("/api/liked-products")
 				// if (!response.ok) throw new Error("Failed to fetch liked products")
 				// const data = await response.json()
 				const data = [
@@ -71,103 +71,109 @@ export default function LikeProductPages() {
 	}
 
 	return (
-		<Box sx={{ padding: "20px" }}>
+		<Box sx={{ padding: "20px", display: "flex", justifyContent: "center" }}>
 			<Box
 				sx={{
-					backgroundColor: "#f9f9f9",
-					padding: "20px",
-					borderRadius: "8px",
+					maxWidth: "1200px", // Set a max-width for the content
+					width: "100%", // Make it responsive
 				}}
 			>
-				<Grid container alignItems="center" justifyContent="space-between">
-					<Grid item xs={6} container alignItems="center">
-						<FavoriteIcon sx={{ color: "#FF1F1F", fontSize: "2rem", mr: 1 }} />
-						<Typography variant="h4" fontWeight="bold" color="#1b1b1b">
-							<Translate text="likepage_Header" />
-						</Typography>
+				<Box
+					sx={{
+						backgroundColor: "#f9f9f9",
+						padding: "20px",
+						borderRadius: "8px",
+					}}
+				>
+					<Grid container alignItems="center" justifyContent="space-between">
+						<Grid item xs={6} container alignItems="center">
+							<FavoriteIcon sx={{ color: "#FF1F1F", fontSize: "2rem", mr: 1 }} />
+							<Typography variant="h4" fontWeight="bold" color="#1b1b1b">
+								<Translate text="likepage_Header" />
+							</Typography>
+						</Grid>
+						<Grid item xs={6} container justifyContent="flex-end">
+							<Box sx={{ display: "flex", alignItems: "right", gap: 36, mr: 12 }}>
+								<Typography variant="h6" fontWeight="medium" color="#333">
+									<Translate text="likepage_Price" />
+								</Typography>
+								<Typography variant="h6" fontWeight="medium" color="#333">
+									<Translate text="likepage_Action" />
+								</Typography>
+							</Box>
+						</Grid>
 					</Grid>
-					<Grid item xs={6} container justifyContent="flex-end">
-						<Box sx={{ display: "flex", alignItems: "right", gap: 36, mr:12 }}>
-							<Typography variant="h6" fontWeight="medium" color="#333">
-								<Translate text="likepage_Price" />
-							</Typography>
-							<Typography variant="h6" fontWeight="medium" color="#333">
-								<Translate text="likepage_Action" />
-							</Typography>
-						</Box>
-					</Grid>
-				</Grid>
-			</Box>
+				</Box>
 
-			<Box sx={{ display: "flex", flexDirection: "column", gap: 2 , mt: 2}}>
-				{likedProducts.map((product) => (
-					<Box
-						key={product.id}
-						sx={{
-							display: "grid",
-							gridTemplateColumns: "120px 1fr auto auto", // Increased column width for the image
-							alignItems: "center",
-							border: "1px solid #ddd",
-							borderRadius: "8px",
-							padding: "24px", // Increased padding to make the box taller
-							backgroundColor: "#fff",
-							gap: 2,
-							cursor: "pointer",
-							height: "auto",
-						}}
-						onClick={() => navigate(`/product/${product.id}`)}
-					>
-						{/* Product Image */}
-						<Box sx={{ width: "120px", height: "120px" }}>
-							{" "}
-							{/* Increased image container size */}
-							<img
-								src={product.image}
-								alt={product.name}
-								style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
-							/>
-						</Box>
-
-						{/* Product Details */}
-						<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left" }}>
-							<Typography variant="h6" fontWeight="medium">
-								{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
-							</Typography>
-							<Typography
-								variant="body2"
-								color="text.secondary"
-								sx={{ whiteSpace: "pre-wrap", lineHeight: 1.5, mr: 40 }}
-							>
-								{product.description.length > 200
-									? `${product.description.substring(0, 200)}...`
-									: product.description}
-							</Typography>
-						</Box>
-
-						{/* Product Price */}
-						<Typography
-							variant="h6"
-							fontWeight="medium"
-							color="#FF5722"
-							sx={{ minWidth: "80px", textAlign: "right", alignSelf: "center", marginRight: 32 }}
-						>
-							฿{product.price}
-						</Typography>
-
-						{/* Action Button */}
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={(e) => {
-								e.stopPropagation() // Prevent click from bubbling up
-								navigate(`/buy/${product.id}`)
+				<Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+					{likedProducts.map((product) => (
+						<Box
+							key={product.id}
+							sx={{
+								display: "grid",
+								gridTemplateColumns: "120px 1fr auto auto",
+								alignItems: "center",
+								border: "1px solid #ddd",
+								borderRadius: "8px",
+								padding: "24px",
+								backgroundColor: "#fff",
+								gap: 2,
+								cursor: "pointer",
+								height: "200px",
+								width: "100%", // Ensure it takes up full width of the container
 							}}
-							sx={{ minWidth: "100px", justifySelf: "end", alignSelf: "center", marginRight: 8 }}
+							onClick={() => navigate(`/product/${product.id}`)}
 						>
-							<Translate text="likepage_Buynow" />
-						</Button>
-					</Box>
-				))}
+							{/* Product Image */}
+							<Box sx={{ width: "140px", height: "140px" }}>
+								<img
+									src={product.image}
+									alt={product.name}
+									style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+								/>
+							</Box>
+
+							{/* Product Details */}
+							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start" , mt: 1, ml: 3}}>
+								<Typography variant="h6" fontWeight="medium">
+									{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
+								</Typography>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+									sx={{ whiteSpace: "pre-wrap", lineHeight: 1.5, mr: 10 }}
+								>
+									{product.description.length > 200
+										? `${product.description.substring(0, 200)}...`
+										: product.description}
+								</Typography>
+							</Box>
+
+							{/* Product Price */}
+							<Typography
+								variant="h6"
+								fontWeight="medium"
+								color="#FF5722"
+								sx={{ minWidth: "80px", textAlign: "right", alignSelf: "center", marginRight: 32 }}
+							>
+								฿{product.price}
+							</Typography>
+
+							{/* Action Button */}
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={(e) => {
+									e.stopPropagation() // Prevent click from bubbling up
+									navigate(`/buy/${product.id}`)
+								}}
+								sx={{ minWidth: "100px", justifySelf: "end", alignSelf: "center", marginRight: 8 }}
+							>
+								<Translate text="likepage_Buynow" />
+							</Button>
+						</Box>
+					))}
+				</Box>
 			</Box>
 		</Box>
 	)
