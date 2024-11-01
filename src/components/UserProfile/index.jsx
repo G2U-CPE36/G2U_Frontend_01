@@ -90,7 +90,7 @@ export default function AccountMenu() {
 					</ListItemIcon>
 					Edit Profile
 				</MenuItem>
-				<MenuItem onClick={() => handleClose("/liked-products")}>
+				<MenuItem onClick={() => handleClose("/LikeProduct")}>
 					<ListItemIcon>
 						<FavoriteIcon fontSize="small" />
 					</ListItemIcon>

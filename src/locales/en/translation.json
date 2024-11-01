@@ -3,5 +3,9 @@
     "testing": "Testing",
     "login/Register":"Login/Register",
     "email":"Email",
-    "password":"Password"
+    "password":"Password",
+    "likepage_Header":"Liked Product",
+    "likepage_Price":"price",
+    "likepage_Action":"action",
+    "likepage_Buynow":"Buy now"
 }
