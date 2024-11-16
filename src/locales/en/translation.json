@@ -3,5 +3,9 @@
     "testing": "Testing",
     "login/Register":"Login/Register",
     "email":"Email",
-    "password":"Password"
+    "password":"Password",
+    "Categories": "Categories",
+    "Price Range": "Price Range",
+    "Province": "Province",
+    "Search": "Search"    
 }

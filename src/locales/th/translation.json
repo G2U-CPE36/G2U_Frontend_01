@@ -3,5 +3,9 @@
     "testing" : "ทดสอบ",
     "login/Register":"เข้าสู่ระบบ/สมัคร",
     "email":"อีเมล",
-    "password":"รหัสผ่าน"
+    "password":"รหัสผ่าน",
+    "Categories": "หมวดหมู่",
+    "Price Range": "ช่วงราคา",
+    "Province": "จังหวัด",
+    "Search": "ค้นหา"    
 }
