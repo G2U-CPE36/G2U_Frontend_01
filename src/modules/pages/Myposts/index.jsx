@@ -1,81 +1,249 @@
 import * as React from "react"
 import Box from "@mui/material/Box"
-import Tabs from "@mui/material/Tabs"
-import Tab from "@mui/material/Tab"
-import Post from "@/components/Post"
-import SellIcon from "@mui/icons-material/Sell"
-import SearchIcon from "@mui/icons-material/Search"
-import ToggleButton from "@mui/material/ToggleButton"
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup"
+import Avatar from "@mui/material/Avatar"
+import Typography from "@mui/material/Typography"
+import Radio from "@mui/material/Radio"
+import RadioGroup from "@mui/material/RadioGroup"
+import FormControl from "@mui/material/FormControl"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import { CircularProgress } from "@mui/material"
+import { useNavigate } from "react-router-dom"
 
 export default function MyPosts() {
-	const [value, setValue] = React.useState(0) // 0 for 'For Sale', 1 for 'Looking to Buy'
-	const [filters, setFilters] = React.useState({
-		ongoing: true,
-		closed: false,
-	})
+	const [category, setCategory] = React.useState("forSale")
+	const [status, setStatus] = React.useState("ongoing")
+	const [posts, setPosts] = React.useState([])
+	const [loading, setLoading] = React.useState(true)
+	const [error, setError] = React.useState(null)
 
-	const handleChange = (event, newValue) => {
-		setValue(newValue)
+	const filteredPosts = posts.filter((post) => post.category === category && post.status === status)
+
+	const mockPosts = [
+		{
+			id: 1,
+			name: "Product 1",
+			province: "Bangkok",
+			price: 200,
+			image: "/images/product1.jpeg",
+			category: "forSale",
+			status: "ongoing",
+		},
+		{
+			id: 2,
+			name: "Product 2",
+			province: "Pattaya",
+			price: 250,
+			image: "/images/product4.jpg",
+			category: "forSale",
+			status: "ongoing",
+		},
+		{
+			id: 3,
+			name: "Product 3",
+			province: "Rayong",
+			price: 800,
+			image: "/images/product3.jpg",
+			category: "forSale",
+			status: "ongoing",
+		},
+		{
+			id: 4,
+			name: "Product 4",
+			province: "Bangkok",
+			price: 999,
+			image: "/images/product2.jpg",
+			category: "forSale",
+			status: "ongoing",
+		},
+		{
+			id: 5,
+			name: "Product 5",
+			province: "Chiang Mai",
+			price: 300,
+			image: "/images/product2.jpg",
+			category: "lookingToBuy",
+			status: "ongoing",
+		},
+		{
+			id: 6,
+			name: "Product 6",
+			province: "Phuket",
+			price: 400,
+			image: "/images/product3.jpg",
+			category: "forSale",
+			status: "closed",
+		},
+		{
+			id: 7,
+			name: "Product 7",
+			province: "Nan",
+			price: 650,
+			image: "/images/product4.jpg",
+			category: "lookingToBuy",
+			status: "closed",
+		},
+	]
+
+	React.useEffect(() => {
+		setTimeout(() => {
+			setPosts(mockPosts)
+			setLoading(false)
+		}, 10)
+	}, [])
+
+	const handleCategoryChange = (event) => {
+		setCategory(event.target.value)
 	}
 
-	const handleFilterToggle = (status) => {
-		// Toggles selected filter state
-		setFilters((prev) => {
-			const newFilters = { ...prev, [status]: !prev[status] }
+	const handleStatusChange = (event) => {
+		setStatus(event.target.value)
+	}
 
-			// Check if both are unchecked, if so, prevent the toggle to ensure one is always selected
-			if (!newFilters.ongoing && !newFilters.closed) {
-				return prev // Revert to previous state if both are unchecked
-			}
-			return newFilters
-		})
+	const navigate = useNavigate()
+
+	if (loading) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<CircularProgress />
+			</Box>
+		)
+	}
+
+	if (error) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<Typography variant="h6" color="error">
+					{error}
+				</Typography>
+			</Box>
+		)
 	}
 
 	return (
-		<>
-			<Box sx={{ width: "100%", bgcolor: "background.paper" }}>
-				<Tabs value={value} onChange={handleChange} centered>
-					<Tab
-						icon={<SellIcon />}
-						iconPosition="start"
-						label="For Sale"
-						sx={{
-							minHeight: 50,
-						}}
+		<Box sx={{ display: "flex", m: 2 }}>
+			{/* Profile Card */}
+			<Box
+				sx={{
+					display: "flex",
+					flexDirection: "column",
+					p: 2,
+					width: "300px",
+					height: "335px",
+					border: "1px solid #ccc",
+					borderRadius: "8px",
+					bgcolor: "background.paper",
+					mb: 40,
+					mr: 2,
+				}}
+			>
+				<Box
+					sx={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						mb: 1,
+					}}
+				>
+					<Avatar
+						alt="User Profile Picture"
+						src="/path-to-profile-picture.jpg"
+						sx={{ width: 100, height: 100, mb: 1 }}
 					/>
-					<Tab
-						icon={<SearchIcon />}
-						iconPosition="start"
-						label="Looking to Buy"
-						sx={{
-							minHeight: 50,
-						}}
-					/>
-				</Tabs>
+					<Typography variant="h6">@Username</Typography>
+					<Typography variant="body2" color="textSecondary">
+						Joined since 24/06/2020
+					</Typography>
+				</Box>
+
+				<Box>
+					<FormControl fullWidth>
+						<Typography variant="subtitle1">Category</Typography>
+						<RadioGroup row value={category} onChange={handleCategoryChange}>
+							<FormControlLabel value="forSale" control={<Radio />} label="For Sale" />
+							<FormControlLabel value="lookingToBuy" control={<Radio />} label="Looking to Buy" />
+						</RadioGroup>
+					</FormControl>
+
+					<FormControl fullWidth>
+						<Typography variant="subtitle1">Status</Typography>
+						<RadioGroup row value={status} onChange={handleStatusChange}>
+							<FormControlLabel value="ongoing" control={<Radio />} label="Ongoing" />
+							<FormControlLabel value="closed" control={<Radio />} label="Closed" />
+						</RadioGroup>
+					</FormControl>
+				</Box>
 			</Box>
-			<Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-				<ToggleButtonGroup aria-label="post status filter">
-					<ToggleButton
-						value="ongoing"
-						selected={filters.ongoing}
-						onClick={() => handleFilterToggle("ongoing")}
-						aria-label="ongoing"
-					>
-						Ongoing
-					</ToggleButton>
-					<ToggleButton
-						value="closed"
-						selected={filters.closed}
-						onClick={() => handleFilterToggle("closed")}
-						aria-label="closed"
-					>
-						Closed
-					</ToggleButton>
-				</ToggleButtonGroup>
+
+			{/* Posts Section */}
+			<Box
+				sx={{
+					flexGrow: 1,
+					display: "grid",
+					gridTemplateColumns: "repeat(3, 1fr)",
+					gap: 1,
+					mb: 10,
+					width: "calc(100% - 320px)",
+				}}
+			>
+				{filteredPosts.length > 0 ? (
+					filteredPosts.map((post) => (
+						<Box
+							key={post.id}
+							onClick={() => navigate(`/productDetail/${post.id}`)}
+							sx={{
+								height: "320px",
+								border: "1px solid #ccc",
+								borderRadius: "8px",
+								bgcolor: "background.paper",
+								p: 2,
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "left",
+								cursor: "pointer",
+								"&:hover": {
+									boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+								},
+							}}
+						>
+							<img
+								src={post.image}
+								alt={post.name}
+								style={{
+									width: "100%",
+									height: "220px",
+									objectFit: "cover",
+									borderRadius: "8px",
+								}}
+							/>
+							<Typography variant="h6">{post.name}</Typography>
+							<Typography variant="body2" color="textSecondary">
+								{post.province}
+							</Typography>
+							<Typography variant="body2" color="primary">
+								฿{post.price}
+							</Typography>
+						</Box>
+					))
+				) : (
+					<Typography variant="h6" color="textSecondary" sx={{ textAlign: "center", gridColumn: "span 3" }}>
+						No posts match your filters.
+					</Typography>
+				)}
 			</Box>
-			{/* Pass the selected tab and filters to the Post component */}
-			<Post category={value === 0 ? "forSale" : "lookingToBuy"} filters={filters} />
-		</>
+		</Box>
 	)
 }
