@@ -4,8 +4,11 @@ import { Link } from "react-router-dom"
 import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
+import { registerToSystem } from "../Login/authAction"
 
 export default function Register() {
+	const dispatch = useDispatch()
 	const form = useForm({
 		defaultValues: {
 			userName: "",
@@ -18,9 +21,13 @@ export default function Register() {
 
 	const style = "w-3/5 mx-auto flex justify-center pt-5"
 
-	function onSubmit(data) {
-		console.log(data)
-		//wait for API
+	async function onSubmit(data) {
+		if (!data.isAgree) {
+			console.log("IsAgree is: ", data.isAgree)
+			// modal
+		} else {
+			dispatch(registerToSystem(data))
+		}
 	}
 
 	return (
@@ -82,7 +89,7 @@ export default function Register() {
 						</div>
 						<div className="w-3/5 mx-auto flex justify-evenly pt-5">
 							<Translate text="Have an account?" />
-							<Link to='/login'>
+							<Link to="/login">
 								<button type="button">
 									<p className="text-sign-up">Sign In</p>
 								</button>

@@ -1,12 +1,13 @@
 import Translate from "@/components/Translate"
 import TextField from "@mui/material/TextField"
-import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
+import { loginToSystem } from "./authAction"
 
 export default function Login() {
 	const style = "w-3/5 mx-auto flex justify-center pt-5"
-
+	const dispatch = useDispatch()
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -15,8 +16,8 @@ export default function Login() {
 	})
 	const { register, handleSubmit } = form
 
-	function onSubmit(data) {
-		console.log(data)
+	async function onSubmit(data) {
+		dispatch(loginToSystem(data))
 	}
 
 	return (
@@ -52,7 +53,9 @@ export default function Login() {
 							/>
 						</div>
 						<div className="h-7 w-3/5 mx-auto flex justify-center rounded bg-main-yellow mt-3">
-							<button type="submit" className="w-full">Login</button>
+							<button type="submit" className="w-full">
+								Login
+							</button>
 						</div>
 						<div className="w-3/5 mx-auto flex justify-evenly pt-5">
 							<Translate text="Don’t have an account?" />
