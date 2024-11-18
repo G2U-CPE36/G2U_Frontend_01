@@ -8,4 +8,18 @@ const axiosInstance = axios.create({
 	},
 })
 
+axiosInstance.interceptors.request.use(
+	(request) => {
+		const accessToken = localStorage.getItem("accessToken")
+		if (accessToken) {
+			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
+			request.headers["Authorization"] = `Bearer ${accessToken}`
+		}
+		return request
+	},
+	(error) => {
+		return Promise.reject(error)
+	},
+)
+
 export default axiosInstance
