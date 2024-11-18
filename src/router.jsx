@@ -3,11 +3,11 @@ import { Route, Routes } from "react-router-dom"
 
 const Login = lazy(() => import("@/modules/Login"))
 const NotFound = lazy(() => import("@/modules/NotFound"))
-const HomePage = lazy(() => import("@/modules/pages/HomePage"))
+const MainPage = lazy(() => import("@/modules/pages/MainPage"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
 
 const routes = [
-	{ path: "/", element: <HomePage />, index: true },
+	{ path: "/", element: <MainPage />, index: true },
 	{ path: "/login", element: <Login /> },
 	{ path: "/test", element: <TestPage /> },
 ]
