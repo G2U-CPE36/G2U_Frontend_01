@@ -22,3 +22,4 @@ Currently, two official plugins are available:
 - npm install @mui/icons-material
 - npm install -D tailwindcss postcss autoprefixer
 - npx tailwindcss init -p
+- npm install react-hook-form

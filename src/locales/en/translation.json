@@ -7,5 +7,9 @@
     "likepage_Header":"Liked Product",
     "likepage_Price":"price",
     "likepage_Action":"action",
-    "likepage_Buynow":"Buy now"
+    "likepage_Buynow":"Buy now",
+    "Categories": "Categories",
+    "Price Range": "Price Range",
+    "Province": "Province",
+    "Search": "Search"    
 }

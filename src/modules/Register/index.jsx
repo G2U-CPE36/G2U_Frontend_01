@@ -1,23 +1,33 @@
 import Translate from "@/components/Translate"
 import TextField from "@mui/material/TextField"
 import { Link } from "react-router-dom"
+import Checkbox from "@mui/material/Checkbox"
+import FormControlLabel from "@mui/material/FormControlLabel"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
-import { loginToSystem } from "./authAction"
+import { registerToSystem } from "../Login/authAction"
 
-export default function Login() {
-	const style = "w-3/5 mx-auto flex justify-center pt-5"
+export default function Register() {
 	const dispatch = useDispatch()
 	const form = useForm({
 		defaultValues: {
+			userName: "",
 			email: "",
 			password: "",
+			isAgree: false,
 		},
 	})
 	const { register, handleSubmit } = form
 
+	const style = "w-3/5 mx-auto flex justify-center pt-5"
+
 	async function onSubmit(data) {
-		dispatch(loginToSystem(data))
+		if (!data.isAgree) {
+			console.log("IsAgree is: ", data.isAgree)
+			// modal
+		} else {
+			dispatch(registerToSystem(data))
+		}
 	}
 
 	return (
@@ -27,7 +37,19 @@ export default function Login() {
 			</div>
 			<div className="flex justify-center w-full">
 				<div class="shadow-inner bg-white w-1/3">
-					<form onSubmit={handleSubmit(onSubmit)}>
+					<form noValidate onSubmit={handleSubmit(onSubmit)}>
+						<div className={style}>
+							<TextField
+								required
+								fullWidth
+								type="text"
+								id="username"
+								label="username"
+								variant="outlined"
+								placeholder="Enter your user name"
+								{...register("userName")}
+							/>
+						</div>
 						<div className={style}>
 							<TextField
 								required
@@ -52,16 +74,24 @@ export default function Login() {
 								{...register("password")}
 							/>
 						</div>
+						<div className="flex justify-center">
+							<FormControlLabel
+								required
+								control={<Checkbox />}
+								label="I agree to the terms & policy"
+								{...register("isAgree")}
+							/>
+						</div>
 						<div className="h-7 w-3/5 mx-auto flex justify-center rounded bg-main-yellow mt-3">
 							<button type="submit" className="w-full">
-								Login
+								Sign Up
 							</button>
 						</div>
 						<div className="w-3/5 mx-auto flex justify-evenly pt-5">
-							<Translate text="Don’t have an account?" />
-							<Link to="/register">
+							<Translate text="Have an account?" />
+							<Link to="/login">
 								<button type="button">
-									<p className="text-sign-up">Sign Up</p>
+									<p className="text-sign-up">Sign In</p>
 								</button>
 							</Link>
 						</div>
