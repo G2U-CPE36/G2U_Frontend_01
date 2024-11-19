@@ -9,7 +9,7 @@ const NotFound = lazy(() => import("@/modules/NotFound"))
 const MainPage = lazy(() => import("@/modules/pages/MainPage"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
 const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
-
+const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true },
@@ -17,6 +17,7 @@ const routes = [
 	{ path: "/test", element: <TestPage /> },
 	{ path: "/likeproduct", element: <LikePage /> },
 	{ path: "/register", element: <Register /> },
+	{ path: "/myposts", element: <MyPosts /> },
 ]
 
 export default function Router() {

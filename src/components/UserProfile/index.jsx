@@ -10,6 +10,7 @@ import Tooltip from "@mui/material/Tooltip"
 import Logout from "@mui/icons-material/Logout"
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import EditIcon from "@mui/icons-material/Edit"
+import ListAltIcon from "@mui/icons-material/ListAlt"
 import { useSelector } from "react-redux"
 
 export default function AccountMenu() {
@@ -90,7 +91,13 @@ export default function AccountMenu() {
 					</ListItemIcon>
 					Edit Profile
 				</MenuItem>
-				<MenuItem onClick={() => handleClose("/LikeProduct")}>
+				<MenuItem onClick={() => handleClose("/MyPosts")}>
+					<ListItemIcon>
+						<ListAltIcon fontSize="small" />
+					</ListItemIcon>
+					My Posts
+				</MenuItem>
+				<MenuItem onClick={() => handleClose("/liked-products")}>
 					<ListItemIcon>
 						<FavoriteIcon fontSize="small" />
 					</ListItemIcon>
