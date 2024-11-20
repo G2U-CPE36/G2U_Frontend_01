@@ -56,17 +56,25 @@ export default function MainPage() {
 
 	useEffect(() => {
 		const fetchAllProducts = async () => {
+			console.debug("Starting API fetch for products...");
 			try {
-				const response = await fetch("/api/liked-products");
-				if (!response.ok) throw new Error("Failed to fetch liked products");
+				const response = await fetch("http://localhost:3001/api/products/getproducts");
+				if (!response.ok) {
+					console.debug("API response not OK:", response.status, response.statusText);
+					throw new Error("Failed to fetch liked products");
+				}
 				const data = await response.json();
+				console.debug("Successfully fetched data from API:", data);
 				setProducts(data); // Set fetched data
 				setFilteredProducts(data); // Initialize with all products
 			} catch (error) {
 				console.error("Error fetching liked products:", error);
 				setError("Failed to load products from the server. Using mock data.");
+				console.debug("Falling back to mock data.");
 				setProducts(mockData); // Use mock data as fallback
 				setFilteredProducts(mockData); // Initialize filtered data with mock data
+			} finally {
+				console.debug("API fetch attempt finished.");
 			}
 		};
 
@@ -75,6 +83,12 @@ export default function MainPage() {
 
 	// Apply filters whenever products or filter state changes
 	useEffect(() => {
+		console.debug("Filtering products with current filters:", {
+			category,
+			priceRange,
+			province,
+			searchQuery,
+		});
 		const filtered = products.filter((product) => {
 			const matchesCategory = category ? product.category === category : true;
 			const matchesPriceRange = priceRange ? product.priceRange === priceRange : true;
@@ -82,8 +96,10 @@ export default function MainPage() {
 			const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true;
 			return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery;
 		});
+		console.debug("Filtered products:", filtered);
 		setFilteredProducts(filtered);
 	}, [products, category, priceRange, province, searchQuery]);
+
 
 	
 	return (
