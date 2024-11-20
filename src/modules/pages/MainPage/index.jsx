@@ -12,6 +12,9 @@ export default function MainPage() {
 	const [priceRange, setPriceRange] = useState("")
 	const [province, setProvince] = useState("")
 	const [searchQuery, setSearchQuery] = useState("")
+	const [products, setProducts] = useState([]); // For API data
+	const [filteredProducts, setFilteredProducts] = useState([]); // Filtered products
+	const [error, setError] = useState(""); // For error handling
 
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handlePriceRangeChange = (event) => setPriceRange(event.target.value)
@@ -29,71 +32,99 @@ export default function MainPage() {
 		e.target.src = "/pic/default.jpg" // Set fallback image path
 	}
 
-	const products = [
-		{
-			id: 1,
-			name: "Smartphone",
-			category: "electronics",
-			priceRange: "100-200",
-			province: "Bangkok",
-			condition: "New",
-			image: "/pic/Smartphone.jpg",
-		},
-		{
-			id: 2,
-			name: "Laptop",
-			category: "electronics",
-			priceRange: "200+",
-			province: "Chiangmai",
-			condition: "Used - Good",
-			image: "/pic/Laptop.jpg",
-		},
-    {
-			id: 3,
-			name: "Smartphone",
-			category: "electronics",
-			priceRange: "100-200",
-			province: "Bangkok",
-			condition: "New",
-			image: "/pic/Smartphone.jpg",
-		},
-		{
-			id: 4,
-			name: "Laptop",
-			category: "electronics",
-			priceRange: "200+",
-			province: "Chiangmai",
-			condition: "Used - Good",
-			image: "/pic/Laptop.jpg",
-		},
-    {
-			id: 5,
-			name: "Smartphone",
-			category: "electronics",
-			priceRange: "100-200",
-			province: "Bangkok",
-			condition: "New",
-			image: "/pic/Smartphone.jpg",
-		},
-		{
-			id: 6,
-			name: "Laptop",
-			category: "electronics",
-			priceRange: "200+",
-			province: "Chiangmai",
-			condition: "Used - Good",
-			image: "/pic/Laptop.jpg",
-		},
-		// Add other products here
-	]
+	// const products = [
+	// 	{
+	// 		id: 1,
+	// 		name: "Smartphone",
+	// 		category: "electronics",
+	// 		priceRange: "100-200",
+	// 		province: "Bangkok",
+	// 		condition: "New",
+	// 		image: "/pic/Smartphone.jpg",
+	// 	},
+	// 	{
+	// 		id: 2,
+	// 		name: "Laptop",
+	// 		category: "electronics",
+	// 		priceRange: "200+",
+	// 		province: "Chiangmai",
+	// 		condition: "Used - Good",
+	// 		image: "/pic/Laptop.jpg",
+	// 	},
+    // {
+	// 		id: 3,
+	// 		name: "Smartphone",
+	// 		category: "electronics",
+	// 		priceRange: "100-200",
+	// 		province: "Bangkok",
+	// 		condition: "New",
+	// 		image: "/pic/Smartphone.jpg",
+	// 	},
+	// 	{
+	// 		id: 4,
+	// 		name: "Laptop",
+	// 		category: "electronics",
+	// 		priceRange: "200+",
+	// 		province: "Chiangmai",
+	// 		condition: "Used - Good",
+	// 		image: "/pic/Laptop.jpg",
+	// 	},
+    // {
+	// 		id: 5,
+	// 		name: "Smartphone",
+	// 		category: "electronics",
+	// 		priceRange: "100-200",
+	// 		province: "Bangkok",
+	// 		condition: "New",
+	// 		image: "/pic/Smartphone.jpg",
+	// 	},
+	// 	{
+	// 		id: 6,
+	// 		name: "Laptop",
+	// 		category: "electronics",
+	// 		priceRange: "200+",
+	// 		province: "Chiangmai",
+	// 		condition: "Used - Good",
+	// 		image: "/pic/Laptop.jpg",
+	// 	},
+	// 	// Add other products here
+	// ]
 
-	const filteredProducts = products.filter((product) => {
-		const matchesCategory = category ? product.category === category : true
-		const matchesPriceRange = priceRange ? product.priceRange === priceRange : true
-		const matchesProvince = province ? product.province === province : true
-		const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true
-		return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery
-	})
+	// const filteredProducts = products.filter((product) => {
+	// 	const matchesCategory = category ? product.category === category : true
+	// 	const matchesPriceRange = priceRange ? product.priceRange === priceRange : true
+	// 	const matchesProvince = province ? product.province === province : true
+	// 	const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true
+	// 	return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery
+	// })
+
+	uuseEffect(() => {
+		const fetchAllProducts = async () => {
+			try {
+				const response = await fetch("/api/products/getproducts");
+				if (!response.ok) throw new Error("Failed to fetch liked products");
+				const data = await response.json();
+				setProducts(data); // Set fetched data
+				setFilteredProducts(data); // Initialize with all products
+			} catch (error) {
+				console.error("Error fetching liked products:", error);
+				setError("Failed to load products. Please try again later.");
+			}
+		};
+
+		fetchAllProducts();
+	}, []);
+
+	useEffect(() => {
+		const filtered = products.filter((product) => {
+			const matchesCategory = category ? product.category === category : true;
+			const matchesPriceRange = priceRange ? product.priceRange === priceRange : true;
+			const matchesProvince = province ? product.province === province : true;
+			const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true;
+			return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery;
+		});
+		setFilteredProducts(filtered);
+	}, [products, category, priceRange, province, searchQuery]);
 
 	return (
 		<Box sx={{ width: "100%" }}>
