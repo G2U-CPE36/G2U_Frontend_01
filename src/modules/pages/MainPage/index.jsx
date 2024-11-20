@@ -1,120 +1,79 @@
-import { useState } from "react"
-import Box from "@mui/material/Box"
-import InputLabel from "@mui/material/InputLabel"
-import MenuItem from "@mui/material/MenuItem"
-import FormControl from "@mui/material/FormControl"
-import Select from "@mui/material/Select"
-import SearchIcon from "@mui/icons-material/Search"
-import Translate from "@/components/Translate"
+import { useState, useEffect } from "react";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import SearchIcon from "@mui/icons-material/Search";
+import Translate from "@/components/Translate";
 
 export default function MainPage() {
-	const [category, setCategory] = useState("")
-	const [priceRange, setPriceRange] = useState("")
-	const [province, setProvince] = useState("")
-	const [searchQuery, setSearchQuery] = useState("")
-	const [products, setProducts] = useState([]); // For API data
+	const [category, setCategory] = useState("");
+	const [priceRange, setPriceRange] = useState("");
+	const [province, setProvince] = useState("");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [products, setProducts] = useState([]); // For API or fallback data
 	const [filteredProducts, setFilteredProducts] = useState([]); // Filtered products
 	const [error, setError] = useState(""); // For error handling
 
-	const handleCategoryChange = (event) => setCategory(event.target.value)
-	const handlePriceRangeChange = (event) => setPriceRange(event.target.value)
-	const handleProvinceChange = (event) => setProvince(event.target.value)
-	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
+	const mockData = [
+		{
+			id: 1,
+			name: "Smartphone",
+			category: "electronics",
+			priceRange: "100-200",
+			province: "Bangkok",
+			condition: "New",
+			image: "/pic/Smartphone.jpg",
+		},
+		{
+			id: 2,
+			name: "Laptop",
+			category: "electronics",
+			priceRange: "200+",
+			province: "Chiangmai",
+			condition: "Used - Good",
+			image: "/pic/Laptop.jpg",
+		},
+		// Add other mock products here
+	];
+
+	const handleCategoryChange = (event) => setCategory(event.target.value);
+	const handlePriceRangeChange = (event) => setPriceRange(event.target.value);
+	const handleProvinceChange = (event) => setProvince(event.target.value);
+	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase());
 
 	const clearFilters = () => {
-		setCategory("")
-		setPriceRange("")
-		setProvince("")
-		setSearchQuery("")
-	}
+		setCategory("");
+		setPriceRange("");
+		setProvince("");
+		setSearchQuery("");
+	};
 
 	const handleImageError = (e) => {
-		e.target.src = "/pic/default.jpg" // Set fallback image path
-	}
+		e.target.src = "/pic/default.jpg"; // Set fallback image path
+	};
 
-	// const products = [
-	// 	{
-	// 		id: 1,
-	// 		name: "Smartphone",
-	// 		category: "electronics",
-	// 		priceRange: "100-200",
-	// 		province: "Bangkok",
-	// 		condition: "New",
-	// 		image: "/pic/Smartphone.jpg",
-	// 	},
-	// 	{
-	// 		id: 2,
-	// 		name: "Laptop",
-	// 		category: "electronics",
-	// 		priceRange: "200+",
-	// 		province: "Chiangmai",
-	// 		condition: "Used - Good",
-	// 		image: "/pic/Laptop.jpg",
-	// 	},
-    // {
-	// 		id: 3,
-	// 		name: "Smartphone",
-	// 		category: "electronics",
-	// 		priceRange: "100-200",
-	// 		province: "Bangkok",
-	// 		condition: "New",
-	// 		image: "/pic/Smartphone.jpg",
-	// 	},
-	// 	{
-	// 		id: 4,
-	// 		name: "Laptop",
-	// 		category: "electronics",
-	// 		priceRange: "200+",
-	// 		province: "Chiangmai",
-	// 		condition: "Used - Good",
-	// 		image: "/pic/Laptop.jpg",
-	// 	},
-    // {
-	// 		id: 5,
-	// 		name: "Smartphone",
-	// 		category: "electronics",
-	// 		priceRange: "100-200",
-	// 		province: "Bangkok",
-	// 		condition: "New",
-	// 		image: "/pic/Smartphone.jpg",
-	// 	},
-	// 	{
-	// 		id: 6,
-	// 		name: "Laptop",
-	// 		category: "electronics",
-	// 		priceRange: "200+",
-	// 		province: "Chiangmai",
-	// 		condition: "Used - Good",
-	// 		image: "/pic/Laptop.jpg",
-	// 	},
-	// 	// Add other products here
-	// ]
-
-	// const filteredProducts = products.filter((product) => {
-	// 	const matchesCategory = category ? product.category === category : true
-	// 	const matchesPriceRange = priceRange ? product.priceRange === priceRange : true
-	// 	const matchesProvince = province ? product.province === province : true
-	// 	const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true
-	// 	return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery
-	// })
-
-	uuseEffect(() => {
+	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
-				const response = await fetch("/api/products/getproducts");
+				const response = await fetch("/api/liked-products");
 				if (!response.ok) throw new Error("Failed to fetch liked products");
 				const data = await response.json();
 				setProducts(data); // Set fetched data
 				setFilteredProducts(data); // Initialize with all products
 			} catch (error) {
 				console.error("Error fetching liked products:", error);
-				setError("Failed to load products. Please try again later.");
+				setError("Failed to load products from the server. Using mock data.");
+				setProducts(mockData); // Use mock data as fallback
+				setFilteredProducts(mockData); // Initialize filtered data with mock data
 			}
 		};
 
 		fetchAllProducts();
 	}, []);
 
+	// Apply filters whenever products or filter state changes
 	useEffect(() => {
 		const filtered = products.filter((product) => {
 			const matchesCategory = category ? product.category === category : true;
@@ -126,6 +85,7 @@ export default function MainPage() {
 		setFilteredProducts(filtered);
 	}, [products, category, priceRange, province, searchQuery]);
 
+	
 	return (
 		<Box sx={{ width: "100%" }}>
 			{/* Header Section */}
