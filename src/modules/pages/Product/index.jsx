@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"; // Import useParams
+import { useParams } from "react-router-dom" // Import useParams
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout"
 import { Button } from "@mui/material"
 import { formatNumber } from "@/helper/func"
+import IconButton from "@mui/material/IconButton"
+import axios from "axios" // Import axios for API calls
 
 const mockproduct = {
 	id: 5,
@@ -31,6 +33,21 @@ Product details of Tefal เตารีดแรงดันไอน้ำ Exp
 - ส่งฟรี
 - ประกัน 2 ปี
   `,
+}
+
+// Function to mark a product as favorite
+const markAsFavorite = async (productID) => {
+	try {
+		const userId = 123 // Replace with actual userId logic
+		const response = await axios.post("http://yourapi.example.com/api/favorites", {
+			productID,
+			userId,
+		})
+		console.log("Product marked as favorite:", response.data)
+		// Optionally update the UI or state to reflect the favorite status
+	} catch (error) {
+		console.error("Error marking product as favorite:", error)
+	}
 }
 
 export default function ProductDetail() {
@@ -88,11 +105,28 @@ export default function ProductDetail() {
 			</div>
 
 			{/* Right Section: Product Details */}
+			{/* Right Section: Product Details */}
 			<div className="lg:w-3/5 flex flex-col">
 				{/* Title and Wishlist Icon */}
 				<div className="flex justify-between items-center">
 					<h1 className="font-bold text-3xl text-gray-800">{product.title}</h1>
-					<FavoriteBorderIcon fontSize="large" className="text-gray-600 cursor-pointer" />
+					<IconButton
+						onClick={async (e) => {
+							e.stopPropagation() // Prevent navigation
+							await markAsFavorite(product.productID) // Call the favorite function
+						}}
+						sx={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						{product.isFavorited ? (
+							<FavoriteIcon sx={{ color: "#FF6347", fontSize: "2.5rem" }} />
+						) : (
+							<FavoriteBorderIcon sx={{ color: "#333", fontSize: "2.5rem" }} />
+						)}
+					</IconButton>
 				</div>
 
 				{/* Price Section */}
