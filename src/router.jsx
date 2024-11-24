@@ -6,6 +6,7 @@ import { useSelector } from "react-redux"
 // Lazy loading will render the components when it's needed
 const Login = lazy(() => import("@/modules/Login"))
 const Register = lazy(() => import("@/modules/Register"))
+
 const MainPage = lazy(() => import("@/modules/pages/MainPage"))
 const NotFound = lazy(() => import("@/modules/Error/NotFound"))
 const Unauthenticated = lazy(() => import("@/modules/Error/Unauthenticated"))
