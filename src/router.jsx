@@ -6,18 +6,23 @@ import { useSelector } from "react-redux"
 // Lazy loading will render the components when it's needed
 const Login = lazy(() => import("@/modules/Login"))
 const Register = lazy(() => import("@/modules/Register"))
+
+const MainPage = lazy(() => import("@/modules/pages/MainPage"))
 const NotFound = lazy(() => import("@/modules/Error/NotFound"))
 const Unauthenticated = lazy(() => import("@/modules/Error/Unauthenticated"))
-const HomePage = lazy(() => import("@/modules/pages/HomePage"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
+const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
+const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
 
 const routes = [
-	{ path: "/", element: <HomePage />, index: true, isPrivate: false },
+	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
+	{ path: "/likeproduct", element: <LikePage />, isPrivate: false },
+	{ path: "/myposts", element: <MyPosts />, isPrivate: false },
 	{ path: "/login", element: <Login />, isPrivate: false },
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
-	// change ProductDetail isPrivate: to false 
+	// change ProductDetail isPrivate: to false
 	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
 ]
 
