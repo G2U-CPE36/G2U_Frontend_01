@@ -4,20 +4,27 @@ import { Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
 import { loginToSystem } from "./authAction"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function Login() {
 	const style = "w-3/5 mx-auto flex justify-center pt-5"
 	const dispatch = useDispatch()
+	const location = useLocation()
+	const navigate = useNavigate()
+	const from = location.state?.from || "/"
+	
 	const form = useForm({
 		defaultValues: {
 			email: "",
 			password: "",
 		},
 	})
+
 	const { register, handleSubmit } = form
 
 	async function onSubmit(data) {
 		dispatch(loginToSystem(data))
+		navigate(from)
 	}
 
 	return (
@@ -55,6 +62,11 @@ export default function Login() {
 						<div className="h-7 w-3/5 mx-auto flex justify-center rounded bg-main-yellow mt-3">
 							<button type="submit" className="w-full">
 								Login
+							</button>
+						</div>
+						<div className="h-7 w-3/5 mx-auto flex justify-center rounded bg-main-yellow mt-3">
+							<button type="button" className="w-full" onClick={() => dispatch(testTriggerAuth())}>
+								Trigger Auth
 							</button>
 						</div>
 						<div className="w-3/5 mx-auto flex justify-evenly pt-5">
