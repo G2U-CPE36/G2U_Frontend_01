@@ -22,7 +22,7 @@ const routes = [
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
 	// change ProductDetail isPrivate: to false
-	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
+	{ path: "/product/:id", element: <ProductDetail />, isPrivate: false },
 ]
 
 export default function Router() {

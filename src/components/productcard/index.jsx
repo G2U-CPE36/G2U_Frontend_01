@@ -29,7 +29,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 
 	return (
 		<Box
-			onClick={() => navigate(`/productDetail/${product.productID}`)}
+			onClick={() => navigate(`/product/${product.productID}`)}
 			sx={{
 				backgroundColor: "#ffffff",
 				padding: 2,
@@ -48,7 +48,6 @@ export default function ProductCard({ product, layoutType = "default" }) {
 				<>
 					{/* Image */}
 					<Box
-						onClick={() => navigate(`/productDetail/${product.productID}`)}
 						sx={{
 							width: "350px",
 							height: "320px",
