@@ -11,7 +11,12 @@ const initialState = {
 const authSlice = createSlice({
 	name: "auth",
 	initialState,
-	reducers: {},
+	reducers: {
+		deleteToken: () => {
+			state.userToken = null
+			localStorage.removeItem("token")
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(loginToSystem.pending, (state) => {
@@ -22,10 +27,12 @@ const authSlice = createSlice({
 				state.loading = false
 				state.userInfo = action.payload.user
 				state.userToken = action.payload.token
-				localStorage.setItem('token', action.payload.token);
+				localStorage.setItem("token", action.payload.token)
 			})
 			.addCase(loginToSystem.rejected, (state, action) => {
 				state.loading = false
+				// Do not forget to remove line "state.userToken = true"
+				state.userToken = true
 				state.error = action.payload || "Failed to login"
 			})
 		builder
@@ -37,7 +44,7 @@ const authSlice = createSlice({
 				state.loading = false
 				state.userInfo = action.payload.user
 				state.userToken = action.payload.token
-				localStorage.setItem('token', action.payload.token);
+				localStorage.setItem("token", action.payload.token)
 			})
 			.addCase(registerToSystem.rejected, (state, action) => {
 				state.loading = false
@@ -45,5 +52,6 @@ const authSlice = createSlice({
 			})
 	},
 })
+export const { deleteToken } = authSlice.actions
 
 export default authSlice.reducer
