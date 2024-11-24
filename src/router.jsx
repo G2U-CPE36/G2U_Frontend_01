@@ -13,6 +13,7 @@ const Unauthenticated = lazy(() => import("@/modules/Error/Unauthenticated"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
 const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
 const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
+
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
 
 const routes = [
@@ -24,7 +25,7 @@ const routes = [
 	{ path: "/register", element: <Register />, isPrivate: false },
 	// change ProductDetail isPrivate: to false
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
-]
+
 
 export default function Router() {
 	const data = useSelector((state) => state.auth)
