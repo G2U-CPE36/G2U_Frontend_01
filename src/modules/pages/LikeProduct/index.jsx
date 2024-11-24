@@ -17,30 +17,10 @@ export default function LikeProductPages() {
 				// if (!response.ok) throw new Error("Failed to fetch liked products")
 				// const data = await response.json()
 				const data = [
-					{
-						id: 1,
-						name: "Sample Product 1",
-						description:
-							"SThe beanbag chair offers a unique blend of comfort and versatility, making it an ideal addition to any living space. Crafted from high-quality, durable fabric, it provides a soft yet supportive seating option that conforms to the body for optimal relaxation. Its lightweight design allows for easy mobility, enabling users to reposition it effortlessly in various settings, whether for lounging, gaming, or casual gatherings. Available in a range of colors and sizes, this beanbag chair seamlessly complements any decor while ensuring a cozy and inviting atmosphere.",
-						image: "/images/sample1.jpg",
-						price: 20.0,
-					},
-					{
-						id: 2,
-						name: "Sample Product 2",
-						description: "Sample description...",
-						image: "/images/sample1.jpg",
-						price: 20.0,
-					},
-					{
-						id: 3,
-						name: "Sample Product 3",
-						description: "Sample description...",
-						image: "/images/sample1.jpg",
-						price: 20.0,
-					},
+					{ id: 1, name: "Sample Product 1", description: "test", image: "/images/sample1.jpg", price: 20.0 },
+					{ id: 2, name: "Sample Product 2", description: "test", image: "/images/sample2.jpg", price: 15.0 },
+					{ id: 3, name: "Sample Product 3", description: "test", image: "/images/sample3.jpg", price: 30.0 },
 				]
-
 				setLikedProducts(data)
 				setLoading(false)
 			} catch (error) {
@@ -49,7 +29,24 @@ export default function LikeProductPages() {
 			}
 		}
 
-		fetchLikedProducts()
+		// Try fetching data and retry if it fails
+		const retryFetch = () => {
+			let attempts = 0
+			const maxAttempts = 10 // 10 attempts, 1 per second
+			const intervalId = setInterval(() => {
+				if (attempts < maxAttempts) {
+					fetchLikedProducts()
+					attempts += 1
+				} else {
+					clearInterval(intervalId)
+					setLoading(false)
+				}
+			}, 1000) // Retry every 1 second
+		}
+
+		retryFetch()
+
+		return () => clearInterval(retryFetch) // Cleanup on unmount
 	}, [])
 
 	if (loading) {
@@ -69,6 +66,7 @@ export default function LikeProductPages() {
 			</Box>
 		)
 	}
+
 
 	return (
 		<Box sx={{ padding: "20px", display: "flex", justifyContent: "center" }}>
@@ -134,7 +132,7 @@ export default function LikeProductPages() {
 							</Box>
 
 							{/* Product Details */}
-							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start" , mt: 1, ml: 3}}>
+							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start", mt: 1, ml: 3 }}>
 								<Typography variant="h6" fontWeight="medium">
 									{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
 								</Typography>

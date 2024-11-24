@@ -1,107 +1,95 @@
-import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import SearchIcon from "@mui/icons-material/Search";
-import Translate from "@/components/Translate";
+import { useState, useEffect } from "react"
+import Box from "@mui/material/Box"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import FormControl from "@mui/material/FormControl"
+import Select from "@mui/material/Select"
+import SearchIcon from "@mui/icons-material/Search"
+import Translate from "@/components/Translate"
+import ProductCard from "@/components/ProductCard";
+import { useNavigate } from "react-router-dom"
+
 
 export default function MainPage() {
-	const [category, setCategory] = useState("");
-	const [priceRange, setPriceRange] = useState("");
-	const [province, setProvince] = useState("");
-	const [searchQuery, setSearchQuery] = useState("");
-	const [products, setProducts] = useState([]); // For API or fallback data
-	const [filteredProducts, setFilteredProducts] = useState([]); // Filtered products
-	const [error, setError] = useState(""); // For error handling
+	const [category, setCategory] = useState("")
+	const [maxPrice, setMaxPrice] = useState("")
+	const [province, setProvince] = useState("")
+	const [searchQuery, setSearchQuery] = useState("")
+	const [products, setProducts] = useState([])
+	const [filteredProducts, setFilteredProducts] = useState([])
+	const [error, setError] = useState("")
+	const navigate = useNavigate();
 
 	const mockData = [
 		{
-			id: 1,
-			name: "Smartphone",
+			productID: 1,
+			name: " iPhone 13",
 			category: "electronics",
-			priceRange: "100-200",
+			price: "150",
 			province: "Bangkok",
 			condition: "New",
 			image: "/pic/Smartphone.jpg",
 		},
 		{
-			id: 2,
-			name: "Laptop",
+			productID: 2,
+			name: "MacBook Pro",
 			category: "electronics",
-			priceRange: "200+",
+			price: "300",
 			province: "Chiangmai",
 			condition: "Used - Good",
 			image: "/pic/Laptop.jpg",
-		},
-		// Add other mock products here
-	];
-
-	const handleCategoryChange = (event) => setCategory(event.target.value);
-	const handlePriceRangeChange = (event) => setPriceRange(event.target.value);
-	const handleProvinceChange = (event) => setProvince(event.target.value);
-	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase());
-
-	const clearFilters = () => {
-		setCategory("");
-		setPriceRange("");
-		setProvince("");
-		setSearchQuery("");
-	};
+		}
+	]
+	const handleCategoryChange = (event) => setCategory(event.target.value)
+	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
+	const handleProvinceChange = (event) => setProvince(event.target.value)
+	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
 
 	const handleImageError = (e) => {
-		e.target.src = "/pic/default.jpg"; // Set fallback image path
-	};
+		e.target.src = "/pic/default.jpg"
+	}
 
 	useEffect(() => {
 		const fetchAllProducts = async () => {
-			console.debug("Starting API fetch for products...");
 			try {
-				const response = await fetch("http://localhost:3001/api/products/getproducts");
-				if (!response.ok) {
-					console.debug("API response not OK:", response.status, response.statusText);
-					throw new Error("Failed to fetch liked products");
-				}
-				const data = await response.json();
-				console.debug("Successfully fetched data from API:", data);
-				setProducts(data); // Set fetched data
-				setFilteredProducts(data); // Initialize with all products
+				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
+				if (!response.ok) throw new Error("Failed to fetch products")
+				const data = await response.json()
+				console.log("Fetched Products from API:", data);
+				setProducts(data) // Set fetched data
+				setFilteredProducts(data) // Initialize with all products
 			} catch (error) {
-				console.error("Error fetching liked products:", error);
-				setError("Failed to load products from the server. Using mock data.");
-				console.debug("Falling back to mock data.");
-				setProducts(mockData); // Use mock data as fallback
-				setFilteredProducts(mockData); // Initialize filtered data with mock data
-			} finally {
-				console.debug("API fetch attempt finished.");
+				setError("Failed to load products from the server. Using mock data.")
+				setProducts(mockData) // Use mock data as fallback
+				setFilteredProducts(mockData) // Initialize filtered data with mock data
 			}
-		};
+		}
 
-		fetchAllProducts();
-	}, []);
+		fetchAllProducts()
+	}, [])
 
-	// Apply filters whenever products or filter state changes
 	useEffect(() => {
-		console.debug("Filtering products with current filters:", {
-			category,
-			priceRange,
-			province,
-			searchQuery,
-		});
 		const filtered = products.filter((product) => {
-			const matchesCategory = category ? product.category === category : true;
-			const matchesPriceRange = priceRange ? product.priceRange === priceRange : true;
-			const matchesProvince = province ? product.province === province : true;
-			const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true;
-			return matchesCategory && matchesPriceRange && matchesProvince && matchesSearchQuery;
-		});
-		console.debug("Filtered products:", filtered);
-		setFilteredProducts(filtered);
-	}, [products, category, priceRange, province, searchQuery]);
+			const matchesCategory = category ? product.category.toLowerCase() === category.toLowerCase() : true
+			const matchesMaxPrice = maxPrice
+				? (() => {
+						if (maxPrice.includes("-")) {
+							const [min, max] = maxPrice.split("-").map(Number)
+							return product.price >= min && product.price <= max
+						} else if (maxPrice.includes("+")) {
+							const min = parseInt(maxPrice)
+							return product.price >= min
+						}
+						return true
+					})()
+				: true
+			const matchesProvince = province ? product.province.toLowerCase() === province.toLowerCase() : true
+			const matchesSearchQuery = searchQuery ? product.productName.toLowerCase().includes(searchQuery) : true
+			return matchesCategory && matchesMaxPrice && matchesProvince && matchesSearchQuery
+		})
+		setFilteredProducts(filtered)
+	}, [products, category, maxPrice, province, searchQuery])
 
-
-	
 	return (
 		<Box sx={{ width: "100%" }}>
 			{/* Header Section */}
@@ -153,6 +141,9 @@ export default function MainPage() {
 							// 	},
 							// }}
 						>
+							<MenuItem value="">
+								<Translate text="Any" />
+							</MenuItem>
 							<MenuItem value="electronics">
 								<Translate text="Electronics" />
 							</MenuItem>
@@ -177,19 +168,22 @@ export default function MainPage() {
 						<Select
 							labelId="price-select-label"
 							id="price-select"
-							value={priceRange}
+							value={maxPrice}
+							onChange={handleMaxPriceChange}
 							label="Price Range"
-							onChange={handlePriceRangeChange}
 							sx={{
-								backgroundColor: "#333652", // Dropdown background color
-								height: "52px", // Set height for a slimmer appearance
-								color: "#FFFFFF", // Dropdown text color
+								backgroundColor: "#333652",
+								height: "52px",
+								color: "#FFFFFF",
 								borderRadius: "6px",
 								"& .MuiSvgIcon-root": {
-									color: "#FFFFFF", // Arrow dropdown color
+									color: "#FFFFFF",
 								},
 							}}
 						>
+							<MenuItem value="">
+								<Translate text="Any" />
+							</MenuItem>
 							<MenuItem value="0-50">$0-$50</MenuItem>
 							<MenuItem value="50-100">$50-$100</MenuItem>
 							<MenuItem value="100-200">$100-$200</MenuItem>
@@ -219,6 +213,9 @@ export default function MainPage() {
 								},
 							}}
 						>
+							<MenuItem value="">
+								<Translate text="Any" />
+							</MenuItem>
 							<MenuItem value="bangkok">Bangkok</MenuItem>
 							<MenuItem value="chiangmai">Chiang Mai</MenuItem>
 							<MenuItem value="phuket">Phuket</MenuItem>
@@ -266,99 +263,21 @@ export default function MainPage() {
 			</Box>
 
 			{/* Products Section */}
-			<Box
-				sx={{
-					display: "grid",
-					gridTemplateColumns: "repeat(4, 1fr)", // 4 cards per row
-					gap: 2,
-					marginTop: 2,
-					padding: "0px 64px",
-				}}
-			>
-				{filteredProducts.length > 0 ? (
-					filteredProducts.map((product) => (
-						<Box
-							key={product.id}
-							sx={{
-								backgroundColor: "#ffffff", // Card background color
-								padding: 2,
-								borderRadius: "8px", // Rounded corners
-								display: "flex",
-								flexDirection: "column",
-								justifyContent: "space-between",
-								alignItems: "center",
-								boxShadow: "2px 6px 8px rgba(0, 0, 0, 0.3)", // Subtle shadow
-								height: "100%", // Fixed height for uniform size
-                width: "100%"
-							}}
-						>
-							{/* Image */}
-							<Box
-								sx={{
-									width: "350px", // Fixed width
-									height: "320px", // Fixed height (same as width for square)
-									backgroundColor: "#c0c0c0", // Placeholder background
-									borderRadius: "8px",
-									overflow: "hidden",
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<img
-									src={product.image}
-									alt={product.name}
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover", // Ensures the image scales proportionally
-									}}
-									onError={handleImageError}
-								/>
-							</Box>
-
-							{/* Product Info */}
-							<Box
-								sx={{
-									width: "100%",
-									textAlign: "left",
-									marginTop: "8px",
-									flexGrow: 1,
-								}}
-							>
-								<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.name}</h2>
-								<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
-								<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
-								<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>
-									฿ {product.priceRange}
-								</Box>
-							</Box>
-
-							{/* Action Buttons */}
-							<Box
-								sx={{
-									width: "100%",
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									marginTop: "8px",
-								}}
-							>
-              </Box>
-						</Box>
-					))
-				) : (
-					<p
-						style={{
-							gridColumn: "span 4",
-							textAlign: "center",
-							color: "#757575",
-						}}
-					>
-						<Translate text="No products found." />
-					</p>
-				)}
-			</Box>
+            <Box
+				
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)", // 4 cards per row
+                    gap: 2,
+                    marginTop: 2,
+                    padding: "0px 64px",
+					cursor: "pointer",
+                }}
+            >
+                {filteredProducts.map((product) => (
+                    <ProductCard key={product.id} product={product} layoutType="mainPage" />
+                ))}
+            </Box>
 		</Box>
 	)
 }

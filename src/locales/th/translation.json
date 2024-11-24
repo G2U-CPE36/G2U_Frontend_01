@@ -11,5 +11,11 @@
     "Categories": "หมวดหมู่",
     "Price Range": "ช่วงราคา",
     "Province": "จังหวัด",
-    "Search": "ค้นหา"    
+    "Search": "ค้นหา",
+    "JoinSince": "เข้าร่วมเมื่อ",
+    "Status": "สถานะ",
+    "Status_Open": "กำลังดำเนิน",
+    "Status_Close": "ปิดแล้ว",
+    "catergories_sell": "โพสต์ขาย",
+    "categories_buy": "โพสต์ตั้งรับ"
 }

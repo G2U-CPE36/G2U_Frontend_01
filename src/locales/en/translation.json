@@ -11,5 +11,11 @@
     "Categories": "Categories",
     "Price Range": "Price Range",
     "Province": "Province",
-    "Search": "Search"    
+    "Search": "Search",
+    "JoinSince": "Joined since",
+    "Status": "Status",
+    "Status_Open": "Ongoing",
+    "Status_Close": "Closed",
+    "catergories_sell": "For Sale",
+    "categories_buy": "Looking to Buy"
 }
