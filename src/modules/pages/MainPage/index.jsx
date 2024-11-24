@@ -75,6 +75,8 @@ export default function MainPage() {
 		e.target.src = "/pic/default.jpg"
 	}
 
+
+	
 	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
