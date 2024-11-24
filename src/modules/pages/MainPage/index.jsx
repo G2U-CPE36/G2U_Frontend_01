@@ -22,8 +22,8 @@ export default function MainPage() {
 	const mockData = [
 		{
 			productID: 1,
-			name: " iPhone 13",
-			category: "electronics",
+			name: "iPhone 13",
+			categoryId: 1, // Electronics
 			price: "150",
 			province: "Bangkok",
 			condition: "New",
@@ -32,11 +32,38 @@ export default function MainPage() {
 		{
 			productID: 2,
 			name: "MacBook Pro",
-			category: "electronics",
+			categoryId: 1, // Electronics
 			price: "300",
 			province: "Chiangmai",
 			condition: "Used - Good",
 			image: "/pic/Laptop.jpg",
+		},
+		{
+			productID: 3,
+			name: "Harry Potter Book Set",
+			categoryId: 2, // Books
+			price: "100",
+			province: "Phuket",
+			condition: "New",
+			image: "/pic/Books.jpg",
+		},
+		{
+			productID: 4,
+			name: "Men's Jacket",
+			categoryId: 3, // Clothing
+			price: "50",
+			province: "Khon Kaen",
+			condition: "New",
+			image: "/pic/Clothing.jpg",
+		},
+		{
+			productID: 5,
+			name: "Dining Table Set",
+			categoryId: 9, // Furniture
+			price: "200",
+			province: "Bangkok",
+			condition: "Used - Good",
+			image: "/pic/Furniture.jpg",
 		},
 	]
 	const handleCategoryChange = (event) => setCategory(event.target.value)
@@ -51,7 +78,7 @@ export default function MainPage() {
 	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
-				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
+				const response = await fetch("http://chawit.tshddns.net:9790/api/products/getproductss")
 				if (!response.ok) throw new Error("Failed to fetch products")
 				const data = await response.json()
 				console.log("Fetched Products from API:", data)
@@ -69,7 +96,9 @@ export default function MainPage() {
 
 	useEffect(() => {
 		const filtered = products.filter((product) => {
-			const matchesCategory = category ? product.category.toLowerCase() === category.toLowerCase() : true
+			const matchesCategory = category
+				? product.categoryId === parseInt(category) // Filter by categoryId
+				: true
 			const matchesMaxPrice = maxPrice
 				? (() => {
 						if (maxPrice.includes("-")) {
@@ -83,7 +112,7 @@ export default function MainPage() {
 					})()
 				: true
 			const matchesProvince = province ? product.province.toLowerCase() === province.toLowerCase() : true
-			const matchesSearchQuery = searchQuery ? product.productName.toLowerCase().includes(searchQuery) : true
+			const matchesSearchQuery = searchQuery ? product.name.toLowerCase().includes(searchQuery) : true
 			return matchesCategory && matchesMaxPrice && matchesProvince && matchesSearchQuery
 		})
 		setFilteredProducts(filtered)
@@ -143,16 +172,16 @@ export default function MainPage() {
 							<MenuItem value="">
 								<Translate text="Any" />
 							</MenuItem>
-							<MenuItem value="electronics">
+							<MenuItem value="1">
 								<Translate text="Electronics" />
 							</MenuItem>
-							<MenuItem value="clothing">
-								<Translate text="Clothing" />
-							</MenuItem>
-							<MenuItem value="books">
+							<MenuItem value="2">
 								<Translate text="Books" />
 							</MenuItem>
-							<MenuItem value="furniture">
+							<MenuItem value="3">
+								<Translate text="Clothing" />
+							</MenuItem>
+							<MenuItem value="9">
 								<Translate text="Furniture" />
 							</MenuItem>
 						</Select>
