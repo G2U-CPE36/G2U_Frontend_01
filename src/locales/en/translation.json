@@ -17,5 +17,12 @@
     "Status_Open": "Ongoing",
     "Status_Close": "Closed",
     "catergories_sell": "For Sale",
-    "categories_buy": "Looking to Buy"
+    "categories_buy": "Looking to Buy",
+    "mypurchase_Header":"Orders",
+    "mypurchase_Status":"status",
+    "mypurchase_Action":"action",
+    "mypurchase_Confirm":"confirm",
+    "mypurchase_Reject":"return",
+    "mypurchase_Delivered":"Delivered",
+    "mypurchase_InProgress":"In Progress"
 }
