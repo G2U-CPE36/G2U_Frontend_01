@@ -29,7 +29,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 
 	return (
 		<Box
-			onClick={() => navigate(`/product/${product.productID}`)}
+			
 			sx={{
 				backgroundColor: "#ffffff",
 				padding: 2,

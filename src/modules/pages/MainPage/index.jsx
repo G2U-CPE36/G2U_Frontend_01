@@ -75,8 +75,6 @@ export default function MainPage() {
 		e.target.src = "/pic/default.jpg"
 	}
 
-
-	
 	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
@@ -300,11 +298,18 @@ export default function MainPage() {
 					gap: 2,
 					marginTop: 2,
 					padding: "0px 64px",
-					cursor: "pointer",
 				}}
 			>
 				{filteredProducts.map((product) => (
-					<ProductCard key={product.id} product={product} layoutType="mainPage" />
+					<Box
+						key={product.productID}
+						onClick={() => navigate(`/product/${product.productID}`)}
+						sx={{
+							cursor: "pointer",
+						}}
+					>
+						<ProductCard product={product} layoutType="mainPage" />
+					</Box>
 				))}
 			</Box>
 		</Box>
