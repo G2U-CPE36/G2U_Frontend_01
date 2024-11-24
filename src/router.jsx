@@ -13,7 +13,7 @@ const Unauthenticated = lazy(() => import("@/modules/Error/Unauthenticated"))
 const TestPage = lazy(() => import("@/modules/pages/TestPage"))
 const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
 const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
-
+const MyPurchase = lazy(() => import("@/modules/pages/MyPurchase"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
 
 const routes = [
@@ -23,8 +23,9 @@ const routes = [
 	{ path: "/login", element: <Login />, isPrivate: false },
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
+	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
 	// change ProductDetail isPrivate: to false
-	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
+	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false }];
 
 
 export default function Router() {
