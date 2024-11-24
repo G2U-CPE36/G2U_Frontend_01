@@ -88,7 +88,6 @@ export default function MyPosts() {
 
 	React.useEffect(() => {
 		const fetchAllPost = async () => {
-
 			try {
 				const response = await fetch("http://localhost:3001/api/products/getproducts")
 				if (!response.ok) throw new Error("Failed to fetch liked post")
@@ -103,7 +102,7 @@ export default function MyPosts() {
 				// }
 				// setPosts(mockPosts) // Use mock data as fallback
 				console.error("Error fetching liked products:", error)
-				setError("Failed to load pages. Please try again later.",error.message)
+				setError("Failed to load pages. Please try again later.", error.message)
 			}
 		}
 

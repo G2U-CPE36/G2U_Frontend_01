@@ -67,7 +67,6 @@ export default function LikeProductPages() {
 		)
 	}
 
-
 	return (
 		<Box sx={{ padding: "20px", display: "flex", justifyContent: "center" }}>
 			<Box

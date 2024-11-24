@@ -6,9 +6,8 @@ import FormControl from "@mui/material/FormControl"
 import Select from "@mui/material/Select"
 import SearchIcon from "@mui/icons-material/Search"
 import Translate from "@/components/Translate"
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard"
 import { useNavigate } from "react-router-dom"
-
 
 export default function MainPage() {
 	const [category, setCategory] = useState("")
@@ -18,7 +17,7 @@ export default function MainPage() {
 	const [products, setProducts] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
 	const [error, setError] = useState("")
-	const navigate = useNavigate();
+	const navigate = useNavigate()
 
 	const mockData = [
 		{
@@ -38,7 +37,7 @@ export default function MainPage() {
 			province: "Chiangmai",
 			condition: "Used - Good",
 			image: "/pic/Laptop.jpg",
-		}
+		},
 	]
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
@@ -55,7 +54,7 @@ export default function MainPage() {
 				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
 				if (!response.ok) throw new Error("Failed to fetch products")
 				const data = await response.json()
-				console.log("Fetched Products from API:", data);
+				console.log("Fetched Products from API:", data)
 				setProducts(data) // Set fetched data
 				setFilteredProducts(data) // Initialize with all products
 			} catch (error) {
@@ -263,21 +262,20 @@ export default function MainPage() {
 			</Box>
 
 			{/* Products Section */}
-            <Box
-				
-                sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)", // 4 cards per row
-                    gap: 2,
-                    marginTop: 2,
-                    padding: "0px 64px",
+			<Box
+				sx={{
+					display: "grid",
+					gridTemplateColumns: "repeat(4, 1fr)", // 4 cards per row
+					gap: 2,
+					marginTop: 2,
+					padding: "0px 64px",
 					cursor: "pointer",
-                }}
-            >
-                {filteredProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} layoutType="mainPage" />
-                ))}
-            </Box>
+				}}
+			>
+				{filteredProducts.map((product) => (
+					<ProductCard key={product.id} product={product} layoutType="mainPage" />
+				))}
+			</Box>
 		</Box>
 	)
 }
