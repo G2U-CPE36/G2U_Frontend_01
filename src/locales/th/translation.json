@@ -17,5 +17,10 @@
     "Status_Open": "กำลังดำเนิน",
     "Status_Close": "ปิดแล้ว",
     "catergories_sell": "โพสต์ขาย",
-    "categories_buy": "โพสต์ตั้งรับ"
+    "categories_buy": "โพสต์ตั้งรับ",
+    "Whatwouldyouliketobuy":"สร้างโพสต์รับซื้อสินค้า",
+    "ProductName":"ชื่อสินค้า",
+    "Whatproductareyoulookingfor":"กำลังตามหาสินค้าอะไรอยู่?",
+    "PriceRange":"ราคา",
+    "Whatisyourpreferredpricerange":"ต้องการซื้อในราคาช่วงไหน?"
 }

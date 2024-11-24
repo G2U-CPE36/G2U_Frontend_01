@@ -1,42 +1,59 @@
-import React, { useState } from "react"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { styled } from "@mui/material/styles"
 import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import Box from "@mui/material/Box"
-import OutlinedInput from "@mui/material/OutlinedInput"
+import TextField from "@mui/material/TextField"
 import Button from "@mui/material/Button"
 import AddIcon from "@mui/icons-material/Add"
-import { styled } from "@mui/material/styles"
-import { useForm } from "react-hook-form"
+import Select from "@mui/material/Select"
+import MenuItem from "@mui/material/MenuItem"
+import FormControl from "@mui/material/FormControl"
+import InputLabel from "@mui/material/InputLabel"
+import Translate from "@/components/Translate"
+
+// Styled component for visually hidden input (used for file upload)
+const VisuallyHiddenInput = styled("input")({
+	clip: "rect(0 0 0 0)",
+	clipPath: "inset(50%)",
+	height: 1,
+	overflow: "hidden",
+	position: "absolute",
+	bottom: 0,
+	left: 0,
+	whiteSpace: "nowrap",
+	width: 1,
+})
+
+// Category choices
+const categories = [
+	"electronic",
+	"pets",
+	"watch",
+	"fashion",
+	"music",
+	"shoes",
+	"sports",
+	"camera",
+	"bags",
+	"mom&kid",
+	"education",
+	"game",
+]
 
 export default function LookingToBuy() {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm()
+	// Form handling
+	const { register, handleSubmit } = useForm()
 
-	const ariaLabel = { "aria-label": "description" }
-	const VisuallyHiddenInput = styled("input")({
-		clip: "rect(0 0 0 0)",
-		clipPath: "inset(50%)",
-		height: 1,
-		overflow: "hidden",
-		position: "absolute",
-		bottom: 0,
-		left: 0,
-		whiteSpace: "nowrap",
-		width: 1,
-	})
-
-	// State for form fields
+	// State for form fields and image preview
 	const [formData, setFormData] = useState({
 		productName: "",
 		priceRange: "",
 		category: "",
 		productDetails: "",
 	})
-	const [imagePreview, setImagePreview] = useState(null) // State for uploaded image preview
+	const [imagePreview, setImagePreview] = useState(null)
 
 	// Handle form field changes
 	const handleInputChange = (event) => {
@@ -52,34 +69,15 @@ export default function LookingToBuy() {
 		const file = event.target.files[0]
 		if (file) {
 			const reader = new FileReader()
-			reader.onload = () => {
-				setImagePreview(reader.result) // Set the image preview
-			}
+			reader.onload = () => setImagePreview(reader.result)
 			reader.readAsDataURL(file)
 		}
 	}
 
 	// Handle form submission
-	const handleSubmit = async (event) => {
-		event.preventDefault()
-		console.log(event)
-		// try {
-		// 	const response = await fetch("/myposts/wtb", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify(formData),
-		// 	})
-		// 	if (response.ok) {
-		// 		alert("Post submitted successfully!")
-		// 	} else {
-		// 		alert("Failed to submit post.")
-		// 	}
-		// } catch (error) {
-		// 	console.error("Error submitting the form:", error)
-		// 	alert("An error occurred. Please try again.")
-		// }
+	const onSubmit = async (data) => {
+		const newData = { ...data, imagePreview }
+		console.log(newData)
 	}
 
 	return (
@@ -91,137 +89,123 @@ export default function LookingToBuy() {
 				justifyContent: "center",
 			}}
 		>
-			{/* Top Section */}
-			<Box
-				sx={{
-					width: "100%",
-					m: 2,
-				}}
-			>
-				<Typography variant="h3">What would you like to buy?</Typography>
+			{/* Header Section */}
+			<Box sx={{ width: "100%", m: 2 }}>
+				<Typography variant="h3">
+					<Translate text="Whatwouldyouliketobuy" />
+				</Typography>
 			</Box>
 
-			{/* Bottom Section */}
-			<Box
-				sx={{
-					display: "flex",
-					width: "100%",
-					flex: 1,
-				}}
-			>
-				{/* Left Side */}
+			{/* Form Section */}
+			<form onSubmit={handleSubmit(onSubmit)}>
 				<Box
 					sx={{
-						flex: 6,
 						display: "flex",
-						flexDirection: "column",
-						p: 2,
+						width: "100%",
+						flex: 1,
 					}}
 				>
-          <form>
-
-          
-					<Box
-						component="form"
-						onSubmit={handleSubmit}
-						sx={{
-							width: "100%",
-							display: "flex",
-							flexDirection: "column",
-						}}
-						noValidate
-						autoComplete="off"
-					>
-						<Typography variant="h6">Product Name</Typography>
-						<OutlinedInput
-							name="productName"
-							placeholder="What product are you looking for?"
-							value={formData.productName}
-							onChange={handleInputChange}
-							inputProps={ariaLabel}
-						/>
-
-						<Typography variant="h6">Price Range</Typography>
-						<OutlinedInput
-							name="priceRange"
-							placeholder="What is your preferred price range?"
-							value={formData.priceRange}
-							onChange={handleInputChange}
-							inputProps={ariaLabel}
-						/>
-
-						<Typography variant="h6">Category</Typography>
-						<OutlinedInput
-							name="category"
-							placeholder="What category does this product belong to?"
-							value={formData.category}
-							onChange={handleInputChange}
-							inputProps={ariaLabel}
-						/>
-
-						<Typography variant="h6">Product Details</Typography>
-						<OutlinedInput
-							name="productDetails"
-							placeholder="Briefly describe the product you are looking for."
-							value={formData.productDetails}
-							onChange={handleInputChange}
-							multiline
-							minRows={6}
-							inputProps={ariaLabel}
-						/>
-
-						<Button
-							type="submit"
-							variant="contained"
-							sx={{ mt: 2, backgroundColor: "#333652", color: "white" }}
+					{/* Left Section: Form Inputs */}
+					<Box sx={{ flex: 6, display: "flex", flexDirection: "column", p: 2 }}>
+						<Box
+							sx={{ width: "100%", display: "flex", flexDirection: "column" }}
+							noValidate
+							autoComplete="off"
 						>
-							Submit
+							<Typography variant="h6">
+								<Translate text="ProductName" />
+							</Typography>
+							<TextField
+								id="productName"
+								type="text"
+								label={<Translate text="Whatproductareyoulookingfor" />}
+								{...register("productName")}
+								value={formData.productName}
+								onChange={handleInputChange}
+							/>
+
+							<Typography variant="h6">
+								<Translate text="PriceRange" />
+							</Typography>
+							<TextField
+								id="priceRange"
+								type="text"
+								label={<Translate text="Whatisyourpreferredpricerange" />}
+								{...register("priceRange")}
+								value={formData.priceRange}
+								onChange={handleInputChange}
+							/>
+
+							<Typography variant="h6">Category</Typography>
+							<FormControl fullWidth sx={{ mt: 1 }}>
+								<InputLabel id="category-label">Select a category</InputLabel>
+								<Select
+									id="category"
+									labelId="category-label"
+									{...register("category")}
+									value={formData.category}
+									onChange={handleInputChange}
+									name="category"
+									label="Selectacategory"
+								>
+									{categories.map((category) => (
+										<MenuItem key={category} value={category}>
+											{category}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
+
+							<Typography variant="h6">Product Details</Typography>
+							<TextField
+								id="productDetails"
+								type="text"
+								{...register("productDetails")}
+								placeholder="Briefly describe the product you are looking for."
+								value={formData.productDetails}
+								onChange={handleInputChange}
+								multiline
+								minRows={6}
+							/>
+
+							<Button
+								type="submit"
+								variant="contained"
+								sx={{ mt: 2, backgroundColor: "#333652", color: "white" }}
+							>
+								Submit
+							</Button>
+						</Box>
+					</Box>
+
+					{/* Right Section: Image Upload */}
+					<Box sx={{ flex: 4, display: "flex", flexDirection: "column", p: 2 }}>
+						<Typography variant="h6" gutterBottom>
+							Upload an image to help others better understand your needs.
+						</Typography>
+						<Button
+							component="label"
+							variant="contained"
+							startIcon={<AddIcon />}
+							sx={{ width: 100, color: "white", backgroundColor: "#333652" }}
+						>
+							IMAGE
+							<VisuallyHiddenInput type="file" onChange={handleImageUpload} />
 						</Button>
+
+						{/* Image Preview */}
+						{imagePreview && (
+							<Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
+								<img
+									src={imagePreview}
+									alt="Uploaded Preview"
+									style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px" }}
+								/>
+							</Box>
+						)}
 					</Box>
 				</Box>
-        </form>
-        
-				{/* Right Side */}
-				<Box
-					sx={{
-						flex: 4,
-						display: "flex",
-						flexDirection: "column",
-						p: 2,
-					}}
-				>
-					<Typography variant="h6" gutterBottom>
-						Upload an image to help others better understand your needs.
-					</Typography>
-					<Button
-						component="label"
-						variant="contained"
-						startIcon={<AddIcon />}
-						sx={{ width: 100, color: "white", backgroundColor: "#333652" }}
-					>
-						IMAGE
-						<VisuallyHiddenInput type="file" onChange={handleImageUpload} />
-					</Button>
-
-					{/* Image Preview */}
-					{imagePreview && (
-						<Box
-							sx={{
-								mt: 2,
-								width: "100%",
-								display: "flex",
-								justifyContent: "center",
-							}}
-						>
-							<img
-								src={imagePreview}
-								alt="Uploaded Preview"
-								style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px" }}
-							/>
-						</Box>
-					)}
-				</Box>
-			</Box>
+			</form>
 		</Container>
 	)
 }

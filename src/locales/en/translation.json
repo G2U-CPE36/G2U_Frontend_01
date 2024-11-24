@@ -17,5 +17,10 @@
     "Status_Open": "Ongoing",
     "Status_Close": "Closed",
     "catergories_sell": "For Sale",
-    "categories_buy": "Looking to Buy"
+    "categories_buy": "Looking to Buy",
+    "Whatwouldyouliketobuy":"What would you like to buy?",
+    "ProductName":"Product Name",
+    "Whatproductareyoulookingfor":"What product are you looking for?",
+    "PriceRange":"Price Range",
+    "Whatisyourpreferredpricerange":"What is your preferred price range?"
 }
