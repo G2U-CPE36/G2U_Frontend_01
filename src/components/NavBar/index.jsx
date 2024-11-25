@@ -2,10 +2,14 @@ import { Button } from "@mui/material"
 import LanguageSelector from "../languageSelector"
 import Translate from "../Translate"
 import AccountMenu from "@/components/UserProfile"
+import { useSelector } from "react-redux"
+import { useEffect } from "react"
 
 export default function NavigationBar() {
 	const style = { backgroundColor: "#333652", width: "100px", height: "35px", borderRadius: "10px" }
+	const userToken = useSelector((state) => state.auth.userToken)
 
+	useEffect(() => {}, [userToken])
 	function modal() {
 		alert("Wait for modal")
 	}

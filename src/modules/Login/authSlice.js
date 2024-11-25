@@ -31,7 +31,6 @@ const authSlice = createSlice({
 			})
 			.addCase(loginToSystem.rejected, (state, action) => {
 				state.loading = false
-				localStorage.setItem("token", "Test")
 				state.error = action.payload || "Failed to login"
 			})
 		builder
