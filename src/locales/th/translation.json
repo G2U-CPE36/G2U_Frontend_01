@@ -24,7 +24,10 @@
     "mypurchase_Confirm":"ยืนยัน",
     "mypurchase_Reject":"คืนสินค้า",
     "mypurchase_Delivered":"จัดส่งสำเร็จ",
-    "mypurchase_InProgress":"กำลังดำเนินการ"
-
-    
+    "mypurchase_InProgress":"กำลังดำเนินการ",    
+    "Whatwouldyouliketobuy":"สร้างโพสต์รับซื้อสินค้า",
+    "ProductName":"ชื่อสินค้า",
+    "Whatproductareyoulookingfor":"กำลังตามหาสินค้าอะไรอยู่?",
+    "PriceRange":"ราคา",
+    "Whatisyourpreferredpricerange":"ต้องการซื้อในราคาช่วงไหน?"
 }

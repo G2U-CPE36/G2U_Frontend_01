@@ -24,5 +24,10 @@
     "mypurchase_Confirm":"confirm",
     "mypurchase_Reject":"return",
     "mypurchase_Delivered":"Delivered",
-    "mypurchase_InProgress":"In Progress"
+    "mypurchase_InProgress":"In Progress",
+    "Whatwouldyouliketobuy":"What would you like to buy?",
+    "ProductName":"Product Name",
+    "Whatproductareyoulookingfor":"What product are you looking for?",
+    "PriceRange":"Price Range",
+    "Whatisyourpreferredpricerange":"What is your preferred price range?"
 }
