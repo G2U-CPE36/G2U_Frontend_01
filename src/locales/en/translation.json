@@ -24,5 +24,20 @@
     "mypurchase_Confirm":"confirm",
     "mypurchase_Reject":"return",
     "mypurchase_Delivered":"Delivered",
-    "mypurchase_InProgress":"In Progress"
+    "mypurchase_InProgress":"In Progress",
+	"Whatwouldyouliketobuy": "What would you like to buy?",
+	"Addaproduct": "Add a product",
+	"ProductName": "Product Name",
+	"Whatproductareyoulookingfor": "What product are you looking for?",
+	"Whatproductareyouadding": "What product are you adding?",
+	"PriceRange": "Price Range",
+	"Whatisyourpreferredpricerange": "What is your preferred price range?",
+	"Category": "Category",
+	"Selectacategory": "Select a category",
+	"ProductDetails": "Product Details",
+	"Describeproductdetails": "Briefly describe the product",
+	"Uploadanimagetoprovidemoreclarityaboutyourneeds": "Upload an image to provide more clarity about your needs.",
+	"Uploadanimagetoshowcaseyourproduct": "Upload an image to showcase your product",
+	"Submit": "Submit",
+	"IMAGES": "IMAGE"
 }
