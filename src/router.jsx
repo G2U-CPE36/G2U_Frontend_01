@@ -15,6 +15,7 @@ const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
 const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
 const MyPurchase = lazy(() => import("@/modules/pages/MyPurchase"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
+const LookingtoBuy = lazy(() => import("@/modules/pages/LookingtoBuy"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
@@ -25,7 +26,8 @@ const routes = [
 	{ path: "/register", element: <Register />, isPrivate: false },
 	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
 	// change ProductDetail isPrivate: to false
-	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false }];
+	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
+	{ path: "/lookingtobuy", element: <LookingtoBuy />, isPrivate: false }];
 
 
 export default function Router() {
