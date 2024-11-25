@@ -59,9 +59,10 @@ export default function ProductDetail() {
 	useEffect(() => {
 		const getProducts = async () => {
 			try {
-				const response = await fetch(`http://chawit.tshddns.net:9790/api/products/${productID}`)
+				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
+				console.log(productData)
 				setProduct(productData)
 				setImage(productData.images?.image1 || "")
 			} catch (error) {

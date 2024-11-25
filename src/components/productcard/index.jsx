@@ -13,11 +13,11 @@ export default function ProductCard({ product, layoutType = "default" }) {
 	const navigate = useNavigate()
 
 	// Function to mark a product as favorite
-	const markAsFavorite = async (productID) => {
+	const markAsFavorite = async (productId) => {
 		try {
-			const userId = 123; // Replace with actual userId logic
-			const response = await axios.post("http://yourapi.example.com/api/favorites", {
-				productID,
+			const userId = 1; // Replace with actual userId logic // Replace with actual userId logic
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
 				userId,
 			});
 			console.log("Product marked as favorite:", response.data);
@@ -98,7 +98,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 						<IconButton
 							onClick={async (e) => {
 								e.stopPropagation(); // Prevent navigation
-								await markAsFavorite(product.productID); // Call the favorite function
+								await markAsFavorite(product.productId); // Call the favorite function
 							}}
 							sx={{
 								position: "relative", // Enable relative positioning
