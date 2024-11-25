@@ -18,7 +18,7 @@ const ProductDetail = lazy(() => import("@/modules/pages/Product"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
-	{ path: "/likeproduct", element: <LikePage />, isPrivate: false },
+	{ path: "/likeproduct", element: <LikePage />, isPrivate: true },
 	{ path: "/myposts", element: <MyPosts />, isPrivate: false },
 	{ path: "/login", element: <Login />, isPrivate: false },
 	{ path: "/test", element: <TestPage />, isPrivate: false },

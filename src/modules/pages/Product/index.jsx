@@ -38,7 +38,7 @@ Product details of Tefal เตารีดแรงดันไอน้ำ Exp
 // Function to mark a product as favorite
 const markAsFavorite = async (productId) => {
 	try {
-		const userId = 1 // Replace with actual userId logic
+		const userId = localStorage.getItem("userId") // Replace with actual userId logic
 		productId = parseInt(productId, 10);
 		const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 			productId,
@@ -110,7 +110,7 @@ export default function ProductDetail() {
 			<div className="lg:w-3/5 flex flex-col">
 				{/* Title and Wishlist Icon */}
 				<div className="flex justify-between items-center">
-					<h1 className="font-bold text-3xl text-gray-800">{product.title}</h1>
+					<h1 className="font-bold text-3xl text-gray-800">{product.productName}</h1>
 					<IconButton
 						onClick={async (e) => {
 							e.stopPropagation() // Prevent navigation
@@ -153,7 +153,7 @@ export default function ProductDetail() {
 				<div className="mt-6">
 					<h2 className="font-semibold text-lg">Product Description:</h2>
 					<p className="mt-2 text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-						{product.description}
+						{product.productDescription}
 					</p>
 				</div>
 

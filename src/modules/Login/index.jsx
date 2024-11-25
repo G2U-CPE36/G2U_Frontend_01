@@ -12,7 +12,7 @@ export default function Login() {
 	const location = useLocation()
 	const navigate = useNavigate()
 	const from = location.state?.from || "/"
-	
+
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -23,8 +23,19 @@ export default function Login() {
 	const { register, handleSubmit } = form
 
 	async function onSubmit(data) {
-		dispatch(loginToSystem(data))
-		navigate(from)
+		try {
+			// Dispatch the login action and wait for it to complete
+			const resultAction = await dispatch(loginToSystem(data)).unwrap()
+
+			// If login is successful, navigate to the desired page
+			if (resultAction?.token) {
+				navigate(from)
+			}
+		} catch (error) {
+			// If login fails, handle the error (e.g., show a message)
+			console.error("Login failed:", error)
+			alert(error || "Login failed. Please try again.")
+		}
 	}
 
 	return (

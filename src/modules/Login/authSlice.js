@@ -25,14 +25,16 @@ const authSlice = createSlice({
 			})
 			.addCase(loginToSystem.fulfilled, (state, action) => {
 				state.loading = false
-				state.userInfo = action.payload.user
+				state.userInfo = action.payload.userId
 				state.userToken = action.payload.token
 				localStorage.setItem("token", action.payload.token)
+				localStorage.setItem("userId", action.payload.userId)
+				localStorage.setItem("username", action.payload.username)
 			})
 			.addCase(loginToSystem.rejected, (state, action) => {
 				state.loading = false
 				// Do not forget to remove line "state.userToken = true"
-				state.userToken = true
+				// state.userToken = true
 				state.error = action.payload || "Failed to login"
 			})
 		builder
@@ -42,7 +44,7 @@ const authSlice = createSlice({
 			})
 			.addCase(registerToSystem.fulfilled, (state, action) => {
 				state.loading = false
-				state.userInfo = action.payload.user
+				state.userInfo = action.payload.userId
 				state.userToken = action.payload.token
 				localStorage.setItem("token", action.payload.token)
 			})
