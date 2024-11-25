@@ -17,5 +17,14 @@
     "Status_Open": "กำลังดำเนิน",
     "Status_Close": "ปิดแล้ว",
     "catergories_sell": "โพสต์ขาย",
-    "categories_buy": "โพสต์ตั้งรับ"
+    "categories_buy": "โพสต์ตั้งรับ",
+    "mypurchase_Header":"รายการคำสั่งซื้อ",
+    "mypurchase_Status":"สถานะการจัดส่ง",
+    "mypurchase_Action":"แอ็คชั่น",
+    "mypurchase_Confirm":"ยืนยัน",
+    "mypurchase_Reject":"คืนสินค้า",
+    "mypurchase_Delivered":"จัดส่งสำเร็จ",
+    "mypurchase_InProgress":"กำลังดำเนินการ"
+
+    
 }
