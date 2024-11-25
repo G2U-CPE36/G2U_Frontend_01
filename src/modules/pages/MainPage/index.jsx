@@ -78,7 +78,7 @@ export default function MainPage() {
 	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
-				const response = await fetch("http://chawit.tshddns.net:9790/api/products/getproductss")
+				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
 				if (!response.ok) throw new Error("Failed to fetch products")
 				const data = await response.json()
 				console.log("Fetched Products from API:", data)
@@ -303,7 +303,7 @@ export default function MainPage() {
 				{filteredProducts.map((product) => (
 					<Box
 						key={product.productID}
-						onClick={() => navigate(`/product/${product.productID}`)}
+						onClick={() => navigate(`/product/${product.productId}`)}
 						sx={{
 							cursor: "pointer",
 						}}
