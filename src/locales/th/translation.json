@@ -1,30 +1,4 @@
 {
     "comingSoon": "เร็วๆนี้......",
-    "testing" : "ทดสอบ",
-    "login/Register":"เข้าสู่ระบบ/สมัคร",
-    "email":"อีเมล",
-    "password":"รหัสผ่าน",
-    "likepage_Header":"สินค้าที่ถูกใจ",
-    "likepage_Price":"ราคาสินค้า",
-    "likepage_Action":"แอ็คชั่น",
-    "likepage_Buynow":"ซื้อทันที",
-    "Categories": "หมวดหมู่",
-    "Price Range": "ช่วงราคา",
-    "Province": "จังหวัด",
-    "Search": "ค้นหา",
-    "JoinSince": "เข้าร่วมเมื่อ",
-    "Status": "สถานะ",
-    "Status_Open": "กำลังดำเนิน",
-    "Status_Close": "ปิดแล้ว",
-    "catergories_sell": "โพสต์ขาย",
-    "categories_buy": "โพสต์ตั้งรับ",
-    "mypurchase_Header":"รายการคำสั่งซื้อ",
-    "mypurchase_Status":"สถานะการจัดส่ง",
-    "mypurchase_Action":"แอ็คชั่น",
-    "mypurchase_Confirm":"ยืนยัน",
-    "mypurchase_Reject":"คืนสินค้า",
-    "mypurchase_Delivered":"จัดส่งสำเร็จ",
-    "mypurchase_InProgress":"กำลังดำเนินการ"
-
-    
+    "testing" : "ทดสอบ"
 }
