@@ -36,11 +36,12 @@ Product details of Tefal เตารีดแรงดันไอน้ำ Exp
 }
 
 // Function to mark a product as favorite
-const markAsFavorite = async (productID) => {
+const markAsFavorite = async (productId) => {
 	try {
-		const userId = 123 // Replace with actual userId logic
-		const response = await axios.post("http://yourapi.example.com/api/favorites", {
-			productID,
+		const userId = 1 // Replace with actual userId logic
+		productId = parseInt(productId, 10);
+		const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+			productId,
 			userId,
 		})
 		console.log("Product marked as favorite:", response.data)
@@ -59,7 +60,7 @@ export default function ProductDetail() {
 	useEffect(() => {
 		const getProducts = async () => {
 			try {
-				const response = await fetch(`http://chawit.tshddns.net:9790/api/products/${productID}`)
+				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
 				setProduct(productData)
@@ -79,7 +80,7 @@ export default function ProductDetail() {
 		return <p>Loading product details...</p>
 	}
 
-	const imageArray = Object.values(product.images)
+	const imageArray = Object.values(product.price)
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
@@ -113,7 +114,7 @@ export default function ProductDetail() {
 					<IconButton
 						onClick={async (e) => {
 							e.stopPropagation() // Prevent navigation
-							await markAsFavorite(product.productID) // Call the favorite function
+							await markAsFavorite(productID) // Call the favorite function
 						}}
 						sx={{
 							display: "flex",
