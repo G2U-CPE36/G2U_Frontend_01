@@ -4,6 +4,12 @@ import Translate from "../Translate"
 import AccountMenu from "@/components/UserProfile"
 
 export default function NavigationBar() {
+	const style = { backgroundColor: "#333652", width: "100px", height: "35px", borderRadius: "10px" }
+
+	function modal() {
+		alert("Wait for modal")
+	}
+
 	return (
 		<nav className="bg-main-yellow p-4">
 			<div className="container mx-auto px-4 sm:px-6 lg:px-20">
@@ -14,18 +20,22 @@ export default function NavigationBar() {
 						</button>
 					</a>
 
-					<div className="flex justify-between">
+					<div className="flex justify-between items-center">
+						{localStorage.getItem("token") && (
+							<Button variant="contained" onClick={modal} sx={style}>
+								<Translate text="post" className="text-white" />
+							</Button>
+						)}
 						<div className="mx-3">
 							<LanguageSelector />
 						</div>
-						<Button
-							variant="contained"
-							href="/login"
-							sx={{ backgroundColor: "#333652", width: "140px", height: "35px" }}
-						>
-							<Translate text="login/Register" className="text-white" />
-						</Button>
-						<AccountMenu />
+						{!localStorage.getItem("token") ? (
+							<Button variant="contained" href="/login" sx={style}>
+								<Translate text="signIn" className="text-white" />
+							</Button>
+						) : (
+							<AccountMenu />
+						)}
 					</div>
 				</div>
 			</div>
