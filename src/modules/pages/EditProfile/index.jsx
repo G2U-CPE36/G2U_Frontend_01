@@ -1,22 +1,21 @@
 import { useState } from "react"
-import {
-	Box,
-	Tab,
-	Typography,
-	TextField,
-	Button,
-	Card,
-	CardContent,
-	IconButton,
-	RadioGroup,
-	FormControlLabel,
-	Radio,
-	FormLabel,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-} from "@mui/material"
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import IconButton from "@mui/material/IconButton";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
+import FormLabel from "@mui/material/FormLabel";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Checkbox } from "@mui/material"
 import TabContext from "@mui/lab/TabContext"
 import TabList from "@mui/lab/TabList"
 import TabPanel from "@mui/lab/TabPanel"
@@ -26,8 +25,44 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Edit, Delete } from "@mui/icons-material"
 
 export default function ProfileWithLabTabs() {
+	//Profile
+	const [formData, setFormData] = useState({
+		username: "",
+		name: "",
+		email: "",
+		phone: "",
+		gender: "",
+		dob: null,
+		photo: null, // เก็บไฟล์รูปภาพ
+	})
+
+	const handleInputChange = (field, value) => {
+		setFormData((prev) => ({ ...prev, [field]: value }))
+	}
+
+	const handlePhotoUpload = (event) => {
+		const file = event.target.files[0]
+		if (file) {
+			setFormData((prev) => ({ ...prev, photo: URL.createObjectURL(file) }))
+		}
+	}
+
+	const handleSave = () => {
+		setIsEditing(false) // Change to display mode
+	}
+
+	const handleEdit = () => {
+		setIsEditing(true) // Switch to edit mode
+	}
+
+	const handleCancel = () => {
+		setIsEditing(false) // Cancel edit
+		// You may want to reset your data to the factory settings before editing.
+	}
+	
+	//Address
 	const [value, setValue] = useState("1")
-	const [dob, setDob] = useState(null)
+	//const [dob, setDob] = useState(null)
 	const [addresses, setAddresses] = useState([
 		{
 			id: 1,
@@ -35,13 +70,6 @@ export default function ProfileWithLabTabs() {
 			phone: "(+66) 12 345 6789",
 			address: "123 Evergreen Street, Maplewood, CA 90210, USA",
 			isDefault: true,
-		},
-		{
-			id: 2,
-			name: "Mr. John Doe",
-			phone: "(+66) 98 765 4321",
-			address: "456 Elm Street, Springfield, IL 62704, USA",
-			isDefault: false,
 		},
 	])
 	const [newAddress, setNewAddress] = useState({
@@ -60,8 +88,8 @@ export default function ProfileWithLabTabs() {
 			prevAddresses.map(
 				(address) =>
 					address.id === addressId
-						? { ...address, isDefault: true } // ตั้งที่อยู่นี้เป็น default
-						: { ...address, isDefault: false }, // ตั้งที่อยู่อื่นๆ เป็นไม่ใช่ default
+						? { ...address, isDefault: true } // Set this address as default.
+						: { ...address, isDefault: false }, // Set other addresses to non default.
 			),
 		)
 	}
@@ -115,13 +143,14 @@ export default function ProfileWithLabTabs() {
 	}
 	const sortedAddresses = addresses.sort((a, b) => b.isDefault - a.isDefault)
 
+	//Cards
 	const handleSetDefaultCard = (cardId) => {
 		setCards((prevCards) =>
 			prevCards.map(
 				(card) =>
 					card.id === cardId
-						? { ...card, isDefault: true } // ตั้งบัตรนี้เป็น default
-						: { ...card, isDefault: false }, // ตั้งบัตรอื่นๆ เป็นไม่ใช่ default
+						? { ...card, isDefault: true } // Set this card as default.
+						: { ...card, isDefault: false }, // Set other cards to not default.
 			),
 		)
 	}
@@ -154,7 +183,7 @@ export default function ProfileWithLabTabs() {
 		handleCardModalClose()
 	}
 
-	const [cardFormOpen, setCardFormOpen] = useState(false) // ประกาศ state
+	const [cardFormOpen, setCardFormOpen] = useState(false) 
 	const [isEditingCard, setIsEditingCard] = useState(false)
 	const [cardData, setCardData] = useState({
 		cardholderName: "",
@@ -167,6 +196,81 @@ export default function ProfileWithLabTabs() {
 		setCards((prev) => prev.filter((card) => card.id !== id))
 	}
 	const sortedCards = [...cards].sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0))
+
+	//Change password
+	const [passwordData, setPasswordData] = useState({
+		currentPassword: "",
+		newPassword: "",
+		confirmPassword: "",
+	})
+	const [isEditingPassword, setIsEditingPassword] = useState(false) // Password edit status
+
+	//const [isEditing, setIsEditing] = useState(false) 
+	
+	const handleSavePassword = () => {
+		// Validation
+		if (passwordData.newPassword !== passwordData.confirmPassword) {
+			alert("New Password and Confirm Password must match.")
+			return
+		}
+		if (passwordData.newPassword === passwordData.currentPassword) {
+			alert("New Password cannot be the same as Current Password.")
+			return
+		}
+
+		// If the inspection passes
+		alert("Password updated successfully.")
+		setPasswordData({
+			currentPassword: "",
+			newPassword: "",
+			confirmPassword: "",
+		})
+		setIsEditingPassword(false) // Change to display mode
+	}
+
+	const handlePasswordInputChange = (field, value) => {
+		setPasswordData((prev) => ({ ...prev, [field]: value }))
+	}
+
+	const handleEditPassword = () => {
+		setIsEditingPassword(true) // Switch to edit mode
+	}
+
+	const handleCancelPassword = () => {
+		// Reset your password information to default.
+		setPasswordData({
+			currentPassword: "",
+			newPassword: "",
+			confirmPassword: "",
+		})
+		setIsEditingPassword(false) // Change to display mode
+	}
+	
+// Privacy Settings Tab 
+	const [accept, setAccept] = useState(false) // State for sharing information with Affiliates
+
+	const handleAcceptChange = (event) => {
+		setAccept(event.target.checked)
+	}
+
+	/*const handleSavePrivacySettings = () => {
+		alert(`Privacy Settings saved. Share information: ${accept ? "Yes" : "No"}`)
+	}*/
+
+	const handleDeleteAccount = () => {
+		// ฟังก์ชันลบข้อมูลบัญชี
+		alert("Your account will be deleted.")
+		// Reset data including formData
+		setFormData({
+			username: "",
+			name: "",
+			email: "",
+			phone: "",
+			gender: "",
+			dob: null,
+			photo: null,
+		})
+	}
 
 	return (
 		<Box sx={{ width: "100%", typography: "body1", height: "100vh" }}>
@@ -184,7 +288,15 @@ export default function ProfileWithLabTabs() {
 				{/* Profile Tab */}
 				<TabPanel value="1">
 					<Box sx={{ display: "flex", flexDirection: "row", p: 2 }}>
-						<Box sx={{ flex: "0 1 300px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+						{/* รูปโปรไฟล์ */}
+						<Box
+							sx={{
+								flex: "0 1 300px",
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+							}}
+						>
 							<Box
 								sx={{
 									width: "100px",
@@ -194,42 +306,106 @@ export default function ProfileWithLabTabs() {
 									display: "flex",
 									justifyContent: "center",
 									alignItems: "center",
+									overflow: "hidden",
 									mb: 2,
 								}}
 							>
-								<Typography>Photo</Typography>
+								{formData.photo ? (
+									<img
+										src={formData.photo}
+										alt="Profile"
+										style={{ width: "100%", height: "100%", objectFit: "cover" }}
+									/>
+								) : (
+									<Typography>Photo</Typography>
+								)}
 							</Box>
-							<Button variant="outlined">Change Photo</Button>
+							{isEditing && (
+								<Button variant="outlined" component="label">
+									Change Photo
+									<input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
+								</Button>
+							)}
 						</Box>
+
+						{/* ฟอร์มโปรไฟล์ */}
 						<Box sx={{ flex: 1, pl: 3 }}>
 							<form>
-								<TextField label="Username" fullWidth margin="normal" />
-								<TextField label="Name" fullWidth margin="normal" />
-								<TextField label="Email" fullWidth margin="normal" />
-								<TextField label="Phone Number" fullWidth margin="normal" />
+								<TextField
+									label="Username"
+									fullWidth
+									margin="normal"
+									value={formData.username}
+									onChange={(e) => handleInputChange("username", e.target.value)}
+									disabled={!isEditing}
+								/>
+								<TextField
+									label="Name"
+									fullWidth
+									margin="normal"
+									value={formData.name}
+									onChange={(e) => handleInputChange("name", e.target.value)}
+									disabled={!isEditing}
+								/>
+								<TextField
+									label="Email"
+									fullWidth
+									margin="normal"
+									value={formData.email}
+									onChange={(e) => handleInputChange("email", e.target.value)}
+									disabled={!isEditing}
+								/>
+								<TextField
+									label="Phone Number"
+									fullWidth
+									margin="normal"
+									value={formData.phone}
+									onChange={(e) => handleInputChange("phone", e.target.value)}
+									disabled={!isEditing}
+								/>
 								<Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
 									<FormLabel sx={{ mr: 2 }}>Gender</FormLabel>
-									<RadioGroup row>
-										<FormControlLabel value="male" control={<Radio />} label="Male" />
-										<FormControlLabel value="female" control={<Radio />} label="Female" />
-										<FormControlLabel value="other" control={<Radio />} label="Other" />
+									<RadioGroup
+										row
+										value={formData.gender}
+										onChange={(e) => handleInputChange("gender", e.target.value)}
+									>
+										<FormControlLabel value="male" control={<Radio />} label="Male" disabled={!isEditing} />
+										<FormControlLabel
+											value="female"
+											control={<Radio />}
+											label="Female"
+											disabled={!isEditing}
+										/>
+										<FormControlLabel value="other" control={<Radio />} label="Other" disabled={!isEditing} />
 									</RadioGroup>
 								</Box>
 								<LocalizationProvider dateAdapter={AdapterDayjs}>
 									<DatePicker
 										label="Date of Birth"
-										value={dob}
-										onChange={(newValue) => setDob(newValue)}
-										renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
+										value={formData.dob}
+										onChange={(newValue) => handleInputChange("dob", newValue)}
+										renderInput={(params) => (
+											<TextField {...params} fullWidth margin="normal" disabled={!isEditing} />
+										)}
 									/>
 								</LocalizationProvider>
+								{/* ปุ่ม Save / Cancel หรือ Edit */}
 								<Box sx={{ mt: 3, textAlign: "right" }}>
-									<Button variant="outlined" color="secondary" sx={{ mr: 2 }}>
-										Cancel
-									</Button>
-									<Button variant="contained" color="primary">
-										Save
-									</Button>
+									{isEditing ? (
+										<>
+											<Button variant="outlined" color="secondary" sx={{ mr: 2 }} onClick={handleCancel}>
+												Cancel
+											</Button>
+											<Button variant="contained" color="primary" onClick={handleSave}>
+												Save
+											</Button>
+										</>
+									) : (
+										<IconButton onClick={handleEdit}>
+											<Edit />
+										</IconButton>
+									)}
 								</Box>
 							</form>
 						</Box>
@@ -272,7 +448,7 @@ export default function ProfileWithLabTabs() {
 									>
 										<Box sx={{ mr: 2 }}>
 											<img
-												src="/pic/image.png"
+												src="\card.png"
 												alt="Card Icon"
 												style={{ width: "50px", height: "50px", borderRadius: "8px" }}
 											/>
@@ -468,16 +644,53 @@ export default function ProfileWithLabTabs() {
 				<TabPanel value="4">
 					<Box sx={{ p: 3 }}>
 						<form>
-							<TextField label="Current Password" fullWidth margin="normal" type="password" />
-							<TextField label="New Password" fullWidth margin="normal" type="password" />
-							<TextField label="Confirm New Password" fullWidth margin="normal" type="password" />
+							<TextField
+								label="Current Password"
+								fullWidth
+								margin="normal"
+								type="password"
+								disabled={!isEditingPassword}
+								value={passwordData.currentPassword}
+								onChange={(e) => handlePasswordInputChange("currentPassword", e.target.value)}
+							/>
+							<TextField
+								label="New Password"
+								fullWidth
+								margin="normal"
+								type="password"
+								disabled={!isEditingPassword}
+								value={passwordData.newPassword}
+								onChange={(e) => handlePasswordInputChange("newPassword", e.target.value)}
+							/>
+							<TextField
+								label="Confirm New Password"
+								fullWidth
+								margin="normal"
+								type="password"
+								disabled={!isEditingPassword}
+								value={passwordData.confirmPassword}
+								onChange={(e) => handlePasswordInputChange("confirmPassword", e.target.value)}
+							/>
 							<Box sx={{ mt: 3, textAlign: "right" }}>
-								<Button variant="outlined" color="secondary" sx={{ mr: 2 }}>
-									Cancel
-								</Button>
-								<Button variant="contained" color="primary">
-									Save
-								</Button>
+								{isEditingPassword ? (
+									<>
+										<Button
+											variant="outlined"
+											color="secondary"
+											sx={{ mr: 2 }}
+											onClick={handleCancelPassword} // ล้างข้อมูลเมื่อกด Cancel
+										>
+											Cancel
+										</Button>
+										<Button variant="contained" color="primary" onClick={handleSavePassword}>
+											Save
+										</Button>
+									</>
+								) : (
+									<IconButton onClick={handleEditPassword}>
+										<Edit />
+									</IconButton>
+								)}
 							</Box>
 						</form>
 					</Box>
@@ -486,12 +699,32 @@ export default function ProfileWithLabTabs() {
 				{/* Privacy Settings Tab */}
 				<TabPanel value="5">
 					<Box sx={{ p: 3 }}>
-						<Typography variant="h4" gutterBottom>
+						<Typography variant="h5" gutterBottom>
 							Privacy Settings
 						</Typography>
-						<Box>
-							<Button variant="contained" color="primary">
-								Save Changes
+
+						{/* Share Information to Affiliates */}
+						<Box sx={{ mb: 2 }}>
+							<Typography variant="body1" gutterBottom>
+								Share your information with our Affiliates
+							</Typography>
+							<Typography variant="body2" color="textSecondary" gutterBottom>
+								Turn on to allow Shopee to share your information with our affiliates for marketing and
+								communications purposes.
+							</Typography>
+							<FormControlLabel
+								control={<Checkbox checked={accept} onChange={handleAcceptChange} />}
+								label="Accept"
+							/>
+						</Box>
+
+						{/* Request Account Deletion */}
+						<Box sx={{ mt: 4 }}>
+							<Typography variant="h6" gutterBottom>
+								Request Account Deletion
+							</Typography>
+							<Button variant="contained" color="error" onClick={handleDeleteAccount}>
+								Delete Account
 							</Button>
 						</Box>
 					</Box>
