@@ -35,22 +35,6 @@ Product details of Tefal เตารีดแรงดันไอน้ำ Exp
   `,
 }
 
-// Function to mark a product as favorite
-const markAsFavorite = async (productId) => {
-	try {
-		const userId = 1 // Replace with actual userId logic
-		productId = parseInt(productId, 10);
-		const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
-			productId,
-			userId,
-		})
-		console.log("Product marked as favorite:", response.data)
-		// Optionally update the UI or state to reflect the favorite status
-	} catch (error) {
-		console.error("Error marking product as favorite:", error)
-	}
-}
-
 export default function ProductDetail() {
 	const { productID } = useParams() // Extract productID from the URL
 	const [product, setProduct] = useState(null)
@@ -58,36 +42,62 @@ export default function ProductDetail() {
 	const [image, setImage] = useState(null)
 
 	useEffect(() => {
-		const getProducts = async () => {
+		const fetchProduct = async () => {
 			try {
+				// Fetch product details
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
 				setProduct(productData)
-				setImage(productData.images?.image1 || "")
+
+				// Render image directly from Blob
+				if (productData.productImage?.data) {
+					const blob = new Blob([new Uint8Array(productData.productImage.data)], {
+						type: "image/jpeg", // Replace with the actual MIME type if not JPEG
+					})
+					const url = URL.createObjectURL(blob)
+					setImage(url)
+				} else {
+					setImage("") // Fallback if no image is provided
+				}
 			} catch (error) {
 				console.error(error.message)
-				console.log("Failed to load product from the server. Using mock data.")
-				setProduct(mockproduct)
-				setImage(mockproduct.images.image1)
+				setError("Failed to load product")
 			}
 		}
 
-		getProducts()
-	}, [productID]) // Run useEffect when productID changes
+		fetchProduct()
+	}, [productID])
 
 	if (!product) {
 		return <p>Loading product details...</p>
 	}
 
-	const imageArray = Object.values(product.price)
+	const imageArray = Object.values(product.images || {})
+
+	// Function to mark a product as favorite
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			productId = parseInt(productID, 10)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			console.log("Product marked as favorite:", response.data)
+			// Optionally update the UI or state to reflect the favorite status
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
 			{/* Left Section: Images */}
+			{/* Left Section: Images */}
 			<div className="lg:w-2/5 flex flex-col items-center">
 				<div className="w-full h-96 flex items-center justify-center border rounded-lg overflow-hidden">
-					<img alt={image} className="object-contain h-full" src={image} />
+					<img alt={product.productName} className="object-contain h-full" src={image} />
 				</div>
 				<div className="flex mt-4 gap-2">
 					{imageArray.map((img, index) => (
@@ -104,13 +114,11 @@ export default function ProductDetail() {
 					))}
 				</div>
 			</div>
-
-			{/* Right Section: Product Details */}
 			{/* Right Section: Product Details */}
 			<div className="lg:w-3/5 flex flex-col">
 				{/* Title and Wishlist Icon */}
 				<div className="flex justify-between items-center">
-					<h1 className="font-bold text-3xl text-gray-800">{product.title}</h1>
+					<h1 className="font-bold text-3xl text-gray-800">{product.productName}</h1>
 					<IconButton
 						onClick={async (e) => {
 							e.stopPropagation() // Prevent navigation
@@ -145,7 +153,7 @@ export default function ProductDetail() {
 
 				{/* Category Section */}
 				<div className="mt-4">
-					<h2 className="font-semibold text-lg">Category:</h2>
+					<h2 className="font-semibold text-lg">Condition:</h2>
 					<p className="text-gray-700">{product.condition}</p>
 				</div>
 
@@ -153,7 +161,7 @@ export default function ProductDetail() {
 				<div className="mt-6">
 					<h2 className="font-semibold text-lg">Product Description:</h2>
 					<p className="mt-2 text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-						{product.description}
+						{product.productDescription}
 					</p>
 				</div>
 

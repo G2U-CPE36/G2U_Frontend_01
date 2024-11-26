@@ -15,7 +15,9 @@ export default function ProductCard({ product, layoutType = "default" }) {
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
 		try {
-			const userId = 1; // Replace with actual userId logic
+			const userId = parseInt(localStorage.getItem("userId"),10) // Replace with actual userId logic
+            console.log(userId)
+            console.log(productId)
 			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 				productId,
 				userId,
@@ -90,7 +92,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 								flexGrow: 1,
 							}}
 						>
-							<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.name}</h2>
+							<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.productName}</h2>
 							<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
 							<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
 							<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
