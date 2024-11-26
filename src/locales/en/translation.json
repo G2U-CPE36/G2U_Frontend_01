@@ -26,5 +26,17 @@
     "mypurchase_Delivered":"Delivered",
     "mypurchase_InProgress":"In Progress",
     "DeliveryInformation":"Delivery Information",
-    "Address":"Address"
+    "Address":"Address",
+    "ChangeAddress":"Change Address",
+    "By":"By",
+    "ProductDetails":"Product Details",
+    "ShippingOptions":"Shipping Options",
+    "InternationalExpress":"International Express",
+    "PaymentMethods": "Payment Methods",
+	"CreditCard": "Credit Card",
+	"OrderTotal": "Order Total",
+	"ShippingFee": "Shipping Fee",
+	"Total": "Total",
+    "More": "More",
+    "PlaceOrder": "Place Order"
 }

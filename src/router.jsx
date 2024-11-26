@@ -25,7 +25,7 @@ const routes = [
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
 	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
-	{ path: "/checkout", element: <CheckOut />, isPrivate: false },
+	{ path: "/checkout", element: <CheckOut />, isPrivate: true },
 	// change ProductDetail isPrivate: to false
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false }];
 
