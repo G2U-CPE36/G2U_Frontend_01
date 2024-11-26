@@ -76,7 +76,7 @@ export default function AddProductForm({ formType, data }) {
 		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
 		console.log(productImage)
 
-		if (!imageFile) {
+		if (!productImage) {
 			console.error("No image file selected.")
 			return
 		}
