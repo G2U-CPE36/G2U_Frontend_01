@@ -51,7 +51,7 @@ export default function LookingToBuy() {
 		productName: "",
 		priceRange: "",
 		category: "",
-		productDetails: "",
+		productDescription: "",
 	})
 	const [imagePreview, setImagePreview] = useState(null)
 
@@ -73,21 +73,22 @@ export default function LookingToBuy() {
 	}
 
 	const onSubmit = async (data) => {
+		console.log(data)
 		const userId = 1
-		const productName = "test product"
+		// const productName = "test product"
 		const categoryId = 2
-		const productDescription = "hello world"
-		const price = 20.0
+		// const productDescription = "hello world"
+		// const price = 20.0
 		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
 		const condition = "new"
 
 		try {
 			const formData = new FormData()
 			formData.append("userId", userId)
-			formData.append("productName", productName)
+			formData.append("productName", data.productName)
 			formData.append("categoryId", categoryId)
-			formData.append("productDescription", productDescription)
-			formData.append("price", price)
+			formData.append("productDescription", data.productDescription)
+			formData.append("price", data.priceRange)
 			formData.append("condition", condition)
 			formData.append("productImage", productImage) // Append the Blob/File object
 
@@ -181,11 +182,11 @@ export default function LookingToBuy() {
 
 							<Typography variant="h6">Product Details</Typography>
 							<TextField
-								id="productDetails"
+								id="productDescription"
 								type="text"
-								{...register("productDetails")}
+								{...register("productDescription")}
 								placeholder="Briefly describe the product you are looking for."
-								value={formData.productDetails}
+								value={formData.productDescription}
 								onChange={handleInputChange}
 								multiline
 								minRows={6}

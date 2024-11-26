@@ -42,13 +42,28 @@ export default function ProductDetail() {
 	const [image, setImage] = useState(null)
 
 	useEffect(() => {
+		let imageUrl // To store created image URL for cleanup
+
 		const getProducts = async () => {
 			try {
+				// Fetch product details
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
 				setProduct(productData)
-				setImage(productData.images?.image1 || "")
+
+				// Fetch image Blob if productImage exists
+				if (productData.productImage) {
+					const imageResponse = await fetch(
+						`http://chawit.thddns.net:9790/api/images/${productData.productImage}`,
+					)
+					if (!imageResponse.ok) throw new Error("Failed to fetch image")
+					const imageBlob = await imageResponse.blob()
+					imageUrl = URL.createObjectURL(imageBlob) // Create URL for the Blob
+					setImage(imageUrl) // Set image for display
+				} else {
+					setImage("") // Fallback if no image is provided
+				}
 			} catch (error) {
 				console.error(error.message)
 				console.log("Failed to load product from the server. Using mock data.")
@@ -58,13 +73,20 @@ export default function ProductDetail() {
 		}
 
 		getProducts()
-	}, [productID]) // Run useEffect when productID changes
+
+		// Cleanup created Blob URLs to avoid memory leaks
+		return () => {
+			if (imageUrl) {
+				URL.revokeObjectURL(imageUrl)
+			}
+		}
+	}, [productID])
 
 	if (!product) {
 		return <p>Loading product details...</p>
 	}
 
-	const imageArray = Object.values(product.price)
+	const imageArray = Object.values(product.images || {})
 
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
@@ -85,9 +107,10 @@ export default function ProductDetail() {
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
 			{/* Left Section: Images */}
+			{/* Left Section: Images */}
 			<div className="lg:w-2/5 flex flex-col items-center">
 				<div className="w-full h-96 flex items-center justify-center border rounded-lg overflow-hidden">
-					<img alt={image} className="object-contain h-full" src={image} />
+					<img alt={product.productName} className="object-contain h-full" src={image} />
 				</div>
 				<div className="flex mt-4 gap-2">
 					{imageArray.map((img, index) => (
@@ -104,8 +127,6 @@ export default function ProductDetail() {
 					))}
 				</div>
 			</div>
-
-			{/* Right Section: Product Details */}
 			{/* Right Section: Product Details */}
 			<div className="lg:w-3/5 flex flex-col">
 				{/* Title and Wishlist Icon */}
