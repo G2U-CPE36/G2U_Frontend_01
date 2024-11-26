@@ -15,6 +15,7 @@ const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
 const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
 const MyPurchase = lazy(() => import("@/modules/pages/MyPurchase"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
+const CheckOut = lazy(() => import("@/modules/pages/CheckOut"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
@@ -24,6 +25,7 @@ const routes = [
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
 	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
+	{ path: "/checkout", element: <CheckOut />, isPrivate: false },
 	// change ProductDetail isPrivate: to false
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false }];
 

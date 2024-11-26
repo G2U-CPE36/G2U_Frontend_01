@@ -24,7 +24,7 @@
     "mypurchase_Confirm":"ยืนยัน",
     "mypurchase_Reject":"คืนสินค้า",
     "mypurchase_Delivered":"จัดส่งสำเร็จ",
-    "mypurchase_InProgress":"กำลังดำเนินการ"
-
-    
+    "mypurchase_InProgress":"กำลังดำเนินการ",
+    "DeliveryInformation":"ข้อมูลการส่งสินค้า",
+    "Address":"ที่อยู่"
 }
