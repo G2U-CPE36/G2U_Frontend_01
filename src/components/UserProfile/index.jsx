@@ -11,12 +11,15 @@ import Logout from "@mui/icons-material/Logout"
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import EditIcon from "@mui/icons-material/Edit"
 import ListAltIcon from "@mui/icons-material/ListAlt"
-import { useSelector } from "react-redux"
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"
+import { useDispatch, useSelector } from "react-redux"
+import { logout } from "@/modules/Login/authSlice"
 
 export default function AccountMenu() {
 	const [anchorEl, setAnchorEl] = useState(null)
 	const open = Boolean(anchorEl)
 	const navigate = useNavigate()
+	const dispatch = useDispatch()
 	const data = useSelector((state) => state.auth)
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget)
@@ -31,6 +34,11 @@ export default function AccountMenu() {
 		}
 	}
 
+	async function handleLogout() {
+		dispatch(logout())
+		window.location.reload()
+	}
+
 	return (
 		<>
 			<Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
@@ -38,7 +46,6 @@ export default function AccountMenu() {
 					<IconButton
 						onClick={handleClick}
 						size="small"
-						sx={{ ml: 2 }}
 						aria-controls={open ? "account-menu" : undefined}
 						aria-haspopup="true"
 						aria-expanded={open ? "true" : undefined}
@@ -103,7 +110,13 @@ export default function AccountMenu() {
 					</ListItemIcon>
 					Liked Product
 				</MenuItem>
-				<MenuItem onClick={() => handleClose()}>
+				<MenuItem onClick={() => handleClose("/mypurchase")}>
+					<ListItemIcon>
+						<ShoppingCartIcon fontSize="small" />
+					</ListItemIcon>
+					My Purchases
+				</MenuItem>
+				<MenuItem onClick={() => handleLogout()}>
 					<ListItemIcon>
 						<Logout fontSize="small" />
 					</ListItemIcon>

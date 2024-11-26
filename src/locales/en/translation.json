@@ -24,5 +24,7 @@
     "mypurchase_Confirm":"confirm",
     "mypurchase_Reject":"return",
     "mypurchase_Delivered":"Delivered",
-    "mypurchase_InProgress":"In Progress"
+    "mypurchase_InProgress":"In Progress",
+    "signIn":"Sign In",
+    "post":"Post"
 }
