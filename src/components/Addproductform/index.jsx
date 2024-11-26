@@ -39,6 +39,8 @@ const categories = [
 	"game",
 ]
 
+const productTag = ["First-hand", "Second-hand", "Any"]
+
 export default function AddProductForm({ formType, data }) {
 	const { register, handleSubmit } = useForm()
 	const [formData, setFormData] = useState(data || {})
@@ -112,7 +114,7 @@ export default function AddProductForm({ formType, data }) {
 								required
 								id="priceRange"
 								type="number"
-								label={<Translate text="Whatisyourpreferredpricerange" />}
+								label={<Translate text={isWTB ? "Enteryourpreferredprice" : "Entertheproductprice"} />}
 								{...register("priceRange")}
 								value={formData.priceRange || ""}
 								onChange={handleInputChange}
@@ -120,6 +122,29 @@ export default function AddProductForm({ formType, data }) {
 									startAdornment: <InputAdornment position="start">฿</InputAdornment>, // Adds the currency symbol at the start
 								}}
 							/>
+							<Typography variant="h6">
+								<Translate text="productTag" />
+							</Typography>
+							<Select
+								required
+								id="productTag"
+								labelId="tag-label"
+								{...register("productTag")}
+								value={formData.productTag || ""}
+								onChange={handleInputChange}
+								name="productTag"
+								displayEmpty
+							>
+								<MenuItem value="" disabled>
+									<Translate text={isWTB ? "Lookingforfirsthandsecondhand": "Selectaproducttag"} />
+								</MenuItem>
+								{productTag.map((productTag) => (
+									<MenuItem key={productTag} value={productTag}>
+										{productTag}
+									</MenuItem>
+								))}
+							</Select>
+
 							<Typography variant="h6">
 								<Translate text="Category" />
 							</Typography>
