@@ -33,33 +33,37 @@ export default function MainPage() {
 	useEffect(() => {
 		const fetchAllProducts = async () => {
 			try {
-				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
-				if (!response.ok) throw new Error("Failed to fetch products")
-				const data = await response.json()
+				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts");
+				if (!response.ok) throw new Error("Failed to fetch products");
+				const data = await response.json();
 				console.log(data)
-
+	
+				// Defensive check: Ensure data is an array
+				if (!Array.isArray(data)) {
+					throw new Error("Data format is incorrect, expected an array.");
+				}
+	
 				const productsWithImages = data.map((product) => {
 					if (product.productImage && product.productImage.data) {
-						// Convert Buffer data to a Blob
 						const blob = new Blob([Uint8Array.from(product.productImage.data)], {
-							type: "image/png", // Adjust MIME type based on the data format
-						})
-						product.productImage = URL.createObjectURL(blob) // Create a Blob URL
-						console.log("Generated Image URL:", product.productImage)
+							type: "image/png",
+						});
+						product.productImage = URL.createObjectURL(blob);
 					}
-					return product
-				})
-
-				setProducts(productsWithImages)
-				setFilteredProducts(productsWithImages)
+					return product;
+				});
+	
+				setProducts(productsWithImages);
+				setFilteredProducts(productsWithImages);
 			} catch (error) {
-				console.error(error)
-				setError("Failed to load products from the server. Using mock data.")
+				console.error("Error fetching products:", error.message);
+				setError("Failed to load products from the server. Using mock data.");
 			}
-		}
-
-		fetchAllProducts()
-	}, [])
+		};
+	
+		fetchAllProducts();
+	}, []);
+	
 
 	useEffect(() => {
 		const filtered = products.filter((product) => {
