@@ -42,9 +42,7 @@ export default function ProductDetail() {
 	const [image, setImage] = useState(null)
 
 	useEffect(() => {
-		let imageUrl // To store created image URL for cleanup
-
-		const getProducts = async () => {
+		const fetchProduct = async () => {
 			try {
 				// Fetch product details
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
@@ -52,34 +50,23 @@ export default function ProductDetail() {
 				const productData = await response.json()
 				setProduct(productData)
 
-				// Fetch image Blob if productImage exists
-				if (productData.productImage) {
-					const imageResponse = await fetch(
-						`http://chawit.thddns.net:9790/api/images/${productData.productImage}`,
-					)
-					if (!imageResponse.ok) throw new Error("Failed to fetch image")
-					const imageBlob = await imageResponse.blob()
-					imageUrl = URL.createObjectURL(imageBlob) // Create URL for the Blob
-					setImage(imageUrl) // Set image for display
+				// Render image directly from Blob
+				if (productData.productImage?.data) {
+					const blob = new Blob([new Uint8Array(productData.productImage.data)], {
+						type: "image/jpeg", // Replace with the actual MIME type if not JPEG
+					})
+					const url = URL.createObjectURL(blob)
+					setImage(url)
 				} else {
 					setImage("") // Fallback if no image is provided
 				}
 			} catch (error) {
 				console.error(error.message)
-				console.log("Failed to load product from the server. Using mock data.")
-				setProduct(mockproduct)
-				setImage(mockproduct.images.image1)
+				setError("Failed to load product")
 			}
 		}
 
-		getProducts()
-
-		// Cleanup created Blob URLs to avoid memory leaks
-		return () => {
-			if (imageUrl) {
-				URL.revokeObjectURL(imageUrl)
-			}
-		}
+		fetchProduct()
 	}, [productID])
 
 	if (!product) {
