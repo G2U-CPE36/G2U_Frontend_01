@@ -3,15 +3,21 @@ import LanguageSelector from "../languageSelector"
 import Translate from "../Translate"
 import AccountMenu from "@/components/UserProfile"
 import { useSelector } from "react-redux"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
+import TransitionsModal from "../modal"
 
 export default function NavigationBar() {
 	const style = { backgroundColor: "#333652", width: "100px", height: "35px", borderRadius: "10px" }
 	const userToken = useSelector((state) => state.auth.userToken)
-
+	const [showModal, setShowModal] = useState(false)
 	useEffect(() => {}, [userToken])
+
 	function modal() {
-		alert("Wait for modal")
+		setShowModal(true)
+	}
+
+	function handleClose() {
+		setShowModal(false)
 	}
 
 	return (
@@ -30,6 +36,7 @@ export default function NavigationBar() {
 								<Translate text="post" className="text-white" />
 							</Button>
 						)}
+						<TransitionsModal open={showModal} onClose={handleClose} />
 						<div className="mx-3">
 							<LanguageSelector />
 						</div>
