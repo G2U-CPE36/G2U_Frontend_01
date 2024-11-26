@@ -1,20 +1,20 @@
 import { useState } from "react"
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import IconButton from "@mui/material/IconButton";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
-import FormLabel from "@mui/material/FormLabel";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
+import Box from "@mui/material/Box"
+import Tab from "@mui/material/Tab"
+import Typography from "@mui/material/Typography"
+import TextField from "@mui/material/TextField"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import CardContent from "@mui/material/CardContent"
+import IconButton from "@mui/material/IconButton"
+import RadioGroup from "@mui/material/RadioGroup"
+import FormControlLabel from "@mui/material/FormControlLabel"
+import Radio from "@mui/material/Radio"
+import FormLabel from "@mui/material/FormLabel"
+import Dialog from "@mui/material/Dialog"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogTitle from "@mui/material/DialogTitle"
 import { Checkbox } from "@mui/material"
 import TabContext from "@mui/lab/TabContext"
 import TabList from "@mui/lab/TabList"
@@ -23,6 +23,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Edit, Delete } from "@mui/icons-material"
+import Translate from "@/components/Translate"
+
 
 export default function ProfileWithLabTabs() {
 	//Profile
@@ -59,7 +61,7 @@ export default function ProfileWithLabTabs() {
 		setIsEditing(false) // Cancel edit
 		// You may want to reset your data to the factory settings before editing.
 	}
-	
+
 	//Address
 	const [value, setValue] = useState("1")
 	//const [dob, setDob] = useState(null)
@@ -183,7 +185,7 @@ export default function ProfileWithLabTabs() {
 		handleCardModalClose()
 	}
 
-	const [cardFormOpen, setCardFormOpen] = useState(false) 
+	const [cardFormOpen, setCardFormOpen] = useState(false)
 	const [isEditingCard, setIsEditingCard] = useState(false)
 	const [cardData, setCardData] = useState({
 		cardholderName: "",
@@ -205,8 +207,8 @@ export default function ProfileWithLabTabs() {
 	})
 	const [isEditingPassword, setIsEditingPassword] = useState(false) // Password edit status
 
-	//const [isEditing, setIsEditing] = useState(false) 
-	
+	//const [isEditing, setIsEditing] = useState(false)
+
 	const handleSavePassword = () => {
 		// Validation
 		if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -245,8 +247,8 @@ export default function ProfileWithLabTabs() {
 		})
 		setIsEditingPassword(false) // Change to display mode
 	}
-	
-// Privacy Settings Tab 
+
+	// Privacy Settings Tab
 	const [accept, setAccept] = useState(false) // State for sharing information with Affiliates
 
 	const handleAcceptChange = (event) => {
@@ -277,11 +279,11 @@ export default function ProfileWithLabTabs() {
 			<TabContext value={value}>
 				<Box sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}>
 					<TabList onChange={handleChange} aria-label="Profile Tabs" centered sx={{ width: "100%" }}>
-						<Tab label="Profile" value="1" />
-						<Tab label="Banks & Cards" value="2" />
-						<Tab label="Addresses" value="3" />
-						<Tab label="Change Password" value="4" />
-						<Tab label="Privacy Settings" value="5" />
+						<Tab label={<Translate text="Profile" />} value="1" />
+						<Tab label={<Translate text="Cards" />} value="2" />
+						<Tab label={<Translate text="Addresses" />} value="3" />
+						<Tab label={<Translate text="Change Password" />} value="4" />
+						<Tab label={<Translate text="Privacy Settings" />} value="5" />
 					</TabList>
 				</Box>
 
@@ -317,12 +319,14 @@ export default function ProfileWithLabTabs() {
 										style={{ width: "100%", height: "100%", objectFit: "cover" }}
 									/>
 								) : (
-									<Typography>Photo</Typography>
+									<Typography>
+										<Translate text="Photo" />
+									</Typography>
 								)}
 							</Box>
 							{isEditing && (
 								<Button variant="outlined" component="label">
-									Change Photo
+									<Translate text="Change Photo" />
 									<input type="file" hidden accept="image/*" onChange={handlePhotoUpload} />
 								</Button>
 							)}
@@ -332,7 +336,7 @@ export default function ProfileWithLabTabs() {
 						<Box sx={{ flex: 1, pl: 3 }}>
 							<form>
 								<TextField
-									label="Username"
+									label={<Translate text="Username" />}
 									fullWidth
 									margin="normal"
 									value={formData.username}
@@ -340,7 +344,7 @@ export default function ProfileWithLabTabs() {
 									disabled={!isEditing}
 								/>
 								<TextField
-									label="Name"
+									label={<Translate text="Name" />}
 									fullWidth
 									margin="normal"
 									value={formData.name}
@@ -348,7 +352,7 @@ export default function ProfileWithLabTabs() {
 									disabled={!isEditing}
 								/>
 								<TextField
-									label="Email"
+									label={<Translate text="Email" />}
 									fullWidth
 									margin="normal"
 									value={formData.email}
@@ -356,13 +360,14 @@ export default function ProfileWithLabTabs() {
 									disabled={!isEditing}
 								/>
 								<TextField
-									label="Phone Number"
+									label={<Translate text="Phone Number" />}
 									fullWidth
 									margin="normal"
 									value={formData.phone}
 									onChange={(e) => handleInputChange("phone", e.target.value)}
 									disabled={!isEditing}
 								/>
+
 								<Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
 									<FormLabel sx={{ mr: 2 }}>Gender</FormLabel>
 									<RadioGroup
@@ -395,10 +400,10 @@ export default function ProfileWithLabTabs() {
 									{isEditing ? (
 										<>
 											<Button variant="outlined" color="secondary" sx={{ mr: 2 }} onClick={handleCancel}>
-												Cancel
+												<Translate text="Cancel" />
 											</Button>
 											<Button variant="contained" color="primary" onClick={handleSave}>
-												Save
+												<Translate text="Save" />
 											</Button>
 										</>
 									) : (
@@ -425,7 +430,9 @@ export default function ProfileWithLabTabs() {
 									mb: 2,
 								}}
 							>
-								<Typography variant="h6">Credit / Debit Cards</Typography>
+								<Typography variant="h6">
+									<Translate text="Credit / Debit Cards" />
+								</Typography>
 								<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
 									+ Add New Card
 								</Button>
@@ -488,14 +495,18 @@ export default function ProfileWithLabTabs() {
 										mb: 2, // Add margin at the bottom for spacing
 									}}
 								>
-									<Typography>You don't have cards yet.</Typography>
+									<Typography>
+										<Translate text="You don't have cards yet." />
+									</Typography>
 								</Box>
 							)}
 						</Box>
 
 						{/* Add/Edit Card Modal */}
 						<Dialog open={cardFormOpen} onClose={handleCardModalClose} fullWidth maxWidth="sm">
-							<DialogTitle>{isEditingCard ? "Edit Card" : "Add New Card"}</DialogTitle>
+							<DialogTitle>
+								<Translate text={isEditingCard ? "Edit Card" : "Add New Card"} />
+							</DialogTitle>
 							<DialogContent>
 								<TextField
 									label="Cardholder Name"
@@ -528,10 +539,10 @@ export default function ProfileWithLabTabs() {
 							</DialogContent>
 							<DialogActions>
 								<Button onClick={handleCardModalClose} color="secondary">
-									Cancel
+									<Translate text="Cancel" />
 								</Button>
 								<Button onClick={handleCardSave} color="primary">
-									Save
+									<Translate text="Save" />
 								</Button>
 							</DialogActions>
 						</Dialog>
@@ -720,8 +731,8 @@ export default function ProfileWithLabTabs() {
 
 						{/* Request Account Deletion */}
 						<Box sx={{ mt: 4 }}>
-							<Typography variant="h6" gutterBottom>
-								Request Account Deletion
+							<Typography variant="h6">
+								<Translate text="Request Account Deletion" />
 							</Typography>
 							<Button variant="contained" color="error" onClick={handleDeleteAccount}>
 								Delete Account
