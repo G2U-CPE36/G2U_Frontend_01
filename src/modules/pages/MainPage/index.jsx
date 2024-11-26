@@ -36,6 +36,7 @@ export default function MainPage() {
 				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
 				if (!response.ok) throw new Error("Failed to fetch products")
 				const data = await response.json()
+				console.log(data)
 
 				const productsWithImages = data.map((product) => {
 					if (product.productImage && product.productImage.data) {
