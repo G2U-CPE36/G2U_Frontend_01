@@ -74,7 +74,7 @@ export default function LookingToBuy() {
 
 	const onSubmit = async (data) => {
 		console.log(data)
-		const userId = 1
+		const userId = localStorage.getItem("userId");
 		// const productName = "test product"
 		const categoryId = 2
 		// const productDescription = "hello world"

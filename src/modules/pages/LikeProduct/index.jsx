@@ -13,45 +13,51 @@ export default function LikeProductPages() {
 	useEffect(() => {
 		const fetchLikedProducts = async () => {
 			try {
-				const userId = localStorage.getItem("userId");
-				const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`);
-				if (!response.ok) throw new Error("Failed to fetch liked products");
-				const result = await response.json();
-				console.log(result);
-	
+				const userId = localStorage.getItem("userId")
+				const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`)
+				if (!response.ok) throw new Error("Failed to fetch liked products")
+				const result = await response.json()
+				console.log(result)
+
 				// Adjust for API response structure
 				if (result && result.likedProducts && Array.isArray(result.likedProducts)) {
-					setLikedProducts(result.likedProducts);
+					setLikedProducts(result.likedProducts)
 				} else {
-					throw new Error("Invalid data format");
+					throw new Error("Invalid data format")
 				}
-				setLoading(false);
+
+				setLoading(false)
+				return true // Indicate success
 			} catch (error) {
-				console.error("Error fetching liked products:", error);
-				setError("Failed to load pages. Please try again later.");
+				console.error("Error fetching liked products:", error)
+				setError("Failed to load pages. Please try again later.")
+				return false // Indicate failure
 			}
-		};
-	
-		// Try fetching data and retry if it fails
+		}
+
 		const retryFetch = () => {
-			let attempts = 0;
-			const maxAttempts = 10; // 10 attempts, 1 per second
-			const intervalId = setInterval(() => {
-				if (attempts < maxAttempts) {
-					fetchLikedProducts();
-					attempts += 1;
-				} else {
-					clearInterval(intervalId);
-					setLoading(false);
+			let attempts = 0
+			const maxAttempts = 10
+			const intervalId = setInterval(async () => {
+				if (attempts >= maxAttempts) {
+					clearInterval(intervalId) // Stop retries after max attempts
+					setLoading(false)
+					return
 				}
-			}, 1000); // Retry every 1 second
-		};
-	
-		retryFetch();
-	
-		return () => clearInterval(retryFetch); // Cleanup on unmount
-	}, []);
-	
+
+				const success = await fetchLikedProducts()
+				if (success) {
+					clearInterval(intervalId) // Stop retries on successful fetch
+				} else {
+					attempts += 1
+				}
+			}, 1000) // Retry every 1 second
+		}
+
+		retryFetch()
+
+		return () => clearInterval(retryFetch) // Cleanup on unmount
+	}, [])
 
 	if (loading) {
 		return (
@@ -137,7 +143,9 @@ export default function LikeProductPages() {
 							{/* Product Details */}
 							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start", mt: 1, ml: 3 }}>
 								<Typography variant="h6" fontWeight="medium">
-									{product.productName.length > 30 ? `${product.productName.substring(0, 30)}...` : product.productName}
+									{product.productName.length > 30
+										? `${product.productName.substring(0, 30)}...`
+										: product.productName}
 								</Typography>
 								<Typography
 									variant="body2"
