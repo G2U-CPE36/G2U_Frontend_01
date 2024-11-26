@@ -35,22 +35,6 @@ Product details of Tefal เตารีดแรงดันไอน้ำ Exp
   `,
 }
 
-// Function to mark a product as favorite
-const markAsFavorite = async (productId) => {
-	try {
-		const userId = localStorage.getItem("userId") // Replace with actual userId logic
-		productId = parseInt(productId, 10);
-		const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
-			productId,
-			userId,
-		})
-		console.log("Product marked as favorite:", response.data)
-		// Optionally update the UI or state to reflect the favorite status
-	} catch (error) {
-		console.error("Error marking product as favorite:", error)
-	}
-}
-
 export default function ProductDetail() {
 	const { productID } = useParams() // Extract productID from the URL
 	const [product, setProduct] = useState(null)
@@ -81,6 +65,22 @@ export default function ProductDetail() {
 	}
 
 	const imageArray = Object.values(product.price)
+
+	// Function to mark a product as favorite
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			productId = parseInt(productID, 10)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			console.log("Product marked as favorite:", response.data)
+			// Optionally update the UI or state to reflect the favorite status
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
@@ -145,7 +145,7 @@ export default function ProductDetail() {
 
 				{/* Category Section */}
 				<div className="mt-4">
-					<h2 className="font-semibold text-lg">Category:</h2>
+					<h2 className="font-semibold text-lg">Condition:</h2>
 					<p className="text-gray-700">{product.condition}</p>
 				</div>
 

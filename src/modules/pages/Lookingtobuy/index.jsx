@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import Translate from "@/components/Translate"
-
+import axios from "axios" // Import axios for API calls
 // Styled component for visually hidden input (used for file upload)
 const VisuallyHiddenInput = styled("input")({
 	clip: "rect(0 0 0 0)",
@@ -68,16 +68,39 @@ export default function LookingToBuy() {
 	const handleImageUpload = (event) => {
 		const file = event.target.files[0]
 		if (file) {
-			const reader = new FileReader()
-			reader.onload = () => setImagePreview(reader.result)
-			reader.readAsDataURL(file)
+			setImagePreview(URL.createObjectURL(file)) // Preview the image
 		}
 	}
 
-	// Handle form submission
 	const onSubmit = async (data) => {
-		const newData = { ...data, imagePreview }
-		console.log(newData)
+		const userId = 1
+		const productName = "test product"
+		const categoryId = 2
+		const productDescription = "hello world"
+		const price = 20.0
+		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
+		const condition = "new"
+
+		try {
+			const formData = new FormData()
+			formData.append("userId", userId)
+			formData.append("productName", productName)
+			formData.append("categoryId", categoryId)
+			formData.append("productDescription", productDescription)
+			formData.append("price", price)
+			formData.append("condition", condition)
+			formData.append("productImage", productImage) // Append the Blob/File object
+
+			const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})
+
+			console.log("Product saved;", response.data)
+		} catch (error) {
+			console.error("Error marking product;", error)
+		}
 	}
 
 	return (
