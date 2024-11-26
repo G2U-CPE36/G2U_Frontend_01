@@ -25,7 +25,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Edit, Delete } from "@mui/icons-material"
 import Translate from "@/components/Translate"
 
-
 export default function ProfileWithLabTabs() {
 	//Profile
 	const [formData, setFormData] = useState({
@@ -369,17 +368,22 @@ export default function ProfileWithLabTabs() {
 								/>
 
 								<Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-									<FormLabel sx={{ mr: 2 }}>Gender</FormLabel>
+									<FormLabel sx={{ mr: 2 }}>{<Translate text="Gender" />}</FormLabel>
 									<RadioGroup
 										row
 										value={formData.gender}
 										onChange={(e) => handleInputChange("gender", e.target.value)}
 									>
-										<FormControlLabel value="male" control={<Radio />} label="Male" disabled={!isEditing} />
+										<FormControlLabel
+											value="male"
+											control={<Radio />}
+											label={<Translate text="Male" />}
+											disabled={!isEditing}
+										/>
 										<FormControlLabel
 											value="female"
 											control={<Radio />}
-											label="Female"
+											label={<Translate text="Female" />}
 											disabled={!isEditing}
 										/>
 										<FormControlLabel value="other" control={<Radio />} label="Other" disabled={!isEditing} />
@@ -387,7 +391,7 @@ export default function ProfileWithLabTabs() {
 								</Box>
 								<LocalizationProvider dateAdapter={AdapterDayjs}>
 									<DatePicker
-										label="Date of Birth"
+										label={<Translate text="Date of Birth" />}
 										value={formData.dob}
 										onChange={(newValue) => handleInputChange("dob", newValue)}
 										renderInput={(params) => (
@@ -434,7 +438,7 @@ export default function ProfileWithLabTabs() {
 									<Translate text="Credit / Debit Cards" />
 								</Typography>
 								<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
-									+ Add New Card
+									<Translate text="+ Add New Card" />
 								</Button>
 							</Box>
 
@@ -505,32 +509,33 @@ export default function ProfileWithLabTabs() {
 						{/* Add/Edit Card Modal */}
 						<Dialog open={cardFormOpen} onClose={handleCardModalClose} fullWidth maxWidth="sm">
 							<DialogTitle>
-								<Translate text={isEditingCard ? "Edit Card" : "Add New Card"} />
+								<Translate text={isEditingCard ? "Edit Card" : "New Card"} />
 							</DialogTitle>
+
 							<DialogContent>
 								<TextField
-									label="Cardholder Name"
+									label={<Translate text="Cardholder Name" />}
 									fullWidth
 									margin="normal"
 									value={cardData.cardholderName}
 									onChange={(e) => setCardData({ ...cardData, cardholderName: e.target.value })}
 								/>
 								<TextField
-									label="Card Number"
+									label={<Translate text="Card Number" />}
 									fullWidth
 									margin="normal"
 									value={cardData.cardNumber}
 									onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
 								/>
 								<TextField
-									label="Expiry Date (MM/YY)"
+									label={<Translate text="Expiry Date (MM/YY)" />}
 									fullWidth
 									margin="normal"
 									value={cardData.expiryDate}
 									onChange={(e) => setCardData({ ...cardData, expiryDate: e.target.value })}
 								/>
 								<TextField
-									label="CVV"
+									label={<Translate text="CVV" />}
 									fullWidth
 									margin="normal"
 									value={cardData.cvv}
@@ -539,7 +544,9 @@ export default function ProfileWithLabTabs() {
 							</DialogContent>
 							<DialogActions>
 								<Button onClick={handleCardModalClose} color="secondary">
-									<Translate text="Cancel" />
+									<Typography>
+										<Translate text="Cancel" />
+									</Typography>
 								</Button>
 								<Button onClick={handleCardSave} color="primary">
 									<Translate text="Save" />
@@ -561,10 +568,10 @@ export default function ProfileWithLabTabs() {
 							}}
 						>
 							<Typography variant="h5" gutterBottom>
-								My Addresses
+								<Translate text="My Addresses" />
 							</Typography>
 							<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
-								+ Add New Address
+								<Translate text="+ Add New Address" />
 							</Button>
 						</Box>
 
@@ -591,12 +598,12 @@ export default function ProfileWithLabTabs() {
 													onClick={() => handleSetDefaultAddress(item.id)}
 													sx={{ mr: 2 }}
 												>
-													Set as Default
+													<Translate text="Set as Default" />
 												</Button>
 											)}
 											{item.isDefault && (
 												<Button variant="contained" color="success" disabled>
-													Default
+													<Translate text="Default" />
 												</Button>
 											)}
 										</div>
@@ -615,24 +622,26 @@ export default function ProfileWithLabTabs() {
 
 						{/* Modal Component */}
 						<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-							<DialogTitle>{isEditing ? "Edit Address" : "New Address"}</DialogTitle>
+							<DialogTitle>
+								{isEditing ? <Translate text="Edit Address" /> : <Translate text="New Address" />}
+							</DialogTitle>
 							<DialogContent>
 								<TextField
-									label="Full Name"
+									label={<Translate text="Full Name" />}
 									value={newAddress.name}
 									onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })}
 									fullWidth
 									margin="normal"
 								/>
 								<TextField
-									label="Phone"
+									label={<Translate text="Phone" />}
 									value={newAddress.phone}
 									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
 									fullWidth
 									margin="normal"
 								/>
 								<TextField
-									label="Address"
+									label={<Translate text="Address" />}
 									value={newAddress.address}
 									onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
 									fullWidth
@@ -641,10 +650,10 @@ export default function ProfileWithLabTabs() {
 							</DialogContent>
 							<DialogActions>
 								<Button onClick={handleClose} color="secondary">
-									Cancel
+									<Translate text="Cancel" />
 								</Button>
 								<Button onClick={handleSaveAddress} color="primary">
-									Save
+									<Translate text="Save" />
 								</Button>
 							</DialogActions>
 						</Dialog>
@@ -656,7 +665,7 @@ export default function ProfileWithLabTabs() {
 					<Box sx={{ p: 3 }}>
 						<form>
 							<TextField
-								label="Current Password"
+								label={<Translate text="Current Password" />}
 								fullWidth
 								margin="normal"
 								type="password"
@@ -665,7 +674,7 @@ export default function ProfileWithLabTabs() {
 								onChange={(e) => handlePasswordInputChange("currentPassword", e.target.value)}
 							/>
 							<TextField
-								label="New Password"
+								label={<Translate text="New Password" />}
 								fullWidth
 								margin="normal"
 								type="password"
@@ -674,7 +683,7 @@ export default function ProfileWithLabTabs() {
 								onChange={(e) => handlePasswordInputChange("newPassword", e.target.value)}
 							/>
 							<TextField
-								label="Confirm New Password"
+								label={<Translate text="Confirm New Password" />}
 								fullWidth
 								margin="normal"
 								type="password"
@@ -691,10 +700,10 @@ export default function ProfileWithLabTabs() {
 											sx={{ mr: 2 }}
 											onClick={handleCancelPassword} // ล้างข้อมูลเมื่อกด Cancel
 										>
-											Cancel
+											<Translate text="Cancel" />
 										</Button>
 										<Button variant="contained" color="primary" onClick={handleSavePassword}>
-											Save
+											<Translate text="Save" />
 										</Button>
 									</>
 								) : (
@@ -711,21 +720,17 @@ export default function ProfileWithLabTabs() {
 				<TabPanel value="5">
 					<Box sx={{ p: 3 }}>
 						<Typography variant="h5" gutterBottom>
-							Privacy Settings
+							{<Translate text="Privacy Settings" />}
 						</Typography>
 
 						{/* Share Information to Affiliates */}
 						<Box sx={{ mb: 2 }}>
 							<Typography variant="body1" gutterBottom>
-								Share your information with our Affiliates
-							</Typography>
-							<Typography variant="body2" color="textSecondary" gutterBottom>
-								Turn on to allow Shopee to share your information with our affiliates for marketing and
-								communications purposes.
+								{<Translate text="Share your information with our Affiliates" />}
 							</Typography>
 							<FormControlLabel
 								control={<Checkbox checked={accept} onChange={handleAcceptChange} />}
-								label="Accept"
+								label={<Translate text="Accept" />}
 							/>
 						</Box>
 
@@ -735,7 +740,7 @@ export default function ProfileWithLabTabs() {
 								<Translate text="Request Account Deletion" />
 							</Typography>
 							<Button variant="contained" color="error" onClick={handleDeleteAccount}>
-								Delete Account
+								{<Translate text="Delete Account" />}
 							</Button>
 						</Box>
 					</Box>
