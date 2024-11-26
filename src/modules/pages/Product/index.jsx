@@ -94,7 +94,6 @@ export default function ProductDetail() {
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
 			{/* Left Section: Images */}
-			{/* Left Section: Images */}
 			<div className="lg:w-2/5 flex flex-col items-center">
 				<div className="w-full h-96 flex items-center justify-center border rounded-lg overflow-hidden">
 					<img alt={product.productName} className="object-contain h-full" src={image} />

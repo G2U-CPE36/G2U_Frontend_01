@@ -4,34 +4,33 @@ import IconButton from "@mui/material/IconButton"
 import { useNavigate } from "react-router-dom"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
 import FavoriteIcon from "@mui/icons-material/Favorite"
-import axios from "axios"; // Import axios for API calls
+import axios from "axios" // Import axios for API calls
 
 export default function ProductCard({ product, layoutType = "default" }) {
 	const handleImageError = (e) => {
 		e.target.src = "/pic/default.jpg" // Fallback image
 	}
 	const navigate = useNavigate()
-
+	
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
 		try {
-			const userId = parseInt(localStorage.getItem("userId"),10) // Replace with actual userId logic
-            console.log(userId)
-            console.log(productId)
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			console.log(userId)
+			console.log(productId)
 			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 				productId,
 				userId,
-			});
-			console.log("Product marked as favorite:", response.data);
+			})
+			console.log("Product marked as favorite:", response.data)
 			// Optionally update the UI or state to reflect the favorite status
 		} catch (error) {
-			console.error("Error marking product as favorite:", error);
+			console.error("Error marking product as favorite:", error)
 		}
-	};
+	}
 
 	return (
 		<Box
-			
 			sx={{
 				backgroundColor: "#ffffff",
 				padding: 2,
@@ -62,7 +61,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 						}}
 					>
 						<img
-							src={product.image}
+							src={product.productImage}
 							alt={product.name}
 							style={{
 								width: "100%",
@@ -99,8 +98,8 @@ export default function ProductCard({ product, layoutType = "default" }) {
 						</Box>
 						<IconButton
 							onClick={async (e) => {
-								e.stopPropagation(); // Prevent navigation
-								await markAsFavorite(product.productId); // Call the favorite function
+								e.stopPropagation() // Prevent navigation
+								await markAsFavorite(product.productId) // Call the favorite function
 							}}
 							sx={{
 								position: "relative", // Enable relative positioning
