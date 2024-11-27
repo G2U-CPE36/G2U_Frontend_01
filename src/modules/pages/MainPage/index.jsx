@@ -26,6 +26,24 @@ export default function MainPage() {
 	const handleProvinceChange = (event) => setProvince(event.target.value)
 	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
 
+	// Function to mark a product as favorite
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			console.log(userId)
+			console.log(productId)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			console.log("Product marked as favorite:", response.data)
+			// Optionally update the UI or state to reflect the favorite status
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
+
+
 	const handleImageError = (e) => {
 		e.target.src = "/pic/default.jpg"
 	}
