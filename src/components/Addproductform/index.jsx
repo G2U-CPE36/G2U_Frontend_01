@@ -90,7 +90,6 @@ export default function AddProductForm({ formType, data }) {
 			formDataToSend.append("price", data.priceRange)
 			formDataToSend.append("condition", condition)
 			formDataToSend.append("productImage", productImage)
-
 			const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
 				headers: {
 					"Content-Type": "multipart/form-data",
