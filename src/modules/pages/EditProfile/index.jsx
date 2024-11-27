@@ -70,7 +70,7 @@ export default function ProfileWithLabTabs() {
 			name: "Mrs. Gdfgsf Fdleafjf",
 			phone: "(+66) 12 345 6789",
 			address: "123 Evergreen Street, Maplewood, CA 90210, USA",
-			isDefault: true,
+			// isDefault: true,
 		},
 	])
 	const [newAddress, setNewAddress] = useState({
@@ -84,7 +84,7 @@ export default function ProfileWithLabTabs() {
 
 	const handleChange = (_, newValue) => setValue(newValue)
 
-	const handleSetDefaultAddress = (addressId) => {
+	/* 	const handleSetDefaultAddress = (addressId) => {
 		setAddresses((prevAddresses) =>
 			prevAddresses.map(
 				(address) =>
@@ -93,13 +93,17 @@ export default function ProfileWithLabTabs() {
 						: { ...address, isDefault: false }, // Set other addresses to non default.
 			),
 		)
-	}
+	} */
 
 	const handleDelete = (id) => {
 		setAddresses((prev) => prev.filter((item) => item.id !== id))
 	}
 
 	const handleOpen = (editing = false, id = null) => {
+		if (!editing && addresses.length > 0) {
+			alert("You can only add one address. Please edit the existing address.")
+			return
+		}
 		setIsEditing(editing)
 		setSelectedAddressId(id)
 		if (editing && id !== null) {
@@ -108,6 +112,12 @@ export default function ProfileWithLabTabs() {
 				name: addressToEdit.name,
 				phone: addressToEdit.phone,
 				address: addressToEdit.address,
+			})
+		} else {
+			setNewAddress({
+				name: "",
+				phone: "",
+				address: "",
 			})
 		}
 		setOpen(true)
@@ -125,27 +135,30 @@ export default function ProfileWithLabTabs() {
 
 	const handleSaveAddress = () => {
 		if (isEditing && selectedAddressId !== null) {
-			// Update existing address
+			// แก้ไขที่อยู่ที่มีอยู่
 			setAddresses((prev) =>
 				prev.map((item) => (item.id === selectedAddressId ? { ...item, ...newAddress } : item)),
 			)
 		} else {
-			// Add new address
-			setAddresses((prev) => [
-				...prev,
-				{
-					id: Date.now(),
-					...newAddress,
-					isDefault: false,
-				},
-			])
+			// เพิ่มที่อยู่ใหม่ (อนุญาตเฉพาะกรณีไม่มีที่อยู่)
+			if (addresses.length === 0) {
+				setAddresses([
+					{
+						id: Date.now(),
+						...newAddress,
+						isDefault: true,
+					},
+				])
+			} else {
+				alert("You can only add one address.")
+			}
 		}
 		handleClose()
 	}
 	const sortedAddresses = addresses.sort((a, b) => b.isDefault - a.isDefault)
 
 	//Cards
-	const handleSetDefaultCard = (cardId) => {
+	/* const handleSetDefaultCard = (cardId) => {
 		setCards((prevCards) =>
 			prevCards.map(
 				(card) =>
@@ -154,8 +167,12 @@ export default function ProfileWithLabTabs() {
 						: { ...card, isDefault: false }, // Set other cards to not default.
 			),
 		)
-	}
+	} */
 	const handleCardModalOpen = (editing = false, data = null) => {
+		if (!editing && cards.length > 0) {
+			alert("You can only add one card. Please edit the existing card.")
+			return
+		}
 		setIsEditingCard(editing)
 		setCardData(data || { cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
 		setCardFormOpen(true)
@@ -170,16 +187,15 @@ export default function ProfileWithLabTabs() {
 	// Save card data
 	const handleCardSave = () => {
 		if (isEditingCard) {
-			// Update existing card
 			setCards((prevCards) =>
 				prevCards.map((card) => (card.id === cardData.id ? { ...card, ...cardData } : card)),
 			)
 		} else {
-			// Add new card
-			setCards((prevCards) => [
-				...prevCards,
-				{ ...cardData, id: Date.now() }, // Generate a unique ID for the new card
-			])
+			if (cards.length === 0) {
+				setCards([{ ...cardData, id: Date.now() }])
+			} else {
+				alert("You can only add one card.")
+			}
 		}
 		handleCardModalClose()
 	}
@@ -437,9 +453,12 @@ export default function ProfileWithLabTabs() {
 								<Typography variant="h6">
 									<Translate text="Credit / Debit Cards" />
 								</Typography>
-								<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
-									<Translate text="+ Add New Card" />
-								</Button>
+								{/* ปุ่มเพิ่มบัตร */}
+								{cards.length === 0 && (
+									<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
+										<Translate text="+ Add New Card" />
+									</Button>
+								)}
 							</Box>
 
 							{/* Display Saved Cards */}
@@ -466,15 +485,6 @@ export default function ProfileWithLabTabs() {
 										</Box>
 
 										<Typography sx={{ flexGrow: 1 }}>**** **** **** {card.cardNumber.slice(-4)}</Typography>
-										{/* Set Default Button */}
-										<Button
-											variant={card.isDefault ? "outlined" : "contained"}
-											color={card.isDefault ? "secondary" : "primary"}
-											onClick={() => handleSetDefaultCard(card.id)}
-											sx={{ mr: 2 }}
-										>
-											{card.isDefault ? "Default" : "Set as Default"}
-										</Button>
 										<Box>
 											<IconButton onClick={() => handleCardModalOpen(true, card)}>
 												<Edit />
@@ -570,9 +580,12 @@ export default function ProfileWithLabTabs() {
 							<Typography variant="h5" gutterBottom>
 								<Translate text="My Addresses" />
 							</Typography>
-							<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
-								<Translate text="+ Add New Address" />
-							</Button>
+							{/* ปุ่มเพิ่มที่อยู่ */}
+							{addresses.length === 0 && (
+								<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
+									<Translate text="+ Add New Address" />
+								</Button>
+							)}
 						</Box>
 
 						{/* Address Cards */}
@@ -590,23 +603,6 @@ export default function ProfileWithLabTabs() {
 									<Typography>{item.phone}</Typography>
 									<Typography>{item.address}</Typography>
 									<Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-										<div>
-											{!item.isDefault && (
-												<Button
-													variant="outlined"
-													color="primary"
-													onClick={() => handleSetDefaultAddress(item.id)}
-													sx={{ mr: 2 }}
-												>
-													<Translate text="Set as Default" />
-												</Button>
-											)}
-											{item.isDefault && (
-												<Button variant="contained" color="success" disabled>
-													<Translate text="Default" />
-												</Button>
-											)}
-										</div>
 										<Box>
 											<IconButton onClick={() => handleOpen(true, item.id)}>
 												<Edit />
