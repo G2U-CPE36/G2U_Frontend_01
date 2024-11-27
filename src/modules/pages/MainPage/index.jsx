@@ -144,19 +144,6 @@ export default function MainPage() {
 									color: "#FFFFFF", // Arrow dropdown color
 								},
 							}}
-							// MenuProps={{
-							// 	PaperProps: {
-							// 		sx: {
-							// 			bgcolor: "#FFFACD", // Menu background color
-							// 			"& .MuiMenuItem-root": {
-							// 				color: "#000000", // Menu item text color
-							// 				"&:hover": {
-							// 					backgroundColor: "#FFD700", // Menu item hover color
-							// 				},
-							// 			},
-							// 		},
-							// 	},
-							// }}
 						>
 							<MenuItem value="">
 								<Translate text="Any" />
