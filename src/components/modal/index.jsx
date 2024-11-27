@@ -32,14 +32,14 @@ export default function TransitionsModal({ open, onClose }) {
 				<Fade in={open}>
 					<div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-2 rounded-lg shadow-lg flex gap-2">
 						<div className={styleDiv}>
-							<Button className="hover:bg-gray-100" onClick={() => handleOnClick("/addproduct")}>
+							<Button onClick={() => handleOnClick("/addproduct")}>
 								<SellOutlinedIcon sx={styleButton} />
 							</Button>
 							<p className="mt-2 text-white">Sell</p>
 						</div>
 						<div className={styleDiv}>
-							<Button className="hover:bg-gray-100" onClick={() => handleOnClick("/lookingtobuy")}>
-								<SearchOutlinedIcon sx={styleButton} color="primary" />
+							<Button onClick={() => handleOnClick("/lookingtobuy")}>
+								<SearchOutlinedIcon sx={styleButton} />
 							</Button>
 							<p className="mt-2 text-white">Looking to buy</p>
 						</div>
