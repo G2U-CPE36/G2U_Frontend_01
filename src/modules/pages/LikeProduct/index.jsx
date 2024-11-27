@@ -17,15 +17,18 @@ export default function LikeProductPages() {
 				const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`)
 				if (!response.ok) throw new Error("Failed to fetch liked products")
 				const result = await response.json()
-				console.log(result)
 
-				// Adjust for API response structure
-				if (result && result.likedProducts && Array.isArray(result.likedProducts)) {
-					setLikedProducts(result.likedProducts)
-				} else {
-					throw new Error("Invalid data format")
-				}
+				const productsWithImages = result.likedProducts.map((product) => {
+					if (product.productImage && product.productImage.data) {
+						const blob = new Blob([Uint8Array.from(product.productImage.data)], {
+							type: "image/png",
+						})
+						product.productImage = URL.createObjectURL(blob)
+					}
+					return product
+				})
 
+				setLikedProducts(productsWithImages)
 				setLoading(false)
 				return true // Indicate success
 			} catch (error) {
@@ -134,9 +137,9 @@ export default function LikeProductPages() {
 							{/* Product Image */}
 							<Box sx={{ width: "140px", height: "140px" }}>
 								<img
-									src={product.image}
+									src={product.productImage}
 									alt={product.productName}
-									style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+									style={{ width: "100%", height: "100%", objectFit: "fill", borderRadius: "8px" }}
 								/>
 							</Box>
 
