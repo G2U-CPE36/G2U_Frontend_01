@@ -25,8 +25,8 @@ export default function Register() {
 			console.log("IsAgree is: ", data.isAgree)
 			// modal
 		} else {
-			console.log(data)
 			const { isAgree, ...filteredData } = data
+			console.log(filteredData)
 			dispatch(registerToSystem(filteredData))
 		}
 	}
