@@ -74,6 +74,7 @@ export default function AddProductForm({ formType, data }) {
 		const categoryId = 2 // Adjust dynamically if needed
 		const condition = "new"
 		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
+		
 		console.log(productImage)
 
 		if (!productImage) {
@@ -90,11 +91,17 @@ export default function AddProductForm({ formType, data }) {
 			formDataToSend.append("price", data.priceRange)
 			formDataToSend.append("condition", condition)
 			formDataToSend.append("productImage", productImage)
+			if (formType = "wtb"){
 			const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
-			})
+			})}
+			else {const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			})}
 
 			console.log("Product saved:", response.data)
 		} catch (error) {
