@@ -45,5 +45,18 @@
 	"Uploadanimagetoprovidemoreclarityaboutyourneeds": "Upload an image to provide more clarity about your needs.",
 	"Uploadanimagetoshowcaseyourproduct": "Upload an image to showcase your product",
 	"Submit": "Submit",
-	"IMAGES": "IMAGE"
+	"IMAGES": "IMAGE",
+    "DeliveryInformation":"Delivery Information",
+    "Address":"Address",
+    "ChangeAddress":"Change Address",
+    "By":"By",
+    "ShippingOptions":"Shipping Options",
+    "InternationalExpress":"International Express",
+    "PaymentMethods": "Payment Methods",
+	"CreditCard": "Credit Card",
+	"OrderTotal": "Order Total",
+	"ShippingFee": "Shipping Fee",
+	"Total": "Total",
+    "More": "More",
+    "PlaceOrder": "Place Order"
 }
