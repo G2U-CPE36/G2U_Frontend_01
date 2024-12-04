@@ -85,8 +85,12 @@ export default function ProfileWithLabTabs() {
 		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
 		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
 		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
+		else if (Number.isNaN(Number(newAddress.postcode))) newErrors.postcode = "Postcode must be a number.";
+		if (!/^\d{10}$/.test(cardData.postcode)) newErrors.postcode = <Translate text="Postcode must be 5 digits."/>
 		if (!newAddress.Address.trim()) newErrors.Address = <Translate text="Address is required." />
 		if (!newAddress.Phone.trim()) newErrors.Phone = <Translate text="Phone is required." />
+		else if (Number.isNaN(Number(newAddress.Phone))) newErrors.Phone = "Phone must be a number.";
+		if (!/^\d{10}$/.test(cardData.Phone)) newErrors.Phone = <Translate text="Phone Number must be 10 digits."/>
 
 		setErrors(newErrors)
 		return Object.keys(newErrors).length === 0
@@ -706,6 +710,10 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									error={!!errors.postcode}
 									helperText={errors.postcode}
+									inputProps={{
+										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+									}}
 								/>
 								<TextField
 									label={<Translate text="Address" />}
@@ -724,6 +732,10 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									error={!!errors.Phone}
 									helperText={errors.Phone}
+									inputProps={{
+										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+									}}
 								/>
 							</DialogContent>
 							<DialogActions>

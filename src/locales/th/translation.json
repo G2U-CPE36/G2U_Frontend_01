@@ -119,5 +119,9 @@
 	"Expiry Date is required.": "กรุณากรอกวันหมดอายุ",
 	"Expiry Date must be in MM/YY format.": "วันหมดอายุต้องเป็น ดด/ปป",
 	"CVV is required.": "กรุณากรอก CVV",
-	"CVV must be 3 digits.": "CVV ต้องมี 3 ตัว"
+	"CVV must be 3 digits.": "CVV ต้องมี 3 ตัว",
+	"Postcode must be a number.": "รหัสไปรษณีย์ต้องเป็นตัวเลขเท่านั้น",
+	"Phone must be a number.": "หมายเลขโทรศัพท์ต้องเป็นตัวเลขเท่านั้น",
+	"Phone Number must be 10 digits.": "หมายเลขโทรศัพท์ต้องมี 10 ตัว",
+	"Postcode must be 5 digits.": "รหัสไปรษณีย์ต้องมี 5 ตัว"
 }

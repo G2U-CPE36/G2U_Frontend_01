@@ -115,5 +115,9 @@
 	"Expiry Date is required.": "Expiry Date is required.",
 	"Expiry Date must be in MM/YY format.": "Expiry Date must be in MM/YY format.",
 	"CVV is required.": "CVV is required.",
-	"CVV must be 3 digits.": "CVV must be 3 digits."
+	"CVV must be 3 digits.": "CVV must be 3 digits.",
+	"Postcode must be a number.": "Postcode must be a number.",
+	"Phone must be a number.": "Phone must be a number.",
+	"Phone Number must be 10 digits.": "Phone Number must be 10 digits.",
+	"Postcode must be 5 digits.": "Postcode must be 5 digits."
 }
