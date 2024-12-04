@@ -66,17 +66,22 @@ export default function ProfileWithLabTabs() {
 	//const [dob, setDob] = useState(null)
 	const [addresses, setAddresses] = useState([
 		{
-			id: 1,
-			name: "Mrs. Gdfgsf Fdleafjf",
-			phone: "(+66) 12 345 6789",
-			address: "123 Evergreen Street, Maplewood, CA 90210, USA",
+			province: "Bangkok",
+			district: "Phaya Thai",
+			subdistrict: "Ratchathewi",
+			postcode: "10400",
+			Address: "123 Sukhumvit Rd, 5th Floor",
+			Phone: "0891234567",
 			isDefault: true,
 		},
 	])
 	const [newAddress, setNewAddress] = useState({
-		name: "",
-		phone: "",
-		address: "",
+		province: "",
+		district: "",
+		subdistrict: "",
+		postcode: "",
+		Address: "",
+		Phone: "",
 	})
 	const [open, setOpen] = useState(false)
 	const [isEditing, setIsEditing] = useState(false)
@@ -105,9 +110,12 @@ export default function ProfileWithLabTabs() {
 		if (editing && id !== null) {
 			const addressToEdit = addresses.find((address) => address.id === id)
 			setNewAddress({
-				name: addressToEdit.name,
-				phone: addressToEdit.phone,
-				address: addressToEdit.address,
+				province: addressToEdit.province,
+				district: addressToEdit.district,
+				subdistrict: addressToEdit.subdistrict,
+				postcode: addressToEdit.postcode,
+				Address: addressToEdit.Address,
+				Phone: addressToEdit.Phone,
 			})
 		}
 		setOpen(true)
@@ -117,9 +125,12 @@ export default function ProfileWithLabTabs() {
 		setOpen(false)
 		setIsEditing(false)
 		setNewAddress({
-			name: "",
-			phone: "",
-			address: "",
+			province: "",
+			district: "",
+			subdistrict: "",
+			postcode: "",
+			Address: "",
+			Phone: "",
 		})
 	}
 
@@ -586,9 +597,13 @@ export default function ProfileWithLabTabs() {
 								}}
 							>
 								<CardContent>
-									<Typography variant="h6">{item.name}</Typography>
-									<Typography>{item.phone}</Typography>
+									<Typography>{item.province}</Typography>
+									<Typography>{item.district}</Typography>
+									<Typography>{item.subdistrict}</Typography>
+									<Typography>{item.postcode}</Typography>
 									<Typography>{item.address}</Typography>
+									<Typography>{item.phone}</Typography>
+
 									<Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
 										<div>
 											{!item.isDefault && (
@@ -627,16 +642,30 @@ export default function ProfileWithLabTabs() {
 							</DialogTitle>
 							<DialogContent>
 								<TextField
-									label={<Translate text="Full Name" />}
-									value={newAddress.name}
-									onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })}
+									label={<Translate text="province" />}
+									value={newAddress.nprovince}
+									onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })}
 									fullWidth
 									margin="normal"
 								/>
 								<TextField
-									label={<Translate text="Phone" />}
-									value={newAddress.phone}
-									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+									label={<Translate text="district" />}
+									value={newAddress.district}
+									onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
+									fullWidth
+									margin="normal"
+								/>
+								<TextField
+									label={<Translate text="subdistrict" />}
+									value={newAddress.subdistrict}
+									onChange={(e) => setNewAddress({ ...newAddress, subdistrict: e.target.value })}
+									fullWidth
+									margin="normal"
+								/>
+								<TextField
+									label={<Translate text="postcode" />}
+									value={newAddress.postcode}
+									onChange={(e) => setNewAddress({ ...newAddress, postcode: e.target.value })}
 									fullWidth
 									margin="normal"
 								/>
@@ -644,6 +673,13 @@ export default function ProfileWithLabTabs() {
 									label={<Translate text="Address" />}
 									value={newAddress.address}
 									onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+									fullWidth
+									margin="normal"
+								/>
+								<TextField
+									label={<Translate text="Phone" />}
+									value={newAddress.phone}
+									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
 									fullWidth
 									margin="normal"
 								/>

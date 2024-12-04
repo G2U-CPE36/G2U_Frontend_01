@@ -100,5 +100,9 @@
     "Share your information with our Affiliates": "Share your information with our Affiliates",
     "Turn on to allow Shopee to share your information with our affiliates for marketing and communications purposes.": "Turn on to allow Shopee to share your information with our affiliates for marketing and communications purposes.",
     "Accept": "Accept",
-    "Delete Account": "Delete Account"
+    "Delete Account": "Delete Account",
+    "province": "province",
+    "district": "district",
+    "subdistrict": "subdistrict",
+    "postcode": "postcode"
 }

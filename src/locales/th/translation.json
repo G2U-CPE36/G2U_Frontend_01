@@ -104,5 +104,9 @@
     "Share your information with our Affiliates": "แชร์ข้อมูลของคุณกับพันธมิตรของเรา",
     "Turn on to allow Shopee to share your information with our affiliates for marketing and communications purposes.": "เปิดใช้งานเพื่อให้ Shopee แชร์ข้อมูลของคุณกับพันธมิตรสำหรับการตลาดและการสื่อสาร",
     "Accept": "ยอมรับ",
-    "Delete Account": "ลบบัญชี"
+    "Delete Account": "ลบบัญชี",
+    "province": "จังหวัด",
+    "district": "เขต",
+    "subdistrict": "แขวง",
+    "postcode": "รหัสไปรษณีย์"
 }
