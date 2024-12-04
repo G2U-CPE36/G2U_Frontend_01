@@ -89,10 +89,12 @@ export default function MyPosts() {
 	React.useEffect(() => {
 		const fetchAllPost = async () => {
 			try {
-				const response = await fetch("http://localhost:3001/api/products/getproducts")
+				const userId = localStorage.getItem("userId")
+				const response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
 				if (!response.ok) throw new Error("Failed to fetch liked post")
 				const data = await response.json()
 				setPosts(data) // Set fetched data
+				console.log(data)
 				setLoading(false)
 			} catch (error) {
 				// if (error.name === "AbortError") {
@@ -235,13 +237,15 @@ export default function MyPosts() {
 							<FormControlLabel
 								value="lookingToBuy"
 								control={<Radio />}
-								label=<Translate text="catergories_buy" />
+								label=<Translate text="categories_buy" />
 							/>
 						</RadioGroup>
 					</FormControl>
 
 					<FormControl fullWidth>
-						<Typography variant="subtitle1">Status</Typography>
+						<Typography variant="subtitle1">
+							<Translate text="Status" />{" "}
+						</Typography>
 						<RadioGroup row value={status} onChange={handleStatusChange}>
 							<FormControlLabel value="ongoing" control={<Radio />} label=<Translate text="Status_Open" /> />
 							<FormControlLabel value="closed" control={<Radio />} label=<Translate text="Status_Close" /> />
