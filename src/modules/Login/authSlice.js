@@ -12,9 +12,10 @@ const authSlice = createSlice({
 	name: "auth",
 	initialState,
 	reducers: {
-		deleteToken: () => {
+		logout: (state) => {
 			state.userToken = null
 			localStorage.removeItem("token")
+			localStorage.removeItem("userId")
 		},
 	},
 	extraReducers: (builder) => {
@@ -25,14 +26,16 @@ const authSlice = createSlice({
 			})
 			.addCase(loginToSystem.fulfilled, (state, action) => {
 				state.loading = false
-				state.userInfo = action.payload.user
+				state.userInfo = action.payload.userId
 				state.userToken = action.payload.token
+				console.log(action.payload)
 				localStorage.setItem("token", action.payload.token)
+				localStorage.setItem("userId", action.payload.userId)
 			})
 			.addCase(loginToSystem.rejected, (state, action) => {
 				state.loading = false
 				// Do not forget to remove line "state.userToken = true"
-				state.userToken = true
+				// state.userToken = true
 				state.error = action.payload || "Failed to login"
 			})
 		builder
@@ -42,9 +45,9 @@ const authSlice = createSlice({
 			})
 			.addCase(registerToSystem.fulfilled, (state, action) => {
 				state.loading = false
-				state.userInfo = action.payload.user
-				state.userToken = action.payload.token
-				localStorage.setItem("token", action.payload.token)
+				// state.userInfo = action.payload.userId
+				// state.userToken = action.payload.token
+				// localStorage.setItem("token", action.payload.token)
 			})
 			.addCase(registerToSystem.rejected, (state, action) => {
 				state.loading = false
@@ -52,6 +55,6 @@ const authSlice = createSlice({
 			})
 	},
 })
-export const { deleteToken } = authSlice.actions
+export const { logout } = authSlice.actions
 
 export default authSlice.reducer

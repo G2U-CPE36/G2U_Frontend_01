@@ -23,7 +23,8 @@
             "correctness": {
                 "noSelfAssign":"error",
                 "noUnusedImports": "error",
-                "noUnusedVariables": "error"
+                "noUnusedVariables": "error",
+                "useExhaustiveDependencies": "off"
             }
         }
     },

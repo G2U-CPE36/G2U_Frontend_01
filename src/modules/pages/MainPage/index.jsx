@@ -5,9 +5,11 @@ import MenuItem from "@mui/material/MenuItem"
 import FormControl from "@mui/material/FormControl"
 import Select from "@mui/material/Select"
 import SearchIcon from "@mui/icons-material/Search"
-import Translate from "@/components/Translate"
-import ProductCard from "@/components/ProductCard"
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
+import FavoriteIcon from "@mui/icons-material/Favorite"
+import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import Translate from "@/components/Translate"
 
 export default function MainPage() {
 	const [category, setCategory] = useState("")
@@ -19,30 +21,27 @@ export default function MainPage() {
 	const [error, setError] = useState("")
 	const navigate = useNavigate()
 
-	const mockData = [
-		{
-			productID: 1,
-			name: " iPhone 13",
-			category: "electronics",
-			price: "150",
-			province: "Bangkok",
-			condition: "New",
-			image: "/pic/Smartphone.jpg",
-		},
-		{
-			productID: 2,
-			name: "MacBook Pro",
-			category: "electronics",
-			price: "300",
-			province: "Chiangmai",
-			condition: "Used - Good",
-			image: "/pic/Laptop.jpg",
-		},
-	]
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
 	const handleProvinceChange = (event) => setProvince(event.target.value)
 	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
+
+	// Function to mark a product as favorite
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			console.log(userId)
+			console.log(productId)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			console.log("Product marked as favorite:", response.data)
+			// Optionally update the UI or state to reflect the favorite status
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
 
 	const handleImageError = (e) => {
 		e.target.src = "/pic/default.jpg"
@@ -54,13 +53,28 @@ export default function MainPage() {
 				const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
 				if (!response.ok) throw new Error("Failed to fetch products")
 				const data = await response.json()
-				console.log("Fetched Products from API:", data)
-				setProducts(data) // Set fetched data
-				setFilteredProducts(data) // Initialize with all products
+				console.log(data)
+
+				// Defensive check: Ensure data is an array
+				if (!Array.isArray(data)) {
+					throw new Error("Data format is incorrect, expected an array.")
+				}
+
+				const productsWithImages = data.map((product) => {
+					if (product.productImage && product.productImage.data) {
+						const blob = new Blob([Uint8Array.from(product.productImage.data)], {
+							type: "image/png",
+						})
+						product.productImage = URL.createObjectURL(blob)
+					}
+					return product
+				})
+
+				setProducts(productsWithImages)
+				setFilteredProducts(productsWithImages)
 			} catch (error) {
+				console.error("Error fetching products:", error.message)
 				setError("Failed to load products from the server. Using mock data.")
-				setProducts(mockData) // Use mock data as fallback
-				setFilteredProducts(mockData) // Initialize filtered data with mock data
 			}
 		}
 
@@ -69,7 +83,9 @@ export default function MainPage() {
 
 	useEffect(() => {
 		const filtered = products.filter((product) => {
-			const matchesCategory = category ? product.category.toLowerCase() === category.toLowerCase() : true
+			const matchesCategory = category
+				? product.categoryId === parseInt(category) // Filter by categoryId
+				: true
 			const matchesMaxPrice = maxPrice
 				? (() => {
 						if (maxPrice.includes("-")) {
@@ -143,16 +159,16 @@ export default function MainPage() {
 							<MenuItem value="">
 								<Translate text="Any" />
 							</MenuItem>
-							<MenuItem value="electronics">
+							<MenuItem value="1">
 								<Translate text="Electronics" />
 							</MenuItem>
-							<MenuItem value="clothing">
-								<Translate text="Clothing" />
-							</MenuItem>
-							<MenuItem value="books">
+							<MenuItem value="2">
 								<Translate text="Books" />
 							</MenuItem>
-							<MenuItem value="furniture">
+							<MenuItem value="3">
+								<Translate text="Clothing" />
+							</MenuItem>
+							<MenuItem value="9">
 								<Translate text="Furniture" />
 							</MenuItem>
 						</Select>
@@ -269,11 +285,92 @@ export default function MainPage() {
 					gap: 2,
 					marginTop: 2,
 					padding: "0px 64px",
-					cursor: "pointer",
 				}}
 			>
 				{filteredProducts.map((product) => (
-					<ProductCard key={product.id} product={product} layoutType="mainPage" />
+					<Box
+						key={product.productId}
+						sx={{
+							backgroundColor: "#ffffff",
+							padding: 2,
+							borderRadius: "8px",
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "space-between",
+							alignItems: "center",
+							boxShadow: "2px 6px 8px rgba(0, 0, 0, 0.3)",
+							height: "100%",
+							width: "100%",
+							cursor: "pointer",
+						}}
+						onClick={() => navigate(`/product/${product.productId}`)}
+					>
+						{/* Product Image */}
+						<Box
+							sx={{
+								width: "350px",
+								height: "320px",
+								backgroundColor: "#c0c0c0",
+								borderRadius: "8px",
+								overflow: "hidden",
+								display: "flex",
+								justifyContent: "center",
+								alignItems: "center",
+							}}
+						>
+							<img
+								src={product.productImage}
+								alt={product.productName}
+								style={{
+									width: "100%",
+									height: "100%",
+									objectFit: "fill",
+								}}
+								onError={handleImageError}
+							/>
+						</Box>
+
+						{/* Product Info */}
+						<Box
+							sx={{
+								width: "100%",
+								textAlign: "left",
+								marginTop: "8px",
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+							}}
+						>
+							<Box
+								sx={{
+									width: "100%",
+									textAlign: "left",
+									marginTop: "8px",
+									flexGrow: 1,
+								}}
+							>
+								<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.productName}</h2>
+								<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
+								<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
+								<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
+							</Box>
+							<Box
+								sx={{
+									position: "relative", // Enable relative positioning
+									top: "-20px", // Move up by 10px
+									// right: "-1px", // Adjust horizontally if necessary
+								}}
+							>
+								<FavoriteBorderIcon
+									onClick={async (e) => {
+										e.stopPropagation()
+										await markAsFavorite(product.productId)
+									}}
+									sx={{ color: "#333", fontSize: "2.5rem", cursor: "pointer" }}
+								/>
+							</Box>
+						</Box>
+					</Box>
 				))}
 			</Box>
 		</Box>

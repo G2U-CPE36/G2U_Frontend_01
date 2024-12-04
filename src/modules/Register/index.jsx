@@ -11,10 +11,9 @@ export default function Register() {
 	const dispatch = useDispatch()
 	const form = useForm({
 		defaultValues: {
-			userName: "",
+			username: "",
 			email: "",
 			password: "",
-			isAgree: false,
 		},
 	})
 	const { register, handleSubmit } = form
@@ -26,7 +25,9 @@ export default function Register() {
 			console.log("IsAgree is: ", data.isAgree)
 			// modal
 		} else {
-			dispatch(registerToSystem(data))
+			const { isAgree, ...filteredData } = data
+			console.log(filteredData)
+			dispatch(registerToSystem(filteredData))
 		}
 	}
 
@@ -47,7 +48,7 @@ export default function Register() {
 								label="username"
 								variant="outlined"
 								placeholder="Enter your user name"
-								{...register("userName")}
+								{...register("username")}
 							/>
 						</div>
 						<div className={style}>

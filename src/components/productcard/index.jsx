@@ -1,12 +1,34 @@
 import React from "react"
 import Box from "@mui/material/Box"
+import IconButton from "@mui/material/IconButton"
 import { useNavigate } from "react-router-dom"
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
+import FavoriteIcon from "@mui/icons-material/Favorite"
+import axios from "axios" // Import axios for API calls
 
 export default function ProductCard({ product, layoutType = "default" }) {
 	const handleImageError = (e) => {
 		e.target.src = "/pic/default.jpg" // Fallback image
 	}
 	const navigate = useNavigate()
+	
+	// Function to mark a product as favorite
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			console.log(userId)
+			console.log(productId)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			console.log("Product marked as favorite:", response.data)
+			// Optionally update the UI or state to reflect the favorite status
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
+
 	return (
 		<Box
 			sx={{
@@ -27,7 +49,6 @@ export default function ProductCard({ product, layoutType = "default" }) {
 				<>
 					{/* Image */}
 					<Box
-						onClick={() => navigate(`/productDetail/${product.productID}`)}
 						sx={{
 							width: "350px",
 							height: "320px",
@@ -40,7 +61,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 						}}
 					>
 						<img
-							src={product.image}
+							src={product.productImage}
 							alt={product.name}
 							style={{
 								width: "100%",
@@ -57,13 +78,41 @@ export default function ProductCard({ product, layoutType = "default" }) {
 							width: "100%",
 							textAlign: "left",
 							marginTop: "8px",
-							flexGrow: 1,
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
 						}}
 					>
-						<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.productName}</h2>
-						<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
-						<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
-						<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
+						<Box
+							sx={{
+								width: "100%",
+								textAlign: "left",
+								marginTop: "8px",
+								flexGrow: 1,
+							}}
+						>
+							<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.productName}</h2>
+							<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
+							<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
+							<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
+						</Box>
+						<IconButton
+							onClick={async (e) => {
+								e.stopPropagation() // Prevent navigation
+								await markAsFavorite(product.productId) // Call the favorite function
+							}}
+							sx={{
+								position: "relative", // Enable relative positioning
+								top: "-30px", // Move up by 10px
+								right: "-5px", // Adjust horizontally if necessary
+							}}
+						>
+							{product.isFavorited ? (
+								<FavoriteIcon sx={{ color: "#333", fontSize: "2.5rem" }} />
+							) : (
+								<FavoriteBorderIcon sx={{ color: "#333", fontSize: "2.5rem" }} />
+							)}
+						</IconButton>
 					</Box>
 				</>
 			)}
@@ -71,7 +120,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 			{layoutType === "mypost" && (
 				<Box
 					key={product.id}
-					onClick={() => navigate(`/productDetail/${product.productID}`)}
+					onClick={() => navigate(`/productDetail/${product.productId}`)}
 					sx={{
 						height: "100%",
 						borderRadius: "8px",
@@ -96,7 +145,6 @@ export default function ProductCard({ product, layoutType = "default" }) {
 					<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
 				</Box>
 			)}
-
 		</Box>
 	)
 }
