@@ -17,6 +17,8 @@ const MyPurchase = lazy(() => import("@/modules/pages/MyPurchase"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
 const LookingToBuy = lazy(() => import("@/modules/pages/LookingToBuy"))
 const AddProduct = lazy(() => import("@/modules/pages/AddProduct"))
+const CheckOut = lazy(() => import("@/modules/pages/CheckOut"))
+const EditProfile = lazy(() => import("@/modules/pages/EditProfile"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
@@ -29,8 +31,10 @@ const routes = [
 	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: true },
 	{ path: "/addproduct", element: <AddProduct />, isPrivate: true },
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
-	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: false }];
-
+	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: false },
+	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
+	{ path: "/checkout/:id", element: <CheckOut />, isPrivate: true },
+	{ path: "/edit-profile", element: <EditProfile /> , isPrivate: false}];
 
 export default function Router() {
 	const data = useSelector((state) => state.auth)

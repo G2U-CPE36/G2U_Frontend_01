@@ -6,40 +6,41 @@ import { Button } from "@mui/material"
 import { formatNumber } from "@/helper/func"
 import IconButton from "@mui/material/IconButton"
 import axios from "axios" // Import axios for API calls
-
-const mockproduct = {
-	id: 5,
-	title: "Tefal เตารีดแรงดันไอน้ำ Express COMPACT SV7120",
-	images: {
-		image1: "/tee1.png",
-		image2: "/tee2.png",
-		image3: "/tee3.png",
-		image4: "/tee4.png",
-		image5: "/tee5.png",
-	},
-	postBy: "Teeboy",
-	postDate: new Date().toISOString(),
-	price: 2634.5691,
-	condition: "Second hand",
-	description: `
-Product details of Tefal เตารีดแรงดันไอน้ำ Express COMPACT รุ่น SV7120:
-- รีดเรียบเร็ว ด้วยแรงดันไอน้ำ 6 บาร์
-- พลังไอน้ำต่อเนื่อง 120 กรัม/นาที พลังไอน้ำเพิ่มพิเศษ 350 กรัม/นาที
-- แผ่นหน้าเตารีด Xpress Glide
-- ความจุแทงค์น้ำ 1.7 ลิตร สามารถรีดผ้าแนวตั้งได้
-- Manual setting ปรับอุณหภูมิ และไอน้ำได้ตามต้องการ
-- มีระบบ Eco mode ช่วยประหยัดพลังงาน
-- ช้อนดักตะกรัน Calc collector ช่วยขจัดตะกรันได้อย่างง่ายดายหมดจด
-- ส่งฟรี
-- ประกัน 2 ปี
-  `,
-}
+import { useNavigate } from "react-router-dom"
+// const mockproduct = {
+// 	id: 5,
+// 	title: "Tefal เตารีดแรงดันไอน้ำ Express COMPACT SV7120",
+// 	images: {
+// 		image1: "/tee1.png",
+// 		image2: "/tee2.png",
+// 		image3: "/tee3.png",
+// 		image4: "/tee4.png",
+// 		image5: "/tee5.png",
+// 	},
+// 	postBy: "Teeboy",
+// 	postDate: new Date().toISOString(),
+// 	price: 2634.5691,
+// 	condition: "Second hand",
+// 	description: `
+// Product details of Tefal เตารีดแรงดันไอน้ำ Express COMPACT รุ่น SV7120:
+// - รีดเรียบเร็ว ด้วยแรงดันไอน้ำ 6 บาร์
+// - พลังไอน้ำต่อเนื่อง 120 กรัม/นาที พลังไอน้ำเพิ่มพิเศษ 350 กรัม/นาที
+// - แผ่นหน้าเตารีด Xpress Glide
+// - ความจุแทงค์น้ำ 1.7 ลิตร สามารถรีดผ้าแนวตั้งได้
+// - Manual setting ปรับอุณหภูมิ และไอน้ำได้ตามต้องการ
+// - มีระบบ Eco mode ช่วยประหยัดพลังงาน
+// - ช้อนดักตะกรัน Calc collector ช่วยขจัดตะกรันได้อย่างง่ายดายหมดจด
+// - ส่งฟรี
+// - ประกัน 2 ปี
+//   `,
+// }
 
 export default function ProductDetail() {
 	const { productID } = useParams() // Extract productID from the URL
 	const [product, setProduct] = useState(null)
 	const [error, setError] = useState("")
 	const [image, setImage] = useState(null)
+	const navigate = useNavigate()
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -176,6 +177,7 @@ export default function ProductDetail() {
 						padding: "10px 20px",
 						borderRadius: "5px",
 					}}
+					onClick={() => navigate(`/checkout/${product.productId}`)}
 				>
 					Buy Product
 				</Button>
