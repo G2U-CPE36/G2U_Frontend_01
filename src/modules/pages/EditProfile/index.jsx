@@ -63,6 +63,35 @@ export default function ProfileWithLabTabs() {
 
 	//Address
 	const [value, setValue] = useState("1")
+	const [errors, setErrors] = useState({
+		province: "",
+		district: "",
+		subdistrict: "",
+		postcode: "",
+		Address: "",
+		Phone: "",
+	})
+	const [newAddress, setNewAddress] = useState({
+		province: "",
+		district: "",
+		subdistrict: "",
+		postcode: "",
+		Address: "",
+		Phone: "",
+	})
+	const ValidateAddressForm = () => {
+		const newErrors = {}
+		if (!newAddress.province.trim()) newErrors.province = <Translate text="Province is required." />
+		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
+		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
+		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
+		if (!newAddress.Address.trim()) newErrors.Address = <Translate text="Address is required." />
+		if (!newAddress.Phone.trim()) newErrors.Phone = <Translate text="Phone is required." />
+
+		setErrors(newErrors)
+		return Object.keys(newErrors).length === 0
+	}
+
 	//const [dob, setDob] = useState(null)
 	const [addresses, setAddresses] = useState([
 		{
@@ -75,30 +104,12 @@ export default function ProfileWithLabTabs() {
 			isDefault: true,
 		},
 	])
-	const [newAddress, setNewAddress] = useState({
-		province: "",
-		district: "",
-		subdistrict: "",
-		postcode: "",
-		Address: "",
-		Phone: "",
-	})
+
 	const [open, setOpen] = useState(false)
 	const [isEditing, setIsEditing] = useState(false)
 	const [selectedAddressId, setSelectedAddressId] = useState(null)
 
 	const handleChange = (_, newValue) => setValue(newValue)
-
-	/* 	const handleSetDefaultAddress = (addressId) => {
-		setAddresses((prevAddresses) =>
-			prevAddresses.map(
-				(address) =>
-					address.id === addressId
-						? { ...address, isDefault: true } // Set this address as default.
-						: { ...address, isDefault: false }, // Set other addresses to non default.
-			),
-		)
-	} */
 
 	const handleDelete = (id) => {
 		setAddresses((prev) => prev.filter((item) => item.id !== id))
@@ -139,6 +150,11 @@ export default function ProfileWithLabTabs() {
 	}
 
 	const handleSaveAddress = () => {
+		if (!ValidateAddressForm()) {
+			// หาก ValidateAddressForm() คืนค่า false จะไม่ดำเนินการต่อ
+			return
+		}
+
 		if (isEditing && selectedAddressId !== null) {
 			// แก้ไขที่อยู่ที่มีอยู่
 			setAddresses((prev) =>
@@ -158,21 +174,29 @@ export default function ProfileWithLabTabs() {
 				alert("You can only add one address.")
 			}
 		}
+
+		// เคลียร์ข้อมูลเมื่อบันทึกสำเร็จ
 		handleClose()
 	}
+
 	const sortedAddresses = addresses.sort((a, b) => b.isDefault - a.isDefault)
 
 	//Cards
-	/* const handleSetDefaultCard = (cardId) => {
-		setCards((prevCards) =>
-			prevCards.map(
-				(card) =>
-					card.id === cardId
-						? { ...card, isDefault: true } // Set this card as default.
-						: { ...card, isDefault: false }, // Set other cards to not default.
-			),
-		)
-	} */
+	const ValidateCardForm = () => {
+		const newErrors = {}
+		if (!cardData.cardholderName.trim()) newErrors.cardholderName = <Translate text="Cardholder Name is required."/>
+		if (!cardData.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required."/>
+		if (!/^\d{16}$/.test(cardData.cardNumber)) newErrors.cardNumber = <Translate text="Card Number must be 16 digits."/>
+		if (!cardData.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required."/>
+		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.expiryDate))
+			newErrors.expiryDate = <Translate text="Expiry Date must be in MM/YY format."/>
+		if (!cardData.cvv.trim()) newErrors.cvv = <Translate text="CVV is required."/>
+		if (!/^\d{3}$/.test(cardData.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits."/>
+
+		setErrors(newErrors) // อัปเดตสถานะข้อผิดพลาด
+		return Object.keys(newErrors).length === 0 // คืนค่า true ถ้าข้อผิดพลาดเป็นค่าว่าง
+	}
+
 	const handleCardModalOpen = (editing = false, data = null) => {
 		if (!editing && cards.length > 0) {
 			alert("You can only add one card. Please edit the existing card.")
@@ -191,7 +215,13 @@ export default function ProfileWithLabTabs() {
 
 	// Save card data
 	const handleCardSave = () => {
+		if (!ValidateCardForm()) {
+			// หยุดการบันทึกหากฟอร์มไม่ผ่านการตรวจสอบ
+			return
+		}
+
 		if (isEditingCard) {
+			// แก้ไขบัตรที่มีอยู่
 			setCards((prevCards) =>
 				prevCards.map((card) => (card.id === cardData.id ? { ...card, ...cardData } : card)),
 			)
@@ -202,6 +232,8 @@ export default function ProfileWithLabTabs() {
 				alert("You can only add one card.")
 			}
 		}
+
+		// ปิดฟอร์มและล้างข้อมูล
 		handleCardModalClose()
 	}
 
@@ -534,6 +566,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cardholderName}
 									onChange={(e) => setCardData({ ...cardData, cardholderName: e.target.value })}
+									error={!!errors.cardholderName}
+									helperText={errors.cardholderName}
 								/>
 								<TextField
 									label={<Translate text="Card Number" />}
@@ -541,6 +575,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cardNumber}
 									onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
+									error={!!errors.cardNumber}
+									helperText={errors.cardNumber}
 								/>
 								<TextField
 									label={<Translate text="Expiry Date (MM/YY)" />}
@@ -548,6 +584,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.expiryDate}
 									onChange={(e) => setCardData({ ...cardData, expiryDate: e.target.value })}
+									error={!!errors.expiryDate}
+									helperText={errors.expiryDate}
 								/>
 								<TextField
 									label={<Translate text="CVV" />}
@@ -555,6 +593,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cvv}
 									onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+									error={!!errors.cvv}
+									helperText={errors.cvv}
 								/>
 							</DialogContent>
 							<DialogActions>
@@ -632,46 +672,58 @@ export default function ProfileWithLabTabs() {
 							</DialogTitle>
 							<DialogContent>
 								<TextField
-									label={<Translate text="province" />}
-									value={newAddress.nprovince}
+									label={<Translate text="Province" />}
+									value={newAddress.province}
 									onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.province} // เส้นขอบสีแดงถ้ามีข้อผิดพลาด
+									helperText={errors.province} // แสดงข้อความข้อผิดพลาด
 								/>
 								<TextField
-									label={<Translate text="district" />}
+									label={<Translate text="District" />}
 									value={newAddress.district}
 									onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.district}
+									helperText={errors.district}
 								/>
 								<TextField
-									label={<Translate text="subdistrict" />}
+									label={<Translate text="Subdistrict" />}
 									value={newAddress.subdistrict}
 									onChange={(e) => setNewAddress({ ...newAddress, subdistrict: e.target.value })}
 									fullWidth
 									margin="normal"
+									//error={!!errors.subdistrict}
+									//helperText={errors.subdistrict}
 								/>
 								<TextField
-									label={<Translate text="postcode" />}
+									label={<Translate text="Postcode" />}
 									value={newAddress.postcode}
 									onChange={(e) => setNewAddress({ ...newAddress, postcode: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.postcode}
+									helperText={errors.postcode}
 								/>
 								<TextField
 									label={<Translate text="Address" />}
-									value={newAddress.address}
-									onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+									value={newAddress.Address}
+									onChange={(e) => setNewAddress({ ...newAddress, Address: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.Address}
+									helperText={errors.Address}
 								/>
 								<TextField
 									label={<Translate text="Phone" />}
-									value={newAddress.phone}
-									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+									value={newAddress.Phone}
+									onChange={(e) => setNewAddress({ ...newAddress, Phone: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.Phone}
+									helperText={errors.Phone}
 								/>
 							</DialogContent>
 							<DialogActions>
