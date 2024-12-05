@@ -95,38 +95,42 @@ export default function MyPosts() {
 				const data = await response.json()
 				setPosts(data) // Set fetched data
 				console.log(data)
-				setLoading(false)
+				setLoading(false) // Mark loading as false after successful fetch
+				return true // Indicate success
 			} catch (error) {
-				// if (error.name === "AbortError") {
-				// 	console.error("Fetch request timed out")
-				// } else {
-				// 	console.error("Error:", error.message)
-				// }
-				// setPosts(mockPosts) // Use mock data as fallback
 				console.error("Error fetching liked products:", error)
-				setError("Failed to load pages. Please try again later.", error.message)
+				setError("Failed to load pages. Please try again later.")
+				return false // Indicate failure
 			}
 		}
-
+	
 		// Try fetching data and retry if it fails
 		const retryFetch = () => {
 			let attempts = 0
-			const maxAttempts = 10 // 10 attempts, 1 per second
-			const intervalId = setInterval(() => {
-				if (attempts < maxAttempts) {
-					fetchAllPost()
-					attempts += 1
-				} else {
+			const maxAttempts = 10 // 10 attempts
+			const intervalId = setInterval(async () => {
+				if (attempts >= maxAttempts) {
 					clearInterval(intervalId)
-					setLoading(false)
+					setLoading(false) // Stop loading if max attempts reached
+					return
+				}
+				
+				const success = await fetchAllPost()
+				if (success) {
+					clearInterval(intervalId) // Stop retrying after success
+				} else {
+					attempts += 1
 				}
 			}, 1000) // Retry every 1 second
 		}
-
+	
 		retryFetch()
-
-		return () => clearInterval(retryFetch) // Cleanup on unmount
+	
+		return () => {
+			setLoading(false) // Cleanup
+		}
 	}, [])
+	
 
 	// if (error) {
 	// 	return (

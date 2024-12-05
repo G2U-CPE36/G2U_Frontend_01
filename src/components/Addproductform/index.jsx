@@ -96,14 +96,18 @@ export default function AddProductForm({ formType, data }) {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
-			})}
+			})
+			if (!response.ok) throw new Error("Failed to create post")
+			}
 			else {const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 				},
-			})}
+			})
+			if (!response.ok) throw new Error("Failed to create post")
+			}
 
-			console.log("Product saved:", response.data)
+			console.log("Product saved")
 		} catch (error) {
 			console.error("Error saving product:", error)
 		}

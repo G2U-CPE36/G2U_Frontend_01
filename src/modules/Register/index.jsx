@@ -27,7 +27,18 @@ export default function Register() {
 		} else {
 			const { isAgree, ...filteredData } = data
 			console.log(filteredData)
-			dispatch(registerToSystem(filteredData))
+			try {
+				// Dispatch the login action and wait for it to complete
+				const resultAction = await dispatch(registerToSystem(filteredData))
+	
+				// If register is successful, navigate to the desired page
+				console.log(resultAction?.success)
+				//navigate("/")
+			} catch (error) {
+				// If login fails, handle the error (e.g., show a message)
+				console.error("register failed:", error)
+				alert(error.message || "register failed. Please try again.")
+			}
 		}
 	}
 

@@ -45,6 +45,7 @@ const authSlice = createSlice({
 			})
 			.addCase(registerToSystem.fulfilled, (state, action) => {
 				state.loading = false
+				state.success = "true"
 				// state.userInfo = action.payload.userId
 				// state.userToken = action.payload.token
 				// localStorage.setItem("token", action.payload.token)

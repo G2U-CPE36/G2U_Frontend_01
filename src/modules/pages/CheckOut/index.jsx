@@ -1,15 +1,17 @@
-import Container from "@mui/material/Container"
-import Box from "@mui/material/Box"
-import Typography from "@mui/material/Typography"
-import Button from "@mui/material/Button"
-import Card from "@mui/material/Card"
-import CardContent from "@mui/material/CardContent"
-import CardMedia from "@mui/material/CardMedia"
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined"
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined"
-import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined"
-import Translate from "@/components/Translate"
-import { useNavigate } from "react-router-dom"
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Divider from "@mui/material/Divider";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
+import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
+import Translate from "@/components/Translate";
+import { useNavigate } from "react-router-dom";
 
 const mockproduct = {
 	id: 1,
@@ -17,7 +19,6 @@ const mockproduct = {
 	images: "/tee1.png",
 	postBy: "Teeboy",
 	price: 2634.5691,
-	condition: "Second-hand", //tag
 	description: `
 - รีดเรียบเร็ว ด้วยแรงดันไอน้ำ 6 บาร์
 - พลังไอน้ำต่อเนื่อง 120 กรัม/นาที พลังไอน้ำเพิ่มพิเศษ 350 กรัม/นาที
@@ -29,136 +30,140 @@ const mockproduct = {
 - ส่งฟรี
 - ประกัน 2 ปี
   `,
-}
+};
 
 const mockdata = {
 	address:
 		"โคนัน เอโดงาวะ (+66) 99 999 9999 99/99, ซอย สุขสวัสดิ์99, ลัดหลวง, ตำบลบางพึ่ง, อำเภอพระประแดง, จังหวัดสมุทรปราการ, 10130",
 	shippingfee: "0",
-}
+};
 
-export default function CheckOut() {
-	const navigate = useNavigate()
-   
+export default function VirtualReceipt() {
+	const navigate = useNavigate();
+
 	return (
-	 <Container
-	  sx={{
-	   mt: 2,
-	   display: "flex",
-	   flexDirection: "column",
-	   justifyContent: "center",
-	   width: "720px",
-	  }}
-	 >
-	  {/* Header */}
-	  <Typography variant="h3" sx={{ display: "flex", alignItems: "center" }}>
-	   <LocationOnOutlinedIcon sx={{ mr: 1, fontSize: "inherit" }} />
-	   <Translate text="DeliveryInformation" />
-	  </Typography>
-   
-	  {/* Address Section */}
-	  <Box>
-	   <Box sx={{ alignItems: "center", justifyContent: "space-between" }}>
-		<Typography variant="h6" sx={{ mr: 2 }}>
-		 <Translate text="Address" />
-		</Typography>
-	   </Box>
-	   <Typography
-		variant="body1"
-		color="textSecondary"
-		sx={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
-	   >
-		{mockdata.address.substring(0, 70)}...
-	   </Typography>
-	  </Box>
-   
-	  {/* Product Card */}
-	  <Box>
-	   <Card
-		sx={{
-		 display: "flex",
-		 mt: 4,
-		 mb: 3,
-		 cursor: "pointer",
-		}}
-		onClick={() => navigate(`/product/${mockproduct.id}`)}
-	   >
-		<CardMedia
-		 component="img"
-		 sx={{
-		  width: 200,
-		  height: 200,
-		  objectFit: "cover",
-		 }}
-		 image={mockproduct.images}
-		 alt={mockproduct.title}
-		/>
-		<CardContent sx={{ flex: 1, display: "flex", justifyContent: "space-between" }}>
-		 <Box>
-		  <Typography variant="body2" color="textSecondary">
-		  <Translate text="By" /> {mockproduct.postBy}
-		  </Typography>
-		  <Typography variant="h5">{mockproduct.title}</Typography>
-		  <Typography variant="body1"><Translate text="ProductDetails" /></Typography>
-		  <Typography variant="body1" color="textSecondary">
-		   {mockproduct.description.substring(0, 100)}...
-		  </Typography>
-		 </Box>
-   
-		 <Typography variant="h5" sx={{ ml: 2, mt: 3, textAlign: "right", whiteSpace: "nowrap" }}>
-		  ฿ {mockproduct.price.toFixed(2)}
-		 </Typography>
-		</CardContent>
-	   </Card>
-	  </Box>
-   
-	  {/* Shipping Options */}
-	  <Box sx={{ mt: 2 }}>
-	   <Typography variant="h5"><Translate text="ShippingOptions" /></Typography>
-	   <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
-		<LocalShippingOutlinedIcon sx={{ mr: 1 }} />
-		<Typography variant="body1"><Translate text="InternationalExpress" /></Typography>
-	   </Box>
-	  </Box>
-   
-	  {/* Payment Methods */}
-	  <Box sx={{ mt: 2 }}>
-	   <Typography variant="h5"><Translate text="PaymentMethods" /></Typography>
-	   <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
-		<Box sx={{ display: "flex", alignItems: "center" }}>
-		 <CreditCardOutlinedIcon sx={{ mr: 1 }} />
-		 <Typography variant="body1"><Translate text="CreditCard" /></Typography>
-		</Box>
-	   </Box>
-	  </Box>
-   
-	  {/* Payment Details */}
-	  <Box sx={{ mt: 2 }}>
-	   <Typography variant="h5"><Translate text="OrderTotal" /></Typography>
-	   <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-		<Typography variant="body1"><Translate text="ShippingFee" /></Typography>
-		<Typography variant="body1">฿ {mockdata.shippingfee}</Typography>
-	   </Box>
-	   <Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
-		<Typography variant="body1"><Translate text="Total" /></Typography>
-		<Typography variant="body1">฿ {mockproduct.price.toFixed(2)}</Typography>
-	   </Box>
-	  </Box>
-   
-	  {/* Place Order Button */}
-	  <Box sx={{ textAlign: "center", mt: 2 }}>
-	   <Button
-		variant="contained"
-		color="primary"
-		size="large"
-		fullWidth
-		onClick={() => {
-		 console.log("submit")
-		}}
-	   >
-		<Translate text="PlaceOrder" />
-	   </Button>
-	  </Box>
-	 </Container>
-	)
-   }
+		<Container
+			sx={{
+				mt: 2,
+				p: 3,
+				width: "600px",
+				backgroundColor: "#fff",
+				border: "1px dashed #aaa",
+				boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+				borderRadius: "8px",
+				fontFamily: "'Courier New', monospace",
+			}}
+		>
+			{/* Receipt Header */}
+			<Box sx={{ textAlign: "center", mb: 3 }}>
+				<ReceiptLongOutlinedIcon sx={{ fontSize: 40, mb: 1, color: "#000000" }} />
+				<Typography variant="h4">Virtual Receipt</Typography>
+				<Divider sx={{ my: 2, borderStyle: "dashed" }} />
+			</Box>
+
+			{/* Delivery Information */}
+			<Typography variant="h5" sx={{ display: "flex", alignItems: "center" }}>
+				<LocationOnOutlinedIcon sx={{ mr: 1 }} />
+				<Translate text="DeliveryInformation" />
+			</Typography>
+			<Typography
+				variant="body1"
+				color="textSecondary"
+				sx={{
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					mb: 2,
+				}}
+			>
+				{mockdata.address.substring(0, 70)}...
+			</Typography>
+
+			{/* Product Card */}
+			<Card
+				sx={{
+					display: "flex",
+					mt: 3,
+					mb: 3,
+					cursor: "pointer",
+					boxShadow: "none",
+					border: "1px solid #eee",
+					borderRadius: "8px",
+				}}
+				onClick={() => navigate(`/product/${mockproduct.id}`)}
+			>
+				<CardMedia
+					component="img"
+					sx={{
+						width: 120,
+						height: 120,
+						objectFit: "cover",
+						borderRadius: "8px 0 0 8px",
+					}}
+					image={mockproduct.images}
+					alt={mockproduct.title}
+				/>
+				<CardContent sx={{ flex: 1 }}>
+					<Typography variant="h6">{mockproduct.title}</Typography>
+					<Typography variant="body2" color="textSecondary">
+						<Translate text="By" /> {mockproduct.postBy}
+					</Typography>
+					<Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+						{mockproduct.description.substring(0, 100)}...
+					</Typography>
+					<Typography variant="h6" sx={{ mt: 1, textAlign: "right" }}>
+						฿ {mockproduct.price.toFixed(2)}
+					</Typography>
+				</CardContent>
+			</Card>
+
+			{/* Shipping Options */}
+			<Typography variant="h6">
+				<Translate text="ShippingOptions" />
+			</Typography>
+			<Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+				<LocalShippingOutlinedIcon sx={{ mr: 1 }} />
+				<Typography variant="body1">
+					<Translate text="InternationalExpress" />
+				</Typography>
+			</Box>
+
+			{/* Payment Methods */}
+			<Typography variant="h6" sx={{ mt: 2 }}>
+				<Translate text="PaymentMethods" />
+			</Typography>
+			<Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+				<CreditCardOutlinedIcon sx={{ mr: 1 }} />
+				<Typography variant="body1">
+					<Translate text="CreditCard" />
+				</Typography>
+			</Box>
+
+			{/* Payment Details */}
+			<Typography variant="h6" sx={{ mt: 2 }}>
+				<Translate text="OrderTotal" />
+			</Typography>
+			<Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+				<Typography variant="body1">
+					<Translate text="ShippingFee" />
+				</Typography>
+				<Typography variant="body1">฿ {mockdata.shippingfee}</Typography>
+			</Box>
+			<Box sx={{ display: "flex", justifyContent: "space-between", mt: 1 }}>
+				<Typography variant="body1">
+					<Translate text="Total" />
+				</Typography>
+				<Typography variant="body1">฿ {mockproduct.price.toFixed(2)}</Typography>
+			</Box>
+
+			{/* Footer */}
+			<Divider sx={{ my: 3, borderStyle: "dashed" }} />
+			<Typography variant="body2" align="center" color="textSecondary">
+				Thank you for your purchase!
+			</Typography>
+			<Typography variant="body2" align="center" color="textSecondary">
+				Visit us again!
+			</Typography>
+		</Container>
+	);
+}

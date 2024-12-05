@@ -34,7 +34,7 @@ export default function Login() {
 		} catch (error) {
 			// If login fails, handle the error (e.g., show a message)
 			console.error("Login failed:", error)
-			alert(error || "Login failed. Please try again.")
+			alert(error.message || "Login failed. Please try again.")
 		}
 	}
 
