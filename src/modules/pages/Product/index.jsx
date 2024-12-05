@@ -50,18 +50,21 @@ export default function ProductDetail() {
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
 				console.log(productData)
-				setProduct(productData)
 
-				// Render image directly from Blob
-				if (productData.productImage?.data) {
-					const blob = new Blob([new Uint8Array(productData.productImage.data)], {
-						type: "image/jpeg", // Replace with the actual MIME type if not JPEG
+				// Process productImage array
+				if (Array.isArray(productData.productImage)) {
+					const imageUrls = productData.productImage.map((imgBuffer) => {
+						// Convert buffer to Blob
+						const blob = new Blob([new Uint8Array(imgBuffer.data)], { type: "image/jpeg" }) // Use the correct MIME type
+						return URL.createObjectURL(blob) // Generate URL
 					})
-					const url = URL.createObjectURL(blob)
-					setImage(url)
+					setImage(imageUrls[0]) // Set the first image as the main image
+					productData.images = imageUrls // Add processed image URLs to product data
 				} else {
-					setImage("") // Fallback if no image is provided
+					productData.images = [] // Fallback if no images
 				}
+
+				setProduct(productData)
 			} catch (error) {
 				console.error(error.message)
 				setError("Failed to load product")
@@ -97,11 +100,14 @@ export default function ProductDetail() {
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
 			{/* Left Section: Images */}
 			<div className="lg:w-2/5 flex flex-col items-center">
+				{/* Main Image */}
 				<div className="w-full h-96 flex items-center justify-center border rounded-lg overflow-hidden">
 					<img alt={product.productName} className="object-contain h-full" src={image} />
 				</div>
+
+				{/* Thumbnail Images */}
 				<div className="flex mt-4 gap-2">
-					{imageArray.map((img, index) => (
+					{product.images.map((img, index) => (
 						<button
 							key={index}
 							type="button"
