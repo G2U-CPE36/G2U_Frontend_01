@@ -19,7 +19,7 @@ export default function Register() {
 	})
 	const { register, handleSubmit } = form
 
-	const style = "w-3/5 mx-auto flex justify-center pt-5"
+	const style = "w-5/6 mx-auto flex justify-center pt-5"
 
 	async function onSubmit(data) {
 		if (!data.isAgree) {
@@ -35,7 +35,7 @@ export default function Register() {
 				// If register is successful, navigate to the desired page
 				if (resultAction?.meta?.requestStatus === "fulfilled") {
 					dispatch(loginToSystem(filteredData))
-					if(resultAction?.meta?.requestStatus === "fulfilled"){
+					if (resultAction?.meta?.requestStatus === "fulfilled") {
 						navigate("/")
 					}
 				}
@@ -52,8 +52,8 @@ export default function Register() {
 			<div className="container mx-auto px-4 sm:px-6 lg:px-20">
 				<div className="font-MF text-main-yellow text-5xl flex justify-center pt-10">G2U</div>
 			</div>
-			<div className="flex justify-center w-full">
-				<div class="shadow-inner bg-white w-1/3">
+			<div className="flex justify-center w-full my-4">
+				<div class="shadow-inner bg-white w-1/4">
 					<form noValidate onSubmit={handleSubmit(onSubmit)}>
 						<div className={style}>
 							<TextField
@@ -99,12 +99,12 @@ export default function Register() {
 								{...register("isAgree")}
 							/>
 						</div>
-						<div className="h-7 w-3/5 mx-auto flex justify-center rounded bg-main-yellow mt-3">
+						<div className="h-7 w-5/6 mx-auto flex justify-center rounded bg-main-yellow mt-3">
 							<button type="submit" className="w-full">
 								Sign Up
 							</button>
 						</div>
-						<div className="w-3/5 mx-auto flex justify-evenly pt-5">
+						<div className="w-5/6 mx-auto flex justify-evenly items-center my-3">
 							<Translate text="Have an account?" />
 							<Link to="/login">
 								<button type="button">
@@ -112,11 +112,11 @@ export default function Register() {
 								</button>
 							</Link>
 						</div>
-						<div className="w-3/5 mx-auto flex items-center justify-center">
+						{/* <div className="w-5/6 mx-auto flex items-center justify-center">
 							<div className="border-t border-black flex-grow"> </div>
 							<span className="mx-4 text-black text-2xl">OR</span>
 							<div className="border-t border-black flex-grow"> </div>
-						</div>
+						</div> */}
 					</form>
 				</div>
 			</div>
