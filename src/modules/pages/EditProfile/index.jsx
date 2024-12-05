@@ -63,51 +63,78 @@ export default function ProfileWithLabTabs() {
 
 	//Address
 	const [value, setValue] = useState("1")
+	const [errors, setErrors] = useState({
+		province: "",
+		district: "",
+		subdistrict: "",
+		postcode: "",
+		Address: "",
+		Phone: "",
+	})
+	const [newAddress, setNewAddress] = useState({
+		province: "",
+		district: "",
+		subdistrict: "",
+		postcode: "",
+		Address: "",
+		Phone: "",
+	})
+	const ValidateAddressForm = () => {
+		const newErrors = {}
+		if (!newAddress.province.trim()) newErrors.province = <Translate text="Province is required." />
+		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
+		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
+		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
+		else if (Number.isNaN(Number(newAddress.postcode))) newErrors.postcode = "Postcode must be a number.";
+		if (!/^\d{10}$/.test(cardData.postcode)) newErrors.postcode = <Translate text="Postcode must be 5 digits."/>
+		if (!newAddress.Address.trim()) newErrors.Address = <Translate text="Address is required." />
+		if (!newAddress.Phone.trim()) newErrors.Phone = <Translate text="Phone is required." />
+		else if (Number.isNaN(Number(newAddress.Phone))) newErrors.Phone = "Phone must be a number.";
+		if (!/^\d{10}$/.test(cardData.Phone)) newErrors.Phone = <Translate text="Phone Number must be 10 digits."/>
+
+		setErrors(newErrors)
+		return Object.keys(newErrors).length === 0
+	}
+
 	//const [dob, setDob] = useState(null)
 	const [addresses, setAddresses] = useState([
 		{
-			id: 1,
-			name: "Mrs. Gdfgsf Fdleafjf",
-			phone: "(+66) 12 345 6789",
-			address: "123 Evergreen Street, Maplewood, CA 90210, USA",
+			province: "Bangkok",
+			district: "Phaya Thai",
+			subdistrict: "Ratchathewi",
+			postcode: "10400",
+			Address: "123 Sukhumvit Rd, 5th Floor",
+			Phone: "0891234567",
 			isDefault: true,
 		},
 	])
-	const [newAddress, setNewAddress] = useState({
-		name: "",
-		phone: "",
-		address: "",
-	})
+
 	const [open, setOpen] = useState(false)
 	const [isEditing, setIsEditing] = useState(false)
 	const [selectedAddressId, setSelectedAddressId] = useState(null)
 
 	const handleChange = (_, newValue) => setValue(newValue)
 
-	const handleSetDefaultAddress = (addressId) => {
-		setAddresses((prevAddresses) =>
-			prevAddresses.map(
-				(address) =>
-					address.id === addressId
-						? { ...address, isDefault: true } // Set this address as default.
-						: { ...address, isDefault: false }, // Set other addresses to non default.
-			),
-		)
-	}
-
 	const handleDelete = (id) => {
 		setAddresses((prev) => prev.filter((item) => item.id !== id))
 	}
 
 	const handleOpen = (editing = false, id = null) => {
+		if (!editing && addresses.length > 0) {
+			alert("You can only add one address. Please edit the existing address.")
+			return
+		}
 		setIsEditing(editing)
 		setSelectedAddressId(id)
 		if (editing && id !== null) {
 			const addressToEdit = addresses.find((address) => address.id === id)
 			setNewAddress({
-				name: addressToEdit.name,
-				phone: addressToEdit.phone,
-				address: addressToEdit.address,
+				province: addressToEdit.province,
+				district: addressToEdit.district,
+				subdistrict: addressToEdit.subdistrict,
+				postcode: addressToEdit.postcode,
+				Address: addressToEdit.Address,
+				Phone: addressToEdit.Phone,
 			})
 		}
 		setOpen(true)
@@ -117,45 +144,68 @@ export default function ProfileWithLabTabs() {
 		setOpen(false)
 		setIsEditing(false)
 		setNewAddress({
-			name: "",
-			phone: "",
-			address: "",
+			province: "",
+			district: "",
+			subdistrict: "",
+			postcode: "",
+			Address: "",
+			Phone: "",
 		})
 	}
 
 	const handleSaveAddress = () => {
+		if (!ValidateAddressForm()) {
+			// หาก ValidateAddressForm() คืนค่า false จะไม่ดำเนินการต่อ
+			return
+		}
+
 		if (isEditing && selectedAddressId !== null) {
-			// Update existing address
+			// แก้ไขที่อยู่ที่มีอยู่
 			setAddresses((prev) =>
 				prev.map((item) => (item.id === selectedAddressId ? { ...item, ...newAddress } : item)),
 			)
 		} else {
-			// Add new address
-			setAddresses((prev) => [
-				...prev,
-				{
-					id: Date.now(),
-					...newAddress,
-					isDefault: false,
-				},
-			])
+			// เพิ่มที่อยู่ใหม่ (อนุญาตเฉพาะกรณีไม่มีที่อยู่)
+			if (addresses.length === 0) {
+				setAddresses([
+					{
+						id: Date.now(),
+						...newAddress,
+						isDefault: true,
+					},
+				])
+			} else {
+				alert("You can only add one address.")
+			}
 		}
+
+		// เคลียร์ข้อมูลเมื่อบันทึกสำเร็จ
 		handleClose()
 	}
+
 	const sortedAddresses = addresses.sort((a, b) => b.isDefault - a.isDefault)
 
 	//Cards
-	const handleSetDefaultCard = (cardId) => {
-		setCards((prevCards) =>
-			prevCards.map(
-				(card) =>
-					card.id === cardId
-						? { ...card, isDefault: true } // Set this card as default.
-						: { ...card, isDefault: false }, // Set other cards to not default.
-			),
-		)
+	const ValidateCardForm = () => {
+		const newErrors = {}
+		if (!cardData.cardholderName.trim()) newErrors.cardholderName = <Translate text="Cardholder Name is required."/>
+		if (!cardData.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required."/>
+		if (!/^\d{16}$/.test(cardData.cardNumber)) newErrors.cardNumber = <Translate text="Card Number must be 16 digits."/>
+		if (!cardData.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required."/>
+		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.expiryDate))
+			newErrors.expiryDate = <Translate text="Expiry Date must be in MM/YY format."/>
+		if (!cardData.cvv.trim()) newErrors.cvv = <Translate text="CVV is required."/>
+		if (!/^\d{3}$/.test(cardData.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits."/>
+
+		setErrors(newErrors) // อัปเดตสถานะข้อผิดพลาด
+		return Object.keys(newErrors).length === 0 // คืนค่า true ถ้าข้อผิดพลาดเป็นค่าว่าง
 	}
+
 	const handleCardModalOpen = (editing = false, data = null) => {
+		if (!editing && cards.length > 0) {
+			alert("You can only add one card. Please edit the existing card.")
+			return
+		}
 		setIsEditingCard(editing)
 		setCardData(data || { cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
 		setCardFormOpen(true)
@@ -169,18 +219,25 @@ export default function ProfileWithLabTabs() {
 
 	// Save card data
 	const handleCardSave = () => {
+		if (!ValidateCardForm()) {
+			// หยุดการบันทึกหากฟอร์มไม่ผ่านการตรวจสอบ
+			return
+		}
+
 		if (isEditingCard) {
-			// Update existing card
+			// แก้ไขบัตรที่มีอยู่
 			setCards((prevCards) =>
 				prevCards.map((card) => (card.id === cardData.id ? { ...card, ...cardData } : card)),
 			)
 		} else {
-			// Add new card
-			setCards((prevCards) => [
-				...prevCards,
-				{ ...cardData, id: Date.now() }, // Generate a unique ID for the new card
-			])
+			if (cards.length === 0) {
+				setCards([{ ...cardData, id: Date.now() }])
+			} else {
+				alert("You can only add one card.")
+			}
 		}
+
+		// ปิดฟอร์มและล้างข้อมูล
 		handleCardModalClose()
 	}
 
@@ -437,9 +494,12 @@ export default function ProfileWithLabTabs() {
 								<Typography variant="h6">
 									<Translate text="Credit / Debit Cards" />
 								</Typography>
-								<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
-									<Translate text="+ Add New Card" />
-								</Button>
+								{/* ปุ่มเพิ่มบัตร */}
+								{cards.length === 0 && (
+									<Button variant="contained" onClick={() => handleCardModalOpen(false)}>
+										<Translate text="+ Add New Card" />
+									</Button>
+								)}
 							</Box>
 
 							{/* Display Saved Cards */}
@@ -466,15 +526,6 @@ export default function ProfileWithLabTabs() {
 										</Box>
 
 										<Typography sx={{ flexGrow: 1 }}>**** **** **** {card.cardNumber.slice(-4)}</Typography>
-										{/* Set Default Button */}
-										<Button
-											variant={card.isDefault ? "outlined" : "contained"}
-											color={card.isDefault ? "secondary" : "primary"}
-											onClick={() => handleSetDefaultCard(card.id)}
-											sx={{ mr: 2 }}
-										>
-											{card.isDefault ? "Default" : "Set as Default"}
-										</Button>
 										<Box>
 											<IconButton onClick={() => handleCardModalOpen(true, card)}>
 												<Edit />
@@ -519,6 +570,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cardholderName}
 									onChange={(e) => setCardData({ ...cardData, cardholderName: e.target.value })}
+									error={!!errors.cardholderName}
+									helperText={errors.cardholderName}
 								/>
 								<TextField
 									label={<Translate text="Card Number" />}
@@ -526,6 +579,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cardNumber}
 									onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
+									error={!!errors.cardNumber}
+									helperText={errors.cardNumber}
 								/>
 								<TextField
 									label={<Translate text="Expiry Date (MM/YY)" />}
@@ -533,6 +588,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.expiryDate}
 									onChange={(e) => setCardData({ ...cardData, expiryDate: e.target.value })}
+									error={!!errors.expiryDate}
+									helperText={errors.expiryDate}
 								/>
 								<TextField
 									label={<Translate text="CVV" />}
@@ -540,6 +597,8 @@ export default function ProfileWithLabTabs() {
 									margin="normal"
 									value={cardData.cvv}
 									onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+									error={!!errors.cvv}
+									helperText={errors.cvv}
 								/>
 							</DialogContent>
 							<DialogActions>
@@ -570,9 +629,12 @@ export default function ProfileWithLabTabs() {
 							<Typography variant="h5" gutterBottom>
 								<Translate text="My Addresses" />
 							</Typography>
-							<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
-								<Translate text="+ Add New Address" />
-							</Button>
+							{/* ปุ่มเพิ่มที่อยู่ */}
+							{addresses.length === 0 && (
+								<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
+									<Translate text="+ Add New Address" />
+								</Button>
+							)}
 						</Box>
 
 						{/* Address Cards */}
@@ -586,27 +648,14 @@ export default function ProfileWithLabTabs() {
 								}}
 							>
 								<CardContent>
-									<Typography variant="h6">{item.name}</Typography>
-									<Typography>{item.phone}</Typography>
+									<Typography>{item.province}</Typography>
+									<Typography>{item.district}</Typography>
+									<Typography>{item.subdistrict}</Typography>
+									<Typography>{item.postcode}</Typography>
 									<Typography>{item.address}</Typography>
+									<Typography>{item.phone}</Typography>
+
 									<Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-										<div>
-											{!item.isDefault && (
-												<Button
-													variant="outlined"
-													color="primary"
-													onClick={() => handleSetDefaultAddress(item.id)}
-													sx={{ mr: 2 }}
-												>
-													<Translate text="Set as Default" />
-												</Button>
-											)}
-											{item.isDefault && (
-												<Button variant="contained" color="success" disabled>
-													<Translate text="Default" />
-												</Button>
-											)}
-										</div>
 										<Box>
 											<IconButton onClick={() => handleOpen(true, item.id)}>
 												<Edit />
@@ -627,25 +676,66 @@ export default function ProfileWithLabTabs() {
 							</DialogTitle>
 							<DialogContent>
 								<TextField
-									label={<Translate text="Full Name" />}
-									value={newAddress.name}
-									onChange={(e) => setNewAddress({ ...newAddress, name: e.target.value })}
+									label={<Translate text="Province" />}
+									value={newAddress.province}
+									onChange={(e) => setNewAddress({ ...newAddress, province: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.province} // เส้นขอบสีแดงถ้ามีข้อผิดพลาด
+									helperText={errors.province} // แสดงข้อความข้อผิดพลาด
 								/>
 								<TextField
-									label={<Translate text="Phone" />}
-									value={newAddress.phone}
-									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+									label={<Translate text="District" />}
+									value={newAddress.district}
+									onChange={(e) => setNewAddress({ ...newAddress, district: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.district}
+									helperText={errors.district}
+								/>
+								<TextField
+									label={<Translate text="Subdistrict" />}
+									value={newAddress.subdistrict}
+									onChange={(e) => setNewAddress({ ...newAddress, subdistrict: e.target.value })}
+									fullWidth
+									margin="normal"
+									//error={!!errors.subdistrict}
+									//helperText={errors.subdistrict}
+								/>
+								<TextField
+									label={<Translate text="Postcode" />}
+									value={newAddress.postcode}
+									onChange={(e) => setNewAddress({ ...newAddress, postcode: e.target.value })}
+									fullWidth
+									margin="normal"
+									error={!!errors.postcode}
+									helperText={errors.postcode}
+									inputProps={{
+										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+									}}
 								/>
 								<TextField
 									label={<Translate text="Address" />}
-									value={newAddress.address}
-									onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
+									value={newAddress.Address}
+									onChange={(e) => setNewAddress({ ...newAddress, Address: e.target.value })}
 									fullWidth
 									margin="normal"
+									error={!!errors.Address}
+									helperText={errors.Address}
+								/>
+								<TextField
+									label={<Translate text="Phone" />}
+									value={newAddress.Phone}
+									onChange={(e) => setNewAddress({ ...newAddress, Phone: e.target.value })}
+									fullWidth
+									margin="normal"
+									error={!!errors.Phone}
+									helperText={errors.Phone}
+									inputProps={{
+										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+									}}
 								/>
 							</DialogContent>
 							<DialogActions>

@@ -30,7 +30,6 @@ const routes = [
 	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
 	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: true },
 	{ path: "/addproduct", element: <AddProduct />, isPrivate: true },
-	// change ProductDetail isPrivate: to false
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
 	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: false },
 	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
