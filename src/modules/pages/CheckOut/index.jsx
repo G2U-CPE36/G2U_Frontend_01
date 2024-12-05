@@ -1,17 +1,18 @@
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Divider from "@mui/material/Divider";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
-import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
-import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
-import Translate from "@/components/Translate";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react"
+import Container from "@mui/material/Container"
+import Box from "@mui/material/Box"
+import Typography from "@mui/material/Typography"
+import Button from "@mui/material/Button"
+import Card from "@mui/material/Card"
+import CardContent from "@mui/material/CardContent"
+import CardMedia from "@mui/material/CardMedia"
+import Divider from "@mui/material/Divider"
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined"
+import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined"
+import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined"
+import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined"
+import Translate from "@/components/Translate"
+import { useNavigate } from "react-router-dom"
 
 const mockproduct = {
 	id: 1,
@@ -30,16 +31,34 @@ const mockproduct = {
 - ส่งฟรี
 - ประกัน 2 ปี
   `,
-};
+}
 
 const mockdata = {
 	address:
 		"โคนัน เอโดงาวะ (+66) 99 999 9999 99/99, ซอย สุขสวัสดิ์99, ลัดหลวง, ตำบลบางพึ่ง, อำเภอพระประแดง, จังหวัดสมุทรปราการ, 10130",
 	shippingfee: "0",
-};
+}
 
 export default function VirtualReceipt() {
-	const navigate = useNavigate();
+	const navigate = useNavigate()
+	const [buttonLabel, setButtonLabel] = useState("Place Order")
+	const [isDisabled, setIsDisabled] = useState(false)
+
+	const handlePlaceOrder = async () => {
+		try {
+			setIsDisabled(true) // Disable the button to prevent multiple clicks
+			setButtonLabel("Processing...")
+
+			// Simulate API call
+			await axios.post("/api/order", { productId: mockproduct.id })
+
+			setButtonLabel("Thank You for Your Purchase!")
+		} catch (error) {
+			console.error("Error placing order:", error)
+			setButtonLabel("Place Order") // Revert if there's an error
+			setIsDisabled(false)
+		}
+	}
 
 	return (
 		<Container
@@ -56,8 +75,7 @@ export default function VirtualReceipt() {
 		>
 			{/* Receipt Header */}
 			<Box sx={{ textAlign: "center", mb: 3 }}>
-				<ReceiptLongOutlinedIcon sx={{ fontSize: 40, mb: 1, color: "#000000" }} />
-				<Typography variant="h4">Virtual Receipt</Typography>
+				<ReceiptLongOutlinedIcon sx={{ fontSize: 50, mb: 1, color: "#000000" }} />
 				<Divider sx={{ my: 2, borderStyle: "dashed" }} />
 			</Box>
 
@@ -95,6 +113,7 @@ export default function VirtualReceipt() {
 				<CardMedia
 					component="img"
 					sx={{
+						mt: 1,
 						width: 120,
 						height: 120,
 						objectFit: "cover",
@@ -105,15 +124,12 @@ export default function VirtualReceipt() {
 				/>
 				<CardContent sx={{ flex: 1 }}>
 					<Typography variant="h6">{mockproduct.title}</Typography>
-					<Typography variant="body2" color="textSecondary">
-						<Translate text="By" /> {mockproduct.postBy}
-					</Typography>
 					<Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
 						{mockproduct.description.substring(0, 100)}...
 					</Typography>
-					<Typography variant="h6" sx={{ mt: 1, textAlign: "right" }}>
+					{/* <Typography variant="h6" sx={{ mt: 1, textAlign: "right" }}>
 						฿ {mockproduct.price.toFixed(2)}
-					</Typography>
+					</Typography> */}
 				</CardContent>
 			</Card>
 
@@ -157,13 +173,31 @@ export default function VirtualReceipt() {
 			</Box>
 
 			{/* Footer */}
-			<Divider sx={{ my: 3, borderStyle: "dashed" }} />
-			<Typography variant="body2" align="center" color="textSecondary">
-				Thank you for your purchase!
-			</Typography>
-			<Typography variant="body2" align="center" color="textSecondary">
-				Visit us again!
-			</Typography>
+			<Box sx={{ mt: 3, textAlign: "center" }}>
+				<Box sx={{ mt: 3, textAlign: "center" }}>
+					<Button
+						variant="contained"
+						sx={{
+							px: 5,
+							py: 1.5,
+							fontSize: "16px",
+							backgroundColor: "#FFD700", // Yellow color
+							color: "#000", // Black text
+							"&:hover": {
+								backgroundColor: "#FFC107", // Slightly darker yellow on hover
+							},
+							"&:disabled": {
+								backgroundColor: "#FFE082", // Lighter yellow when disabled
+								color: "#B0B0B0", // Gray text when disabled
+							},
+						}}
+						onClick={handlePlaceOrder}
+						disabled={isDisabled}
+					>
+						{buttonLabel}
+					</Button>
+				</Box>
+			</Box>
 		</Container>
-	);
+	)
 }

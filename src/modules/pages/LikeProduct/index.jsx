@@ -37,8 +37,8 @@ export default function LikeProductPages() {
 				localStorage.setItem("userLikeList", productIds.join(",")) // Save as a comma-separated string
 
 				const productsWithImages = result.likedProducts.map((product) => {
-					if (product.productImage && product.productImage.data) {
-						const blob = new Blob([Uint8Array.from(product.productImage.data)], {
+					if (product.productImage[0] && product.productImage[0].data) {
+						const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
 							type: "image/png",
 						})
 						product.productImage = URL.createObjectURL(blob)
