@@ -61,23 +61,23 @@ export default function ProfileWithLabTabs() {
 		// You may want to reset your data to the factory settings before editing.
 	}
 
-	//Address
+	//address
 	const [value, setValue] = useState("1")
 	const [errors, setErrors] = useState({
 		province: "",
 		district: "",
 		subdistrict: "",
 		postcode: "",
-		Address: "",
-		Phone: "",
+		address: "",
+		phone: "",
 	})
 	const [newAddress, setNewAddress] = useState({
 		province: "",
 		district: "",
 		subdistrict: "",
 		postcode: "",
-		Address: "",
-		Phone: "",
+		address: "",
+		phone: "",
 	})
 	const ValidateAddressForm = () => {
 		const newErrors = {}
@@ -86,9 +86,9 @@ export default function ProfileWithLabTabs() {
 		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
 		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
 		else if (!/^\d{5}$/.test(newAddress.postcode)) newErrors.postcode = "Postcode must be 5 digits.";
-		if (!newAddress.Address.trim()) newErrors.Address = <Translate text="Address is required." />
-		if (!newAddress.Phone.trim()) newErrors.Phone = <Translate text="Phone is required." />
-		else if (!/^\d{10}$/.test(newAddress.Phone)) newErrors.Phone = "Phone Number must be 10 digits.";
+		if (!newAddress.address.trim()) newErrors.address = <Translate text="address is required." />
+		if (!newAddress.phone.trim()) newErrors.phone = <Translate text="phone is required." />
+		else if (!/^\d{10}$/.test(newAddress.phone)) newErrors.phone = "phone Number must be 10 digits.";
 
 		setErrors(newErrors)
 		return Object.keys(newErrors).length === 0
@@ -108,7 +108,7 @@ export default function ProfileWithLabTabs() {
 			console.error("Error loading address:", error.message)
 			setErrors((prev) => ({
 				...prev,
-				Address: "Failed to load address from the server.",
+				address: "Failed to load address from the server.",
 			}))
 		}
 	}
@@ -185,8 +185,8 @@ export default function ProfileWithLabTabs() {
 				district: addressToEdit.district,
 				subdistrict: addressToEdit.subdistrict,
 				postcode: addressToEdit.postcode,
-				Address: addressToEdit.Address,
-				Phone: addressToEdit.Phone,
+				address: addressToEdit.address,
+				phone: addressToEdit.phone,
 			})
 		}
 		setOpen(true)
@@ -200,8 +200,8 @@ export default function ProfileWithLabTabs() {
 			district: "",
 			subdistrict: "",
 			postcode: "",
-			Address: "",
-			Phone: "",
+			address: "",
+			phone: "",
 		})
 	}
 
@@ -450,7 +450,7 @@ export default function ProfileWithLabTabs() {
 									disabled={!isEditing}
 								/>
 								<TextField
-									label={<Translate text="Phone Number" />}
+									label={<Translate text="phone Number" />}
 									fullWidth
 									margin="normal"
 									value={formData.phone}
@@ -666,12 +666,12 @@ export default function ProfileWithLabTabs() {
 							{/* ปุ่มเพิ่มที่อยู่ */}
 							{addressdata.length === 0 && (
 								<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
-									<Translate text="+ Add New Address" />
+									<Translate text="+ Add New address" />
 								</Button>
 							)}
 						</Box>
 
-						{/* Address Cards */}
+						{/* address Cards */}
 						{sortedAddresses.map((item) => (
 							<Card
 								key={item.id}
@@ -706,7 +706,7 @@ export default function ProfileWithLabTabs() {
 						{/* Modal Component */}
 						<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
 							<DialogTitle>
-								{isEditing ? <Translate text="Edit Address" /> : <Translate text="New Address" />}
+								{isEditing ? <Translate text="Edit address" /> : <Translate text="New address" />}
 							</DialogTitle>
 							<DialogContent>
 								<TextField
@@ -750,22 +750,22 @@ export default function ProfileWithLabTabs() {
 									}}
 								/>
 								<TextField
-									label={<Translate text="Address" />}
-									value={newAddress.Address}
-									onChange={(e) => setNewAddress({ ...newAddress, Address: e.target.value })}
+									label={<Translate text="address" />}
+									value={newAddress.address}
+									onChange={(e) => setNewAddress({ ...newAddress, address: e.target.value })}
 									fullWidth
 									margin="normal"
-									error={!!errors.Address}
-									helperText={errors.Address}
+									error={!!errors.address}
+									helperText={errors.address}
 								/>
 								<TextField
-									label={<Translate text="Phone" />}
-									value={newAddress.Phone}
-									onChange={(e) => setNewAddress({ ...newAddress, Phone: e.target.value })}
+									label={<Translate text="phone" />}
+									value={newAddress.phone}
+									onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
 									fullWidth
 									margin="normal"
-									error={!!errors.Phone}
-									helperText={errors.Phone}
+									error={!!errors.phone}
+									helperText={errors.phone}
 									inputProps={{
 										inputMode: "numeric", // ใช้ตัวเลือก inputMode สำหรับตัวเลข
 										pattern: "[0-9]*", // รองรับเฉพาะตัวเลข

@@ -21,7 +21,9 @@ export default function LikeProductPages() {
 						result.message === "No liked products found" 
 					) {
 						//throw new Error("No liked products found")
+						localStorage.removeItem("userLikeList")
 						alert("You have no liked product")
+
 					} else {
 						//throw new Error("Failed to fetch liked products")
 						alert("Failed to fetch liked products")
