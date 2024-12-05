@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import Typography from "@mui/material/Typography"
@@ -85,29 +85,85 @@ export default function ProfileWithLabTabs() {
 		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
 		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
 		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
-		else if (Number.isNaN(Number(newAddress.postcode))) newErrors.postcode = "Postcode must be a number.";
-		if (!/^\d{10}$/.test(cardData.postcode)) newErrors.postcode = <Translate text="Postcode must be 5 digits."/>
+		else if (Number.isNaN(Number(newAddress.postcode))) newErrors.postcode = "Postcode must be a number."
+		if (!/^\d{10}$/.test(cardData.postcode))
+			newErrors.postcode = <Translate text="Postcode must be 5 digits." />
 		if (!newAddress.Address.trim()) newErrors.Address = <Translate text="Address is required." />
 		if (!newAddress.Phone.trim()) newErrors.Phone = <Translate text="Phone is required." />
-		else if (Number.isNaN(Number(newAddress.Phone))) newErrors.Phone = "Phone must be a number.";
-		if (!/^\d{10}$/.test(cardData.Phone)) newErrors.Phone = <Translate text="Phone Number must be 10 digits."/>
+		else if (Number.isNaN(Number(newAddress.Phone))) newErrors.Phone = "Phone must be a number."
+		if (!/^\d{10}$/.test(cardData.Phone))
+			newErrors.Phone = <Translate text="Phone Number must be 10 digits." />
 
 		setErrors(newErrors)
 		return Object.keys(newErrors).length === 0
 	}
 
-	//const [dob, setDob] = useState(null)
-	const [addresses, setAddresses] = useState([
-		{
-			province: "Bangkok",
-			district: "Phaya Thai",
-			subdistrict: "Ratchathewi",
-			postcode: "10400",
-			Address: "123 Sukhumvit Rd, 5th Floor",
-			Phone: "0891234567",
-			isDefault: true,
-		},
-	])
+	const [addressdata, setAddresses] = useState([])
+
+	const addresses = async () => {
+		try {
+			const userId = localStorage.getItem("userId")
+			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${userId}`)
+			if (!response.ok) throw new Error("Failed to get address")
+			const data = await response.json()
+			console.log(data)
+			setAddresses(data) // Update state with fetched data
+		} catch (error) {
+			console.error("Error loading address:", error.message)
+			setErrors((prev) => ({
+				...prev,
+				Address: "Failed to load address from the server.",
+			}))
+		}
+	}
+
+	useEffect(() => {
+		addresses()
+	}, [])
+
+	const saveAddressToApi = async (newAddress) => {
+		try {
+			// Retrieve userId from localStorage
+			const userId = localStorage.getItem("userId");
+			
+			if (!userId) {
+				throw new Error("User ID is not available in localStorage");
+			}
+	
+			// Add userId to the newAddress object
+			const requestBody = { ...newAddress, userId };
+			
+			console.log(requestBody); // Log the final request body
+			
+			// Send the request
+			const response = await fetch("http://chawit.thddns.net:9790/api/address/create", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(requestBody), // Include userId in the body
+			});
+			
+			if (!response.ok) throw new Error("Failed to save address");
+			
+			addresses(); // Refresh address list
+		} catch (error) {
+			console.error("Error saving address:", error.message);
+		}
+	};
+	
+
+	const updateAddressToApi = async (id, updatedAddress) => {
+		try {
+			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(updatedAddress),
+			})
+			if (!response.ok) throw new Error("Failed to update address")
+			addresses() // Refresh address list
+		} catch (error) {
+			console.error("Error updating address:", error.message)
+		}
+	}
 
 	const [open, setOpen] = useState(false)
 	const [isEditing, setIsEditing] = useState(false)
@@ -120,14 +176,14 @@ export default function ProfileWithLabTabs() {
 	}
 
 	const handleOpen = (editing = false, id = null) => {
-		if (!editing && addresses.length > 0) {
+		if (!editing && addressdata.length > 0) {
 			alert("You can only add one address. Please edit the existing address.")
 			return
 		}
 		setIsEditing(editing)
 		setSelectedAddressId(id)
 		if (editing && id !== null) {
-			const addressToEdit = addresses.find((address) => address.id === id)
+			const addressToEdit = addressdata.find((address) => address.id === id)
 			setNewAddress({
 				province: addressToEdit.province,
 				district: addressToEdit.district,
@@ -154,48 +210,30 @@ export default function ProfileWithLabTabs() {
 	}
 
 	const handleSaveAddress = () => {
-		if (!ValidateAddressForm()) {
-			// หาก ValidateAddressForm() คืนค่า false จะไม่ดำเนินการต่อ
-			return
-		}
-
+		if (!ValidateAddressForm()) return
 		if (isEditing && selectedAddressId !== null) {
-			// แก้ไขที่อยู่ที่มีอยู่
-			setAddresses((prev) =>
-				prev.map((item) => (item.id === selectedAddressId ? { ...item, ...newAddress } : item)),
-			)
+			updateAddressToApi(selectedAddressId, newAddress)
 		} else {
-			// เพิ่มที่อยู่ใหม่ (อนุญาตเฉพาะกรณีไม่มีที่อยู่)
-			if (addresses.length === 0) {
-				setAddresses([
-					{
-						id: Date.now(),
-						...newAddress,
-						isDefault: true,
-					},
-				])
-			} else {
-				alert("You can only add one address.")
-			}
+			saveAddressToApi(newAddress)
 		}
-
-		// เคลียร์ข้อมูลเมื่อบันทึกสำเร็จ
 		handleClose()
 	}
 
-	const sortedAddresses = addresses.sort((a, b) => b.isDefault - a.isDefault)
+	const sortedAddresses = addressdata.sort((a, b) => b.isDefault - a.isDefault)
 
 	//Cards
 	const ValidateCardForm = () => {
 		const newErrors = {}
-		if (!cardData.cardholderName.trim()) newErrors.cardholderName = <Translate text="Cardholder Name is required."/>
-		if (!cardData.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required."/>
-		if (!/^\d{16}$/.test(cardData.cardNumber)) newErrors.cardNumber = <Translate text="Card Number must be 16 digits."/>
-		if (!cardData.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required."/>
+		if (!cardData.cardholderName.trim())
+			newErrors.cardholderName = <Translate text="Cardholder Name is required." />
+		if (!cardData.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required." />
+		if (!/^\d{16}$/.test(cardData.cardNumber))
+			newErrors.cardNumber = <Translate text="Card Number must be 16 digits." />
+		if (!cardData.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required." />
 		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.expiryDate))
-			newErrors.expiryDate = <Translate text="Expiry Date must be in MM/YY format."/>
-		if (!cardData.cvv.trim()) newErrors.cvv = <Translate text="CVV is required."/>
-		if (!/^\d{3}$/.test(cardData.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits."/>
+			newErrors.expiryDate = <Translate text="Expiry Date must be in MM/YY format." />
+		if (!cardData.cvv.trim()) newErrors.cvv = <Translate text="CVV is required." />
+		if (!/^\d{3}$/.test(cardData.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits." />
 
 		setErrors(newErrors) // อัปเดตสถานะข้อผิดพลาด
 		return Object.keys(newErrors).length === 0 // คืนค่า true ถ้าข้อผิดพลาดเป็นค่าว่าง
@@ -630,7 +668,7 @@ export default function ProfileWithLabTabs() {
 								<Translate text="My Addresses" />
 							</Typography>
 							{/* ปุ่มเพิ่มที่อยู่ */}
-							{addresses.length === 0 && (
+							{addressdata.length === 0 && (
 								<Button variant="contained" color="primary" onClick={() => handleOpen(false)}>
 									<Translate text="+ Add New Address" />
 								</Button>
@@ -711,8 +749,8 @@ export default function ProfileWithLabTabs() {
 									error={!!errors.postcode}
 									helperText={errors.postcode}
 									inputProps={{
-										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
-										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+										inputMode: "numeric", // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: "[0-9]*", // รองรับเฉพาะตัวเลข
 									}}
 								/>
 								<TextField
@@ -733,8 +771,8 @@ export default function ProfileWithLabTabs() {
 									error={!!errors.Phone}
 									helperText={errors.Phone}
 									inputProps={{
-										inputMode: 'numeric',  // ใช้ตัวเลือก inputMode สำหรับตัวเลข
-										pattern: '[0-9]*',  // รองรับเฉพาะตัวเลข
+										inputMode: "numeric", // ใช้ตัวเลือก inputMode สำหรับตัวเลข
+										pattern: "[0-9]*", // รองรับเฉพาะตัวเลข
 									}}
 								/>
 							</DialogContent>
