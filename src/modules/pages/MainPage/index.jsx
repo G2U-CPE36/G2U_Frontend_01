@@ -30,11 +30,16 @@ export default function MainPage() {
 	const markAsFavorite = async (productId) => {
 		try {
 			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			if (!userId) {
+				alert("you need to login first")
+				return false
+			}
 			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 				productId,
 				userId,
 			})
 			console.log("Product marked as favorite:", response.data)
+			return true
 		} catch (error) {
 			console.error("Error marking product as favorite:", error)
 		}
@@ -48,7 +53,10 @@ export default function MainPage() {
 		const fetchData = async () => {
 			try {
 				// Wait for liked products to be fetched
-				await fetchLikedProducts()
+				const userId = localStorage.getItem("userId")
+				if (userId) {
+					await fetchLikedProducts()
+				}
 
 				// Then fetch all products
 				const fetchAllProducts = async () => {
@@ -140,7 +148,7 @@ export default function MainPage() {
 				if (result.message === "No liked products found") {
 					localStorage.removeItem("userLikeList")
 				} else {
-					alert("Failed to fetch liked products")
+					console.log("error", result)
 				}
 				return true
 			}
@@ -433,26 +441,26 @@ export default function MainPage() {
 								{product.isLiked ? (
 									<FavoriteIcon
 										onClick={async (e) => {
-											e.stopPropagation();
+											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
 												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											setProducts(updatedProducts)
-											await markAsFavorite(product.productId)
+											const getFav = await markAsFavorite(product.productId)
+											if(getFav) {setProducts(updatedProducts)}
 										}} // Optionally disable un-liking
 										sx={{ color: "#ff1744", fontSize: "2.5rem", cursor: "pointer" }} // Filled heart with red color
 									/>
 								) : (
 									<FavoriteBorderIcon
 										onClick={async (e) => {
-											e.stopPropagation();
+											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
 												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											setProducts(updatedProducts)
-											await markAsFavorite(product.productId)
+											const getFav = await markAsFavorite(product.productId)
+											if(getFav) {setProducts(updatedProducts)}
 										}} // Optionally disable un-liking
 										sx={{ color: "#333", fontSize: "2.5rem", cursor: "pointer" }} // Outlined heart
 									/>

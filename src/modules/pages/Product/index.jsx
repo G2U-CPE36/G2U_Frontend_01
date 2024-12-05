@@ -15,6 +15,31 @@ export default function ProductDetail() {
 	const [open, setOpen] = useState(false) // State for the modal
 	const navigate = useNavigate()
 
+	const puchasehandle = async () => {
+		try {
+			const userId = localStorage.getItem("userId")
+			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${userId}`)
+			if (!response.ok) throw new Error("Failed to get address")
+			const data = await response.json()
+			console.log(data)
+
+			// Check if data is not null or empty
+			if (data && data.length > 0) {
+				console.log("Address data:", data);
+				navigate(`/checkout/${productID}`)
+				// Perform actions with the data
+			} else {
+				console.warn("No address data found");
+				alert("Please, verify your address first.");
+				navigate("/edit-profile")
+			}
+			
+		} catch (error) {
+			console.error("Error loading address:", error.message)
+			setError("Failed to load address from the server.")
+		}
+	}
+
 	useEffect(() => {
 		const fetchProduct = async () => {
 			try {
@@ -163,7 +188,7 @@ export default function ProductDetail() {
 						padding: "10px 20px",
 						borderRadius: "5px",
 					}}
-					onClick={() => navigate(`/checkout/${product.productId}`)}
+					onClick={puchasehandle}
 				>
 					Buy Product
 				</Button>

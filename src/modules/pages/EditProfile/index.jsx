@@ -24,8 +24,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Edit, Delete } from "@mui/icons-material"
 import Translate from "@/components/Translate"
+import { useNavigate } from "react-router-dom"
+import { logout } from "@/modules/Login/authSlice"
+import { useDispatch } from "react-redux"
+
 
 export default function ProfileWithLabTabs() {
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
 	//Profile
 	const [formData, setFormData] = useState({
 		username: "",
@@ -293,6 +299,8 @@ export default function ProfileWithLabTabs() {
 		expiryDate: "",
 		cvv: "",
 	})
+
+	
 	const [cards, setCards] = useState([])
 	const handleDeleteCard = (id) => {
 		setCards((prev) => prev.filter((card) => card.id !== id))
@@ -359,19 +367,22 @@ export default function ProfileWithLabTabs() {
 		alert(`Privacy Settings saved. Share information: ${accept ? "Yes" : "No"}`)
 	}*/
 
-	const handleDeleteAccount = () => {
+	const handleDeleteAccount = async() => {
 		// ฟังก์ชันลบข้อมูลบัญชี
-		alert("Your account will be deleted.")
+		alert("Your account has been deleted.")
 		// Reset data including formData
-		setFormData({
-			username: "",
-			name: "",
-			email: "",
-			phone: "",
-			gender: "",
-			dob: null,
-			photo: null,
-		})
+		try {
+			const userId = localStorage.getItem("userId")
+			const response = await fetch(`http://chawit.thddns.net:9790/api/users/${userId}`, {
+				method: "DELETE",
+			})
+			if (!response.ok) throw new Error("Failed to delete account")
+			dispatch(logout()) // Refresh address list
+			navigate("/")
+		} catch (error) {
+			console.error("Error deleting account:", error.message)
+		}
+		
 	}
 
 	return (
