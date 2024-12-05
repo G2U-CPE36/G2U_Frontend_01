@@ -23,6 +23,7 @@ export default function ProductDetail() {
 					console.warn("userLikeList is not an array. Resetting to an empty array.")
 					userLikeList = []
 				}
+				console.log("test")
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
 				const productData = await response.json()
