@@ -149,6 +149,7 @@ export default function ProfileWithLabTabs() {
 
 	const updateAddressToApi = async (id, updatedAddress) => {
 		try {
+			console.log("test", id , updatedAddress)
 			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
@@ -167,17 +168,25 @@ export default function ProfileWithLabTabs() {
 
 	const handleChange = (_, newValue) => setValue(newValue)
 
-	const handleDelete = (id) => {
-		setAddresses((prev) => prev.filter((item) => item.id !== id))
+	const handleDelete = async (id) => {
+		try {
+			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
+				method: "DELETE",
+			})
+			if (!response.ok) throw new Error("Failed to delete address")
+			addresses() // Refresh address list
+		} catch (error) {
+			console.error("Error deleting address:", error.message)
+		}
 	}
 
-	const handleOpen = (editing = false, id = null) => {
+	const handleOpen = (editing = false, id, addressid) => {
 		if (!editing && addressdata.length > 0) {
 			alert("You can only add one address. Please edit the existing address.")
 			return
 		}
 		setIsEditing(editing)
-		setSelectedAddressId(id)
+		setSelectedAddressId(addressid)
 		if (editing && id !== null) {
 			const addressToEdit = addressdata.find((address) => address.id === id)
 			setNewAddress({
@@ -207,7 +216,8 @@ export default function ProfileWithLabTabs() {
 
 	const handleSaveAddress = () => {
 		if (!ValidateAddressForm()) return
-		if (isEditing && selectedAddressId !== null) {
+
+		if (isEditing == true) {
 			updateAddressToApi(selectedAddressId, newAddress)
 		} else {
 			saveAddressToApi(newAddress)
@@ -691,10 +701,10 @@ export default function ProfileWithLabTabs() {
 
 									<Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
 										<Box>
-											<IconButton onClick={() => handleOpen(true, item.id)}>
+											<IconButton onClick={() => handleOpen(true, item.id, item.addressId)}>
 												<Edit />
 											</IconButton>
-											<IconButton onClick={() => handleDelete(item.id)} color="error">
+											<IconButton onClick={() => handleDelete(item.addressId)} color="error">
 												<Delete />
 											</IconButton>
 										</Box>
