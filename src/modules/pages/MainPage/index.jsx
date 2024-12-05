@@ -220,8 +220,26 @@ export default function MainPage() {
 							<MenuItem value="3">
 								<Translate text="Clothing" />
 							</MenuItem>
+							<MenuItem value="4">
+								<Translate text="Home" />
+							</MenuItem>
+							<MenuItem value="5">
+								<Translate text="Sports" />
+							</MenuItem>
+							<MenuItem value="6">
+								<Translate text="Beauty" />
+							</MenuItem>
+							<MenuItem value="7">
+								<Translate text="Toys" />
+							</MenuItem>
+							<MenuItem value="8">
+								<Translate text="Groceries" />
+							</MenuItem>
 							<MenuItem value="9">
 								<Translate text="Furniture" />
+							</MenuItem>
+							<MenuItem value="10">
+								<Translate text="Automotive" />
 							</MenuItem>
 						</Select>
 					</FormControl>

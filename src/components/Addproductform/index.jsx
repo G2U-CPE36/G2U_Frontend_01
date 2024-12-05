@@ -45,8 +45,9 @@ const productTag = ["First-hand", "Second-hand", "Any"]
 export default function AddProductForm({ formType, data }) {
 	const { register, handleSubmit } = useForm()
 	const [formData, setFormData] = useState(data || {})
-	const [imageFile, setImageFile] = useState(null) // Store the selected image file
-	const [imagePreview, setImagePreview] = useState(null) // Store the preview URL
+	const [images, setImages] = useState([]) // Store selected image files
+	const [imagePreviews, setImagePreviews] = useState([]) // Store preview URLs
+
 	const navigate = useNavigate()
 
 	const isWTB = formType === "wtb"
@@ -60,13 +61,23 @@ export default function AddProductForm({ formType, data }) {
 	}
 
 	const handleImageUpload = (event) => {
-		const file = event.target.files[0]
-		if (file && file.type.startsWith("image/")) {
-			//setImageFile(file);
-			setImagePreview(URL.createObjectURL(file))
-		} else {
-			console.error("Invalid file type. Please upload an image.")
+		const files = Array.from(event.target.files)
+		if (files.length + images.length > 5) {
+			alert("You can upload up to 5 images only.")
+			return
 		}
+
+		const validFiles = files.filter((file) => file.type.startsWith("image/"))
+		if (validFiles.length !== files.length) {
+			alert("Some files are not valid images.")
+			return
+		}
+
+		const newImages = [...images, ...validFiles]
+		const newPreviews = [...imagePreviews, ...validFiles.map((file) => URL.createObjectURL(file))]
+
+		setImages(newImages)
+		setImagePreviews(newPreviews)
 	}
 
 	const onSubmit = async (data) => {
@@ -90,7 +101,10 @@ export default function AddProductForm({ formType, data }) {
 			formDataToSend.append("productDescription", data.productDetails)
 			formDataToSend.append("price", data.priceRange)
 			formDataToSend.append("condition", condition)
-			formDataToSend.append("productImage", productImage)
+			images.forEach((image, index) => {
+				formDataToSend.append(`productImage`, image); // Same key for all images
+			  });
+
 			if ((formType = "wtb")) {
 				const response = await axios.post(
 					"http://chawit.thddns.net:9790/api/products/create",
@@ -267,16 +281,21 @@ export default function AddProductForm({ formType, data }) {
 							sx={{ color: "white", backgroundColor: "#333652" }}
 						>
 							<Translate text="IMAGES" />
-							<VisuallyHiddenInput type="file" onChange={handleImageUpload} />
+							<VisuallyHiddenInput
+								type="file"
+								multiple // Allow multiple file uploads
+								onChange={handleImageUpload}
+							/>
 						</Button>
 						<Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 2 }}>
-							{imagePreview && (
+							{imagePreviews.map((preview, index) => (
 								<img
-									src={imagePreview}
-									alt="Uploaded Preview"
+									key={index}
+									src={preview}
+									alt={`Uploaded Preview ${index + 1}`}
 									style={{ maxWidth: "100px", maxHeight: "100px", borderRadius: "8px" }}
 								/>
-							)}
+							))}
 						</Box>
 					</Box>
 				</Box>

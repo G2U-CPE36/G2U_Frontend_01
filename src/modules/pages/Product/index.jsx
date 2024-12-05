@@ -23,10 +23,10 @@ export default function ProductDetail() {
 					console.warn("userLikeList is not an array. Resetting to an empty array.")
 					userLikeList = []
 				}
-				console.log("test")
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
-				const productData = await response.json()
+					const productData = await response.json()
+				console.log(productData)
 
 				if (Array.isArray(productData.productImage)) {
 					const imageUrls = productData.productImage.map((imgBuffer) => {
@@ -137,7 +137,7 @@ export default function ProductDetail() {
 				</div>
 				<div className="flex gap-5 mt-4 text-gray-500 text-sm">
 					<p>
-						By <span className="underline underline-offset-2">{product.createdBy}</span>
+						By <span className="underline underline-offset-2">{product.username}</span>
 					</p>
 					<p>Post Date: {new Date(product.createdAt).toLocaleDateString()}</p>
 				</div>
