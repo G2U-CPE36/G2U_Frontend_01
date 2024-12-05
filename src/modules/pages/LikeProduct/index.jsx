@@ -13,33 +13,58 @@ export default function LikeProductPages() {
 	useEffect(() => {
 		const fetchLikedProducts = async () => {
 			try {
-				// const response = await fetch("/api/liked-products")
-				// if (!response.ok) throw new Error("Failed to fetch liked products")
-				// const data = await response.json()
-				const data = [
-					{ id: 1, name: "Sample Product 1", description: "test", image: "/images/sample1.jpg", price: 20.0 },
-					{ id: 2, name: "Sample Product 2", description: "test", image: "/images/sample2.jpg", price: 15.0 },
-					{ id: 3, name: "Sample Product 3", description: "test", image: "/images/sample3.jpg", price: 30.0 },
-				]
-				setLikedProducts(data)
+				const userId = localStorage.getItem("userId")
+				const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`)
+				const result = await response.json()
+				if (!response.ok) {
+					if (result.message === "No liked products found") {
+						localStorage.removeItem("userLikeList")
+					} else {
+						alert("Failed to fetch liked products")
+					}
+					return true
+				}
+	
+				// Save product IDs as a JSON array
+				const productIds = result.likedProducts.map((product) => product.productId)
+				localStorage.setItem("userLikeList", JSON.stringify(productIds)) // Save as JSON array
+				console.log(result)
+
+				const productsWithImages = result.likedProducts.map((product) => {
+					if (product.productImage[0] && product.productImage[0].data) {
+						const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+							type: "image/png",
+						})
+						product.productImage = URL.createObjectURL(blob)
+					}
+					return product
+				})
+
+				setLikedProducts(productsWithImages)
 				setLoading(false)
+				return true // Indicate success
 			} catch (error) {
 				console.error("Error fetching liked products:", error)
 				setError("Failed to load pages. Please try again later.")
+				return false // Indicate failure
 			}
 		}
 
-		// Try fetching data and retry if it fails
 		const retryFetch = () => {
 			let attempts = 0
-			const maxAttempts = 10 // 10 attempts, 1 per second
-			const intervalId = setInterval(() => {
-				if (attempts < maxAttempts) {
-					fetchLikedProducts()
-					attempts += 1
-				} else {
-					clearInterval(intervalId)
+			const maxAttempts = 10
+			const intervalId = setInterval(async () => {
+				if (attempts >= maxAttempts) {
+					clearInterval(intervalId) // Stop retries after max attempts
 					setLoading(false)
+					return
+				}
+
+				const success = await fetchLikedProducts()
+				if (success) {
+					clearInterval(intervalId) // Stop retries on successful fetch
+				} else {
+					attempts += 1
 				}
 			}, 1000) // Retry every 1 second
 		}
@@ -105,7 +130,7 @@ export default function LikeProductPages() {
 				<Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
 					{likedProducts.map((product) => (
 						<Box
-							key={product.id}
+							key={product.productId}
 							sx={{
 								display: "grid",
 								gridTemplateColumns: "120px 1fr auto auto",
@@ -119,30 +144,32 @@ export default function LikeProductPages() {
 								height: "200px",
 								width: "100%", // Ensure it takes up full width of the container
 							}}
-							onClick={() => navigate(`/product/${product.id}`)}
+							onClick={() => navigate(`/product/${product.productId}`)}
 						>
 							{/* Product Image */}
 							<Box sx={{ width: "140px", height: "140px" }}>
 								<img
-									src={product.image}
-									alt={product.name}
-									style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+									src={product.productImage}
+									alt={product.productName}
+									style={{ width: "100%", height: "100%", objectFit: "fill", borderRadius: "8px" }}
 								/>
 							</Box>
 
 							{/* Product Details */}
 							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start", mt: 1, ml: 3 }}>
 								<Typography variant="h6" fontWeight="medium">
-									{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
+									{product.productName.length > 30
+										? `${product.productName.substring(0, 30)}...`
+										: product.productName}
 								</Typography>
 								<Typography
 									variant="body2"
 									color="text.secondary"
 									sx={{ whiteSpace: "pre-wrap", lineHeight: 1.5, mr: 10 }}
 								>
-									{product.description.length > 200
-										? `${product.description.substring(0, 200)}...`
-										: product.description}
+									{product.productDescription.length > 200
+										? `${product.productDescription.substring(0, 200)}...`
+										: product.productDescription}
 								</Typography>
 							</Box>
 
@@ -162,7 +189,7 @@ export default function LikeProductPages() {
 								color="primary"
 								onClick={(e) => {
 									e.stopPropagation() // Prevent click from bubbling up
-									navigate(`/buy/${product.id}`)
+									navigate(`/buy/${product.productId}`)
 								}}
 								sx={{ minWidth: "100px", justifySelf: "end", alignSelf: "center", marginRight: 8 }}
 							>

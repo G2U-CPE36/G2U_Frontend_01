@@ -1,96 +1,93 @@
-import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom" // Import useParams
+import React, { useState, useEffect } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
+import FavoriteIcon from "@mui/icons-material/Favorite"
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout"
-import { Button } from "@mui/material"
+import { Button, IconButton, Dialog } from "@mui/material"
 import { formatNumber } from "@/helper/func"
-import IconButton from "@mui/material/IconButton"
-import axios from "axios" // Import axios for API calls
-
-const mockproduct = {
-	id: 5,
-	title: "Tefal เตารีดแรงดันไอน้ำ Express COMPACT SV7120",
-	images: {
-		image1: "/tee1.png",
-		image2: "/tee2.png",
-		image3: "/tee3.png",
-		image4: "/tee4.png",
-		image5: "/tee5.png",
-	},
-	postBy: "Teeboy",
-	postDate: new Date().toISOString(),
-	price: 2634.5691,
-	condition: "Second hand",
-	description: `
-Product details of Tefal เตารีดแรงดันไอน้ำ Express COMPACT รุ่น SV7120:
-- รีดเรียบเร็ว ด้วยแรงดันไอน้ำ 6 บาร์
-- พลังไอน้ำต่อเนื่อง 120 กรัม/นาที พลังไอน้ำเพิ่มพิเศษ 350 กรัม/นาที
-- แผ่นหน้าเตารีด Xpress Glide
-- ความจุแทงค์น้ำ 1.7 ลิตร สามารถรีดผ้าแนวตั้งได้
-- Manual setting ปรับอุณหภูมิ และไอน้ำได้ตามต้องการ
-- มีระบบ Eco mode ช่วยประหยัดพลังงาน
-- ช้อนดักตะกรัน Calc collector ช่วยขจัดตะกรันได้อย่างง่ายดายหมดจด
-- ส่งฟรี
-- ประกัน 2 ปี
-  `,
-}
-
-// Function to mark a product as favorite
-const markAsFavorite = async (productID) => {
-	try {
-		const userId = 123 // Replace with actual userId logic
-		const response = await axios.post("http://yourapi.example.com/api/favorites", {
-			productID,
-			userId,
-		})
-		console.log("Product marked as favorite:", response.data)
-		// Optionally update the UI or state to reflect the favorite status
-	} catch (error) {
-		console.error("Error marking product as favorite:", error)
-	}
-}
+import axios from "axios"
 
 export default function ProductDetail() {
-	const { productID } = useParams() // Extract productID from the URL
+	const { productID } = useParams()
 	const [product, setProduct] = useState(null)
 	const [error, setError] = useState("")
 	const [image, setImage] = useState(null)
+	const [open, setOpen] = useState(false) // State for the modal
+	const navigate = useNavigate()
 
 	useEffect(() => {
-		const getProducts = async () => {
+		const fetchProduct = async () => {
 			try {
+				let userLikeList = JSON.parse(localStorage.getItem("userLikeList")) || []
+				if (!Array.isArray(userLikeList)) {
+					console.warn("userLikeList is not an array. Resetting to an empty array.")
+					userLikeList = []
+				}
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
-				const productData = await response.json()
+					const productData = await response.json()
 				console.log(productData)
+
+				if (Array.isArray(productData.productImage)) {
+					const imageUrls = productData.productImage.map((imgBuffer) => {
+						const blob = new Blob([new Uint8Array(imgBuffer.data)], { type: "image/jpeg" })
+						return URL.createObjectURL(blob)
+					})
+					setImage(imageUrls[0])
+					productData.images = imageUrls
+				} else {
+					productData.images = []
+				}
+				productData.isLiked = userLikeList.includes(productData.productId)
 				setProduct(productData)
-				setImage(productData.images?.image1 || "")
 			} catch (error) {
 				console.error(error.message)
-				console.log("Failed to load product from the server. Using mock data.")
-				setProduct(mockproduct)
-				setImage(mockproduct.images.image1)
+				setError("Failed to load product")
 			}
 		}
-
-		getProducts()
-	}, [productID]) // Run useEffect when productID changes
+		fetchProduct()
+	}, [productID])
 
 	if (!product) {
 		return <p>Loading product details...</p>
 	}
 
-	const imageArray = Object.values(product.images)
+	const imageArray = Object.values(product.images || {})
+
+	const markAsFavorite = async (productId) => {
+		try {
+			const userId = parseInt(localStorage.getItem("userId"), 10)
+			productId = parseInt(productID, 10)
+			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
+				productId,
+				userId,
+			})
+			setProduct((prevProduct) => ({
+				...prevProduct,
+				isLiked: !prevProduct.isLiked,
+			}))
+		} catch (error) {
+			console.error("Error marking product as favorite:", error)
+		}
+	}
 
 	return (
 		<div className="container mx-auto p-6 flex flex-col lg:flex-row gap-6">
 			{/* Left Section: Images */}
 			<div className="lg:w-2/5 flex flex-col items-center">
+				{/* Main Image */}
 				<div className="w-full h-96 flex items-center justify-center border rounded-lg overflow-hidden">
-					<img alt={image} className="object-contain h-full" src={image} />
+					<img
+						alt={product.productName}
+						className="object-contain h-full cursor-pointer"
+						src={image}
+						onClick={() => setOpen(true)} // Open modal on click
+					/>
 				</div>
+
+				{/* Thumbnail Images */}
 				<div className="flex mt-4 gap-2">
-					{imageArray.map((img, index) => (
+					{product.images.map((img, index) => (
 						<button
 							key={index}
 							type="button"
@@ -105,16 +102,21 @@ export default function ProductDetail() {
 				</div>
 			</div>
 
-			{/* Right Section: Product Details */}
+			{/* Modal for Zoom */}
+			<Dialog open={open} onClose={() => setOpen(false)} maxWidth="lg">
+				<div className="p-4 flex items-center justify-center">
+					<img alt="Zoomed" src={image} className="w-full h-auto max-h-[80vh] object-contain" />
+				</div>
+			</Dialog>
+
 			{/* Right Section: Product Details */}
 			<div className="lg:w-3/5 flex flex-col">
-				{/* Title and Wishlist Icon */}
 				<div className="flex justify-between items-center">
-					<h1 className="font-bold text-3xl text-gray-800">{product.title}</h1>
+					<h1 className="font-bold text-3xl text-gray-800">{product.productName}</h1>
 					<IconButton
 						onClick={async (e) => {
-							e.stopPropagation() // Prevent navigation
-							await markAsFavorite(product.productID) // Call the favorite function
+							e.stopPropagation()
+							await markAsFavorite(productID)
 						}}
 						sx={{
 							display: "flex",
@@ -122,7 +124,7 @@ export default function ProductDetail() {
 							justifyContent: "center",
 						}}
 					>
-						{product.isFavorited ? (
+						{product.isLiked ? (
 							<FavoriteIcon sx={{ color: "#FF6347", fontSize: "2.5rem" }} />
 						) : (
 							<FavoriteBorderIcon sx={{ color: "#333", fontSize: "2.5rem" }} />
@@ -130,44 +132,38 @@ export default function ProductDetail() {
 					</IconButton>
 				</div>
 
-				{/* Price Section */}
 				<div className="mt-3">
 					<p className="text-4xl font-semibold text-green-600">฿ {formatNumber(product.price)}</p>
 				</div>
-
-				{/* Post Information */}
 				<div className="flex gap-5 mt-4 text-gray-500 text-sm">
 					<p>
-						By <span className="underline underline-offset-2">{product.postBy}</span>
+						By <span className="underline underline-offset-2">{product.username}</span>
 					</p>
-					<p>Post Date: {new Date(product.postDate).toLocaleDateString()}</p>
+					<p>Post Date: {new Date(product.createdAt).toLocaleDateString()}</p>
 				</div>
-
-				{/* Category Section */}
 				<div className="mt-4">
-					<h2 className="font-semibold text-lg">Category:</h2>
+					<h2 className="font-semibold text-lg">Condition:</h2>
 					<p className="text-gray-700">{product.condition}</p>
 				</div>
-
-				{/* Product Description */}
 				<div className="mt-6">
 					<h2 className="font-semibold text-lg">Product Description:</h2>
 					<p className="mt-2 text-gray-700 whitespace-pre-wrap leading-relaxed text-sm">
-						{product.description}
+						{product.productDescription}
 					</p>
 				</div>
-
-				{/* Buy Button */}
 				<Button
+					sx={{
+						mt: 5,
+					}}
 					variant="contained"
 					startIcon={<ShoppingCartCheckoutIcon />}
-					className="mt-6"
 					style={{
 						backgroundColor: "#4CAF50",
 						color: "white",
 						padding: "10px 20px",
 						borderRadius: "5px",
 					}}
+					onClick={() => navigate(`/checkout/${product.productId}`)}
 				>
 					Buy Product
 				</Button>

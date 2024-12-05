@@ -4,32 +4,33 @@ import IconButton from "@mui/material/IconButton"
 import { useNavigate } from "react-router-dom"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
 import FavoriteIcon from "@mui/icons-material/Favorite"
-import axios from "axios"; // Import axios for API calls
+import axios from "axios" // Import axios for API calls
 
 export default function ProductCard({ product, layoutType = "default" }) {
 	const handleImageError = (e) => {
 		e.target.src = "/pic/default.jpg" // Fallback image
 	}
 	const navigate = useNavigate()
-
+	
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
 		try {
-			const userId = 1; // Replace with actual userId logic // Replace with actual userId logic
+			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			console.log(userId)
+			console.log(productId)
 			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 				productId,
 				userId,
-			});
-			console.log("Product marked as favorite:", response.data);
+			})
+			console.log("Product marked as favorite:", response.data)
 			// Optionally update the UI or state to reflect the favorite status
 		} catch (error) {
-			console.error("Error marking product as favorite:", error);
+			console.error("Error marking product as favorite:", error)
 		}
-	};
+	}
 
 	return (
 		<Box
-			
 			sx={{
 				backgroundColor: "#ffffff",
 				padding: 2,
@@ -60,7 +61,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 						}}
 					>
 						<img
-							src={product.image}
+							src={product.productImage}
 							alt={product.name}
 							style={{
 								width: "100%",
@@ -90,7 +91,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 								flexGrow: 1,
 							}}
 						>
-							<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.name}</h2>
+							<h2 style={{ fontWeight: "bold", fontSize: "1rem" }}>{product.productName}</h2>
 							<p style={{ color: "#757575", fontSize: "0.9rem" }}>{product.province}</p>
 							<p style={{ color: "#d32f2f", fontWeight: "bold", fontSize: "1rem" }}>{product.condition}</p>
 							<Box sx={{ fontWeight: "bold", fontSize: "1.2rem", color: "#333" }}>฿ {product.price}</Box>
@@ -119,7 +120,7 @@ export default function ProductCard({ product, layoutType = "default" }) {
 			{layoutType === "mypost" && (
 				<Box
 					key={product.id}
-					onClick={() => navigate(`/productDetail/${product.productID}`)}
+					onClick={() => navigate(`/productDetail/${product.productId}`)}
 					sx={{
 						height: "100%",
 						borderRadius: "8px",

@@ -1,20 +1,20 @@
 import Translate from "@/components/Translate"
 import TextField from "@mui/material/TextField"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Checkbox from "@mui/material/Checkbox"
 import FormControlLabel from "@mui/material/FormControlLabel"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
-import { registerToSystem } from "../Login/authAction"
+import { registerToSystem, loginToSystem } from "../Login/authAction"
 
 export default function Register() {
 	const dispatch = useDispatch()
+	const navigate = useNavigate()
 	const form = useForm({
 		defaultValues: {
-			userName: "",
+			username: "",
 			email: "",
 			password: "",
-			isAgree: false,
 		},
 	})
 	const { register, handleSubmit } = form
@@ -26,7 +26,24 @@ export default function Register() {
 			console.log("IsAgree is: ", data.isAgree)
 			// modal
 		} else {
-			dispatch(registerToSystem(data))
+			const { isAgree, ...filteredData } = data
+			console.log(filteredData)
+			try {
+				// Dispatch the login action and wait for it to complete
+				const resultAction = await dispatch(registerToSystem(filteredData))
+
+				// If register is successful, navigate to the desired page
+				if (resultAction?.meta?.requestStatus === "fulfilled") {
+					dispatch(loginToSystem(filteredData))
+					if(resultAction?.meta?.requestStatus === "fulfilled"){
+						navigate("/")
+					}
+				}
+			} catch (error) {
+				// If login fails, handle the error (e.g., show a message)
+				console.error("register failed:", error)
+				alert(error.message || "register failed. Please try again.")
+			}
 		}
 	}
 
@@ -47,7 +64,7 @@ export default function Register() {
 								label="username"
 								variant="outlined"
 								placeholder="Enter your user name"
-								{...register("userName")}
+								{...register("username")}
 							/>
 						</div>
 						<div className={style}>

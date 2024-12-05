@@ -89,42 +89,48 @@ export default function MyPosts() {
 	React.useEffect(() => {
 		const fetchAllPost = async () => {
 			try {
-				const response = await fetch("http://localhost:3001/api/products/getproducts")
+				const userId = localStorage.getItem("userId")
+				const response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
 				if (!response.ok) throw new Error("Failed to fetch liked post")
 				const data = await response.json()
 				setPosts(data) // Set fetched data
-				setLoading(false)
+				console.log(data)
+				setLoading(false) // Mark loading as false after successful fetch
+				return true // Indicate success
 			} catch (error) {
-				// if (error.name === "AbortError") {
-				// 	console.error("Fetch request timed out")
-				// } else {
-				// 	console.error("Error:", error.message)
-				// }
-				// setPosts(mockPosts) // Use mock data as fallback
 				console.error("Error fetching liked products:", error)
-				setError("Failed to load pages. Please try again later.", error.message)
+				setError("Failed to load pages. Please try again later.")
+				return false // Indicate failure
 			}
 		}
-
+	
 		// Try fetching data and retry if it fails
 		const retryFetch = () => {
 			let attempts = 0
-			const maxAttempts = 10 // 10 attempts, 1 per second
-			const intervalId = setInterval(() => {
-				if (attempts < maxAttempts) {
-					fetchAllPost()
-					attempts += 1
-				} else {
+			const maxAttempts = 10 // 10 attempts
+			const intervalId = setInterval(async () => {
+				if (attempts >= maxAttempts) {
 					clearInterval(intervalId)
-					setLoading(false)
+					setLoading(false) // Stop loading if max attempts reached
+					return
+				}
+				
+				const success = await fetchAllPost()
+				if (success) {
+					clearInterval(intervalId) // Stop retrying after success
+				} else {
+					attempts += 1
 				}
 			}, 1000) // Retry every 1 second
 		}
-
+	
 		retryFetch()
-
-		return () => clearInterval(retryFetch) // Cleanup on unmount
+	
+		return () => {
+			setLoading(false) // Cleanup
+		}
 	}, [])
+	
 
 	// if (error) {
 	// 	return (
@@ -235,13 +241,15 @@ export default function MyPosts() {
 							<FormControlLabel
 								value="lookingToBuy"
 								control={<Radio />}
-								label=<Translate text="catergories_buy" />
+								label=<Translate text="categories_buy" />
 							/>
 						</RadioGroup>
 					</FormControl>
 
 					<FormControl fullWidth>
-						<Typography variant="subtitle1">Status</Typography>
+						<Typography variant="subtitle1">
+							<Translate text="Status" />{" "}
+						</Typography>
 						<RadioGroup row value={status} onChange={handleStatusChange}>
 							<FormControlLabel value="ongoing" control={<Radio />} label=<Translate text="Status_Open" /> />
 							<FormControlLabel value="closed" control={<Radio />} label=<Translate text="Status_Close" /> />

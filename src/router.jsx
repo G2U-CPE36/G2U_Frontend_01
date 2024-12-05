@@ -15,18 +15,26 @@ const LikePage = lazy(() => import("@/modules/pages/LikeProduct"))
 const MyPosts = lazy(() => import("@/modules/pages/MyPosts"))
 const MyPurchase = lazy(() => import("@/modules/pages/MyPurchase"))
 const ProductDetail = lazy(() => import("@/modules/pages/Product"))
+const LookingToBuy = lazy(() => import("@/modules/pages/LookingToBuy"))
+const AddProduct = lazy(() => import("@/modules/pages/AddProduct"))
+const CheckOut = lazy(() => import("@/modules/pages/CheckOut"))
+const EditProfile = lazy(() => import("@/modules/pages/EditProfile"))
 
 const routes = [
 	{ path: "/", element: <MainPage />, index: true, isPrivate: false },
-	{ path: "/likeproduct", element: <LikePage />, isPrivate: false },
+	{ path: "/likeproduct", element: <LikePage />, isPrivate: true },
 	{ path: "/myposts", element: <MyPosts />, isPrivate: false },
 	{ path: "/login", element: <Login />, isPrivate: false },
 	{ path: "/test", element: <TestPage />, isPrivate: false },
 	{ path: "/register", element: <Register />, isPrivate: false },
 	{ path: "/mypurchase", element: <MyPurchase />, isPrivate: false },
-	// change ProductDetail isPrivate: to false
-	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false }];
-
+	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: true },
+	{ path: "/addproduct", element: <AddProduct />, isPrivate: true },
+	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
+	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: false },
+	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
+	{ path: "/checkout/:id", element: <CheckOut />, isPrivate: true },
+	{ path: "/edit-profile", element: <EditProfile /> , isPrivate: false}];
 
 export default function Router() {
 	const data = useSelector((state) => state.auth)

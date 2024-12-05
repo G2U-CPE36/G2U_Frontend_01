@@ -10,6 +10,7 @@ export default {
 				"main-yellow": "#f7ce46",
 				"light-yellow": "#FDF9E6",
 				"sign-up": "#0F3DDE",
+				"custom-gray": "#333652",
 			},
 		},
 	},
