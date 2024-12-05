@@ -33,7 +33,7 @@ const routes = [
 	{ path: "/product/:productID", element: <ProductDetail />, isPrivate: false },
 	{ path: "/lookingtobuy", element: <LookingToBuy />, isPrivate: false },
 	{ path: "/product/:id", element: <ProductDetail />, isPrivate: true },
-	{ path: "/checkout/:id", element: <CheckOut />, isPrivate: true },
+	{ path: "/checkout/:productID", element: <CheckOut />, isPrivate: true },
 	{ path: "/edit-profile", element: <EditProfile /> , isPrivate: false}];
 
 export default function Router() {

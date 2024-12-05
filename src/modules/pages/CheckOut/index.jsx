@@ -12,7 +12,10 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined"
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined"
 import Translate from "@/components/Translate"
-import { useNavigate } from "react-router-dom"
+import { useParams , useNavigate } from "react-router-dom"
+
+
+
 
 const mockproduct = {
 	id: 1,
@@ -39,10 +42,18 @@ const mockdata = {
 	shippingfee: "0",
 }
 
+
+
 export default function VirtualReceipt() {
 	const navigate = useNavigate()
 	const [buttonLabel, setButtonLabel] = useState("Place Order")
 	const [isDisabled, setIsDisabled] = useState(false)
+	const [image, setImage] = useState(null)
+	const {productID } = useParams()
+	const [product, setProduct] = useState(null)
+	const [error, setError] = useState("")
+
+
 
 	const handlePlaceOrder = async () => {
 		try {
@@ -50,7 +61,7 @@ export default function VirtualReceipt() {
 			setButtonLabel("Processing...")
 
 			// Simulate API call
-			await axios.post("/api/order", { productId: mockproduct.id })
+			await axios.post("/api/order", { productId: product.productId })
 
 			setButtonLabel("Thank You for Your Purchase!")
 		} catch (error) {
@@ -59,6 +70,35 @@ export default function VirtualReceipt() {
 			setIsDisabled(false)
 		}
 	}
+
+
+	useEffect(() => {
+		const fetchProduct = async () => {
+			try {
+				console.log(productID)
+				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
+				if (!response.ok) throw new Error("Failed to fetch product")
+					const productData = await response.json()
+				console.log(productData)
+	
+				if (Array.isArray(productData.productImage)) {
+					const imageUrls = productData.productImage.map((imgBuffer) => {
+						const blob = new Blob([new Uint8Array(imgBuffer.data)], { type: "image/jpeg" })
+						return URL.createObjectURL(blob)
+					})
+					setImage(imageUrls[0])
+					productData.images = imageUrls
+				} else {
+					productData.images = []
+				}
+				setProduct(productData)
+			} catch (error) {
+				console.error(error.message)
+				setError("Failed to load product")
+			}
+		}
+		fetchProduct()
+	}, [productID])
 
 	return (
 		<Container
@@ -108,24 +148,23 @@ export default function VirtualReceipt() {
 					border: "1px solid #eee",
 					borderRadius: "8px",
 				}}
-				onClick={() => navigate(`/product/${mockproduct.id}`)}
+				onClick={() => navigate(`/product/${product.productId}`)}
 			>
 				<CardMedia
 					component="img"
 					sx={{
-						mt: 1,
 						width: 120,
 						height: 120,
-						objectFit: "cover",
+						objectFit: "fill",
 						borderRadius: "8px 0 0 8px",
 					}}
-					image={mockproduct.images}
-					alt={mockproduct.title}
+					image={product.images}
+					alt={product.images}
 				/>
 				<CardContent sx={{ flex: 1 }}>
-					<Typography variant="h6">{mockproduct.title}</Typography>
+					<Typography variant="h6">{product.productName}</Typography>
 					<Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-						{mockproduct.description.substring(0, 100)}...
+						{product.productDescription.substring(0, 100)}...
 					</Typography>
 					{/* <Typography variant="h6" sx={{ mt: 1, textAlign: "right" }}>
 						฿ {mockproduct.price.toFixed(2)}
@@ -169,7 +208,7 @@ export default function VirtualReceipt() {
 				<Typography variant="body1">
 					<Translate text="Total" />
 				</Typography>
-				<Typography variant="body1">฿ {mockproduct.price.toFixed(2)}</Typography>
+				<Typography variant="body1">฿ {product.price.toFixed(2)}</Typography>
 			</Box>
 
 			{/* Footer */}
