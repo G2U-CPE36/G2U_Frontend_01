@@ -15,8 +15,24 @@ export default function LikeProductPages() {
 			try {
 				const userId = localStorage.getItem("userId")
 				const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`)
-				if (!response.ok) throw new Error("Failed to fetch liked products")
 				const result = await response.json()
+				if (!response.ok) {
+					if (
+						result.message === "No liked products found" 
+					) {
+						//throw new Error("No liked products found")
+						alert("You have no liked product")
+					} else {
+						//throw new Error("Failed to fetch liked products")
+						alert("Failed to fetch liked products")
+					}
+					setLoading(false)
+					return true 
+				}
+				console.log(result)
+
+				const productIds = result.likedProducts.map((product) => product.productId)
+				localStorage.setItem("userLikeList", productIds.join(",")) // Save as a comma-separated string
 
 				const productsWithImages = result.likedProducts.map((product) => {
 					if (product.productImage && product.productImage.data) {

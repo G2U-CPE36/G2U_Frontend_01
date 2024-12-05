@@ -105,6 +105,28 @@ export default function MainPage() {
 		setFilteredProducts(filtered)
 	}, [products, category, maxPrice, province, searchQuery])
 
+	// useEffect(() => {
+	// 	const fetchLikedProducts = async () => {
+	// 		try {
+	// 			const userId = localStorage.getItem("userId")
+	// 			const response = await fetch(`http://chawit.thddns.net:9790/api/users/getLike/${userId}`)
+	// 			if (!response.ok) throw new Error("Failed to fetch liked products")
+	// 			const result = await response.json()
+
+	// 			const productIds = result.likedProducts.map((product) => product.productId)
+	// 			localStorage.setItem("userLikeList", productIds.join(",")) // Save as a comma-separated string
+
+	// 			return true // Indicate success
+	// 		} catch (error) {
+	// 			console.error("Error fetching liked products:", error.message)
+	// 			setError("Failed to load pages. Please try again later.")
+	// 			return false // Indicate failure
+	// 		}
+	// 	}
+	// 	fetchLikedProducts()
+	// }, [])
+
+
 	return (
 		<Box sx={{ width: "100%" }}>
 			{/* Header Section */}
