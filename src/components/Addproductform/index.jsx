@@ -12,7 +12,7 @@ import MenuItem from "@mui/material/MenuItem"
 import axios from "axios"
 import Translate from "@/components/Translate"
 import InputAdornment from "@mui/material/InputAdornment"
-
+import { useNavigate } from "react-router-dom"
 const VisuallyHiddenInput = styled("input")({
 	clip: "rect(0 0 0 0)",
 	clipPath: "inset(50%)",
@@ -47,6 +47,7 @@ export default function AddProductForm({ formType, data }) {
 	const [formData, setFormData] = useState(data || {})
 	const [imageFile, setImageFile] = useState(null) // Store the selected image file
 	const [imagePreview, setImagePreview] = useState(null) // Store the preview URL
+	const navigate = useNavigate()
 
 	const isWTB = formType === "wtb"
 
@@ -59,22 +60,21 @@ export default function AddProductForm({ formType, data }) {
 	}
 
 	const handleImageUpload = (event) => {
-		const file = event.target.files[0];
+		const file = event.target.files[0]
 		if (file && file.type.startsWith("image/")) {
 			//setImageFile(file);
-			setImagePreview(URL.createObjectURL(file));
+			setImagePreview(URL.createObjectURL(file))
 		} else {
-			console.error("Invalid file type. Please upload an image.");
+			console.error("Invalid file type. Please upload an image.")
 		}
-	};
-	
+	}
 
 	const onSubmit = async (data) => {
 		const userId = localStorage.getItem("userId")
 		const categoryId = 2 // Adjust dynamically if needed
 		const condition = "new"
 		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
-		
+
 		console.log(productImage)
 
 		if (!productImage) {
@@ -91,20 +91,40 @@ export default function AddProductForm({ formType, data }) {
 			formDataToSend.append("price", data.priceRange)
 			formDataToSend.append("condition", condition)
 			formDataToSend.append("productImage", productImage)
-			if (formType = "wtb"){
-			const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			})
-			if (!response.ok) throw new Error("Failed to create post")
-			}
-			else {const response = await axios.post("http://chawit.thddns.net:9790/api/products/create", formDataToSend, {
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			})
-			if (!response.ok) throw new Error("Failed to create post")
+			if ((formType = "wtb")) {
+				const response = await axios.post(
+					"http://chawit.thddns.net:9790/api/products/create",
+					formDataToSend,
+					{
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					},
+				)
+				if (response.status < 200 || response.status >= 300) {
+					throw new Error("Failed to create post")
+				} else {
+					console.log("Post created successfully:", response.data)
+					alert("Post created successfully")
+					navigate("/")
+				}
+			} else {
+				const response = await axios.post(
+					"http://chawit.thddns.net:9790/api/products/create",
+					formDataToSend,
+					{
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					},
+				)
+				if (response.status < 200 || response.status >= 300) {
+					throw new Error("Failed to create post")
+				} else {
+					console.log("Post created successfully:", response.data)
+					alert("Post created successfully")
+					navigate("/")
+				}
 			}
 
 			console.log("Product saved")
