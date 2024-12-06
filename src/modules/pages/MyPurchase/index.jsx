@@ -10,6 +10,45 @@ export default function MyPurchasePages() {
 	const [error, setError] = useState(null)
 	const navigate = useNavigate()
 
+	const handleConfirm = async (orderid, productid) => {
+		try {
+			const response = await fetch(`http://chawit.thddns.net:9790/api/order/orders/${orderid}/status`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ newStatus: "COMPLETE" }),
+			})
+			if (!response.ok) throw new Error("Failed to change status")
+			console.log(productid)
+			const response2 = await fetch(`http://chawit.thddns.net:9790/api/products/${productid}/toggle`, {
+				method: "PUT",
+			})
+			if (!response2.ok) throw new Error("Failed to change productid")
+			const result = response2.json()
+			console.log(result)
+			location.reload()
+		} catch (error) {
+			console.error("Error changing status:", error.message)
+		}
+	}
+
+	const handleConfirm2 = async (orderid, productid) => {
+		try {
+			const response = await fetch(`http://chawit.thddns.net:9790/api/order/orders/${orderid}/status`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify("CANCELLED"),
+			})
+			if (!response.ok) throw new Error("Failed to change status")
+			const response2 = await fetch(`http://chawit.thddns.net:9790/api/products/${productid}/toggle`, {
+				method: "PUT",
+			})
+			if (!response2.ok) throw new Error("Failed to change productid")
+			location.reload()
+		} catch (error) {
+			console.error("Error changing status:", error.message)
+		}
+	}
+
 	useEffect(() => {
 		const fetchMyPurchase = async () => {
 			try {
@@ -194,7 +233,7 @@ export default function MyPurchasePages() {
 											color="primary"
 											onClick={(e) => {
 												e.stopPropagation()
-												navigate(`/buy/${product.Product?.productId}`) // Adjusted for nested data
+												handleConfirm(product?.orderId, product?.productId) // Adjusted for nested data
 											}}
 											sx={{ minWidth: "100px" }}
 										>
@@ -205,7 +244,7 @@ export default function MyPurchasePages() {
 											color="error"
 											onClick={(e) => {
 												e.stopPropagation()
-												console.log(`Rejected product with id: ${product.Product?.productId}`) // Adjusted for nested data
+												handleConfirm2(product?.orderId, product?.productId) // Adjusted for nested data
 											}}
 											sx={{ minWidth: "100px" }}
 										>

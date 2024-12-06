@@ -8,6 +8,7 @@ import SearchIcon from "@mui/icons-material/Search"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import axios from "axios"
+import { CircularProgress } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import Translate from "@/components/Translate"
 import { debounce } from "lodash"
@@ -22,6 +23,7 @@ export default function MainPage() {
 	const [filteredProducts, setFilteredProducts] = useState([])
 	const [error, setError] = useState("")
 	const navigate = useNavigate()
+	const [loading, setLoading] = useState(true)
 
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
@@ -104,6 +106,7 @@ export default function MainPage() {
 				const fetchAllProducts = async () => {
 					try {
 						// Fetch the liked list from local storage and parse it as JSON
+						setLoading(true) 
 						let userLikeList = JSON.parse(localStorage.getItem("userLikeList")) || []
 
 						// Ensure userLikeList is an array
@@ -119,6 +122,7 @@ export default function MainPage() {
 							response = await fetch("http://chawit.thddns.net:9790/api/openorders/get/1-20")
 							console.log("This is from buy post")
 						}
+						
 
 						const data = await response.json()
 						console.log(data)
@@ -147,9 +151,10 @@ export default function MainPage() {
 
 							return product
 						})
-
+						
 						setProducts(productsWithImages)
 						setFilteredProducts(productsWithImages)
+						setLoading(false) 
 					} catch (error) {
 						console.error("Error fetching products:", error.message)
 						setError("Failed to load products from the server. Using mock data.")
@@ -222,6 +227,37 @@ export default function MainPage() {
 			setError("Failed to load pages. Please try again later.")
 			return false // Indicate failure
 		}
+	}
+	if (loading) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<CircularProgress />
+			</Box>
+		)
+	}
+
+	if (error) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<Typography variant="h6" color="error">
+					{error}
+				</Typography>
+			</Box>
+		)
 	}
 
 	return (
