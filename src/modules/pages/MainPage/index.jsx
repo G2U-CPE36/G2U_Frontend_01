@@ -15,6 +15,7 @@ export default function MainPage() {
 	const [category, setCategory] = useState("")
 	const [maxPrice, setMaxPrice] = useState("")
 	const [province, setProvince] = useState("")
+	const [typeOfPost, setTypeOfPost] = useState("sellPost")
 	const [searchQuery, setSearchQuery] = useState("")
 	const [products, setProducts] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
@@ -24,6 +25,7 @@ export default function MainPage() {
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
 	const handleProvinceChange = (event) => setProvince(event.target.value)
+	const handleTypeChange = (event) => setTypeOfPost(event.target.value)
 	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
 
 	// Function to mark a product as favorite
@@ -69,10 +71,15 @@ export default function MainPage() {
 							console.warn("userLikeList is not an array. Resetting to an empty array.")
 							userLikeList = []
 						}
+						let response
+						if (typeOfPost === "sellPost") {
+							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=16")
+							console.log("This is from sell post")
+						} else {
+							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=12")
+							console.log("This is from buy post")
+						}
 
-						const response = await fetch(
-							"http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=12",
-						)
 						if (!response.ok) throw new Error("Failed to fetch products")
 
 						const data = await response.json()
@@ -114,7 +121,7 @@ export default function MainPage() {
 		}
 
 		fetchData()
-	}, [])
+	}, [typeOfPost])
 
 	useEffect(() => {
 		const filtered = products.filter((product) => {
@@ -315,6 +322,33 @@ export default function MainPage() {
 							<MenuItem value="chiangmai">Chiang Mai</MenuItem>
 							<MenuItem value="phuket">Phuket</MenuItem>
 							<MenuItem value="khonkaen">Khon Kaen</MenuItem>
+						</Select>
+					</FormControl>
+				</Box>
+
+				<Box sx={{ width: "100%", mr: 4 }}>
+					<FormControl fullWidth>
+						<InputLabel id="Type-select-label" sx={{ color: "#FFFFFF" }}>
+							<Translate text="Type" />
+						</InputLabel>
+						<Select
+							labelId="Type-select-label"
+							id="Type-select"
+							value={typeOfPost}
+							label="Type"
+							onChange={handleTypeChange}
+							sx={{
+								backgroundColor: "#333652", // Dropdown background color
+								color: "#FFFFFF", // Dropdown text color
+								height: "52px",
+								borderRadius: "6px",
+								"& .MuiSvgIcon-root": {
+									color: "#FFFFFF", // Arrow dropdown color
+								},
+							}}
+						>
+							<MenuItem value="buyPost">Buying Product</MenuItem>
+							<MenuItem value="sellPost">Selling Product</MenuItem>
 						</Select>
 					</FormControl>
 				</Box>
