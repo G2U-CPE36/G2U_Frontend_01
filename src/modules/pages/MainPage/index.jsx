@@ -15,7 +15,7 @@ export default function MainPage() {
 	const [category, setCategory] = useState("")
 	const [maxPrice, setMaxPrice] = useState("")
 	const [province, setProvince] = useState("")
-	const [typeOfPost, setTypeOfPost] = useState("")
+	const [typeOfPost, setTypeOfPost] = useState("sellPost")
 	const [searchQuery, setSearchQuery] = useState("")
 	const [products, setProducts] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
@@ -51,6 +51,8 @@ export default function MainPage() {
 		e.target.src = "/pic/default.jpg"
 	}
 
+
+	
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -73,10 +75,10 @@ export default function MainPage() {
 						}
 						let response
 						if (typeOfPost === "sellPost") {
-							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=16")
+							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=8")
 							console.log("This is from sell post")
 						} else {
-							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=12")
+							response = await fetch("http://chawit.thddns.net:9790/api/openorders/get/1-20")
 							console.log("This is from buy post")
 						}
 
@@ -294,7 +296,7 @@ export default function MainPage() {
 					</FormControl>
 				</Box>
 
-				<Box sx={{ width: "100%", mr: 4 }}>
+				<Box sx={{ width: "100%" }}>
 					<FormControl fullWidth>
 						<InputLabel id="province-select-label" sx={{ color: "#FFFFFF" }}>
 							<Translate text="Province" />
