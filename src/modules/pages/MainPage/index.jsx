@@ -34,8 +34,8 @@ export default function MainPage() {
 
 	// Debounced search API call
 	const debouncedFetchSearchResults = debounce(async (query) => {
-		if (query.trim() === "") {
-			setFilteredProducts(products) // Reset to all products if search is cleared
+		if (query.trim() === "" && products.length) {
+			setFilteredProducts(products)
 			return
 		}
 
@@ -51,11 +51,11 @@ export default function MainPage() {
 			// Process the API response to match your data structure
 			const searchedProducts = data.map((product) => {
 				// Process product image if it exists
-				if (product.productImage && product.productImage[0]?.data) {
-					const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+				if (product.picture && product.picture[0]?.data) {
+					const blob = new Blob([Uint8Array.from(product.picture[0].data)], {
 						type: "image/png",
 					})
-					product.productImage = URL.createObjectURL(blob)
+					product.picture = URL.createObjectURL(blob)
 				}
 				return product
 			})
@@ -91,8 +91,6 @@ export default function MainPage() {
 		e.target.src = "/pic/default.jpg"
 	}
 
-
-	
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -134,12 +132,17 @@ export default function MainPage() {
 							// Add isLiked field based on userLikeList
 							product.isLiked = userLikeList.includes(product.productId)
 
-							// Process product image if it exists
-							if (product.productImage[0] && product.productImage[0].data) {
-								const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+							// Check if product.picture is an array and process the first picture if it exists
+							if (Array.isArray(product.picture) && product.picture[0] && product.picture[0].data) {
+								const blob = new Blob([Uint8Array.from(product.picture[0].data)], {
 									type: "image/png",
 								})
-								product.productImage = URL.createObjectURL(blob)
+								product.picture = URL.createObjectURL(blob)
+							} else {
+								const blob = new Blob([Uint8Array.from(product.picture.data)], {
+									type: "image/png",
+								})
+								product.picture = URL.createObjectURL(blob)
 							}
 
 							return product
@@ -164,6 +167,12 @@ export default function MainPage() {
 	}, [typeOfPost])
 
 	useEffect(() => {
+		return () => {
+			debouncedFetchSearchResults.cancel()
+		}
+	}, [])
+
+	useEffect(() => {
 		const filtered = products.filter((product) => {
 			const matchesCategory = category
 				? product.categoryId === parseInt(category) // Filter by categoryId
@@ -181,7 +190,8 @@ export default function MainPage() {
 					})()
 				: true
 			const matchesProvince = province ? product.province.toLowerCase() === province.toLowerCase() : true
-			const matchesSearchQuery = searchQuery ? product.productName.toLowerCase().includes(searchQuery) : true
+			const matchesSearchQuery = searchQuery ? new RegExp(searchQuery, "i").test(product.productName) : true
+
 			return matchesCategory && matchesMaxPrice && matchesProvince && matchesSearchQuery
 		})
 		setFilteredProducts(filtered)
@@ -473,7 +483,7 @@ export default function MainPage() {
 							}}
 						>
 							<img
-								src={product.productImage}
+								src={product.picture}
 								alt={product.productName}
 								style={{
 									width: "100%",
