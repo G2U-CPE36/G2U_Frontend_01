@@ -36,7 +36,7 @@ export default function AccountMenu() {
 
 	async function handleLogout() {
 		dispatch(logout())
-		window.location.reload()
+		navigate("/")
 	}
 
 	return (

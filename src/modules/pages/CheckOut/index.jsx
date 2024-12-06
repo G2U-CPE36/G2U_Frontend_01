@@ -12,7 +12,9 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined"
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined"
 import Translate from "@/components/Translate"
-import { useNavigate } from "react-router-dom"
+import { CircularProgress } from "@mui/material"
+import axios from "axios"
+import { useParams, useNavigate } from "react-router-dom"
 
 const mockproduct = {
 	id: 1,
@@ -43,21 +45,102 @@ export default function VirtualReceipt() {
 	const navigate = useNavigate()
 	const [buttonLabel, setButtonLabel] = useState("Place Order")
 	const [isDisabled, setIsDisabled] = useState(false)
+	const [image, setImage] = useState(null)
+	const { productID } = useParams()
+	const [productfinal, setProduct] = useState("")
+	const [error, setError] = useState("")
+	const [loading, setLoading] = useState(true)
 
 	const handlePlaceOrder = async () => {
 		try {
 			setIsDisabled(true) // Disable the button to prevent multiple clicks
 			setButtonLabel("Processing...")
 
-			// Simulate API call
-			await axios.post("/api/order", { productId: mockproduct.id })
+			const userId = parseInt(localStorage.getItem("userId"))
+			if (!userId || !productID || !productfinal) {
+				setButtonLabel("Invalid Order Details")
+				setIsDisabled(false)
+				return
+			}
+			const productId = parseInt(productID)
+			const sellerId = parseInt(productfinal.userId)
+			const addressId = parseInt(productfinal.addressId)
 
-			setButtonLabel("Thank You for Your Purchase!")
+			console.log(productId,userId,sellerId,addressId)
+			// Send POST request
+			const response = await axios.post("http://chawit.thddns.net:9790/api/order/orders", {
+				productId,
+				userId,
+				sellerId,
+				addressId,
+			})
+
+			console.log("Order Response:", response.data) // Debugging API response
+			navigate("/mypurchase")
 		} catch (error) {
 			console.error("Error placing order:", error)
-			setButtonLabel("Place Order") // Revert if there's an error
+			setButtonLabel("Place Order") // Revert button state
 			setIsDisabled(false)
+		} finally {
+			setIsDisabled(false) // Ensure button is re-enabled
 		}
+	}
+
+	useEffect(() => {
+		const fetchProduct = async () => {
+			try {
+				console.log(productID)
+				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
+				if (!response.ok) {
+					throw new Error(`Failed to fetch product: ${response.status} ${response.statusText}`)
+				}
+
+				const productData = await response.json()
+				console.log(productData)
+
+				if (Array.isArray(productData.productImage)) {
+					const imageUrls = productData.productImage.map((imgBuffer) => {
+						const blob = new Blob([new Uint8Array(imgBuffer.data)], { type: "image/jpeg" })
+						return URL.createObjectURL(blob)
+					})
+					setImage(imageUrls[0])
+					productData.images = imageUrls
+				} else {
+					productData.images = []
+				}
+				const userId = localStorage.getItem("userId")
+				const response2 = await fetch(`http://chawit.thddns.net:9790/api/address/${userId}`)
+				if (!response2.ok) throw new Error("Failed to get address")
+				const data2 = await response2.json()
+
+				const response3 = await fetch(`http://chawit.thddns.net:9790/api/cards/${userId}`)
+				if (!response3.ok) throw new Error("Failed to get address")
+				const data3 = await response3.json()
+				//console.log(data2[0].address); // Should print the address value
+				const newproduct = {
+					...productData,
+					address: data2[0].address,
+					cardNumber: data3[0].cardNumber,
+					addressId: data2[0].addressId
+				}
+
+				console.log("new", newproduct)
+				setProduct(newproduct)
+				setLoading(false)
+			} catch (error) {
+				console.error(error.message)
+				setError("Failed to load product")
+			}
+		}
+		fetchProduct()
+	}, [])
+
+	if (loading) {
+		return (
+			<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+				<CircularProgress />
+			</Box>
+		)
 	}
 
 	return (
@@ -94,7 +177,7 @@ export default function VirtualReceipt() {
 					mb: 2,
 				}}
 			>
-				{mockdata.address.substring(0, 70)}...
+				{productfinal.address.substring(0, 70)}...
 			</Typography>
 
 			{/* Product Card */}
@@ -108,24 +191,23 @@ export default function VirtualReceipt() {
 					border: "1px solid #eee",
 					borderRadius: "8px",
 				}}
-				onClick={() => navigate(`/product/${mockproduct.id}`)}
+				onClick={() => navigate(`/product/${productID}`)}
 			>
 				<CardMedia
 					component="img"
 					sx={{
-						mt: 1,
 						width: 120,
 						height: 120,
-						objectFit: "cover",
+						objectFit: "fill",
 						borderRadius: "8px 0 0 8px",
 					}}
-					image={mockproduct.images}
-					alt={mockproduct.title}
+					image={productfinal.images[0]}
+					alt={productfinal.images[0]}
 				/>
 				<CardContent sx={{ flex: 1 }}>
-					<Typography variant="h6">{mockproduct.title}</Typography>
+					<Typography variant="h6">{productfinal.productName}</Typography>
 					<Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-						{mockproduct.description.substring(0, 100)}...
+						{productfinal.productDescription.substring(0, 100)}...
 					</Typography>
 					{/* <Typography variant="h6" sx={{ mt: 1, textAlign: "right" }}>
 						฿ {mockproduct.price.toFixed(2)}
@@ -151,7 +233,7 @@ export default function VirtualReceipt() {
 			<Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
 				<CreditCardOutlinedIcon sx={{ mr: 1 }} />
 				<Typography variant="body1">
-					<Translate text="CreditCard" />
+					<Translate text="CreditCard" />: **** **** **** {productfinal.cardNumber.slice(-4)}
 				</Typography>
 			</Box>
 
@@ -169,7 +251,7 @@ export default function VirtualReceipt() {
 				<Typography variant="body1">
 					<Translate text="Total" />
 				</Typography>
-				<Typography variant="body1">฿ {mockproduct.price.toFixed(2)}</Typography>
+				<Typography variant="body1">฿ {productfinal.price.toFixed(2)}</Typography>
 			</Box>
 
 			{/* Footer */}

@@ -24,8 +24,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker"
 import { Edit, Delete } from "@mui/icons-material"
 import Translate from "@/components/Translate"
+import { useNavigate } from "react-router-dom"
+import { logout } from "@/modules/Login/authSlice"
+import { useDispatch } from "react-redux"
 
 export default function ProfileWithLabTabs() {
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
 	//Profile
 	const [formData, setFormData] = useState({
 		username: "",
@@ -85,10 +90,10 @@ export default function ProfileWithLabTabs() {
 		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
 		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
 		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
-		else if (!/^\d{5}$/.test(newAddress.postcode)) newErrors.postcode = "Postcode must be 5 digits.";
+		else if (!/^\d{5}$/.test(newAddress.postcode)) newErrors.postcode = "Postcode must be 5 digits."
 		if (!newAddress.address.trim()) newErrors.address = <Translate text="address is required." />
 		if (!newAddress.phone.trim()) newErrors.phone = <Translate text="phone is required." />
-		else if (!/^\d{10}$/.test(newAddress.phone)) newErrors.phone = "phone Number must be 10 digits.";
+		else if (!/^\d{10}$/.test(newAddress.phone)) newErrors.phone = "phone Number must be 10 digits."
 
 		setErrors(newErrors)
 		return Object.keys(newErrors).length === 0
@@ -120,36 +125,35 @@ export default function ProfileWithLabTabs() {
 	const saveAddressToApi = async (newAddress) => {
 		try {
 			// Retrieve userId from localStorage
-			const userId = localStorage.getItem("userId");
-			
+			const userId = localStorage.getItem("userId")
+
 			if (!userId) {
-				throw new Error("User ID is not available in localStorage");
+				throw new Error("User ID is not available in localStorage")
 			}
-	
+
 			// Add userId to the newAddress object
-			const requestBody = { ...newAddress, userId };
-			
-			console.log(requestBody); // Log the final request body
-			
+			const requestBody = { ...newAddress, userId }
+
+			console.log(requestBody) // Log the final request body
+
 			// Send the request
 			const response = await fetch("http://chawit.thddns.net:9790/api/address/create", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(requestBody), // Include userId in the body
-			});
-			
-			if (!response.ok) throw new Error("Failed to save address");
-			
-			addresses(); // Refresh address list
+			})
+
+			if (!response.ok) throw new Error("Failed to save address")
+
+			addresses() // Refresh address list
 		} catch (error) {
-			console.error("Error saving address:", error.message);
+			console.error("Error saving address:", error.message)
 		}
-	};
-	
+	}
 
 	const updateAddressToApi = async (id, updatedAddress) => {
 		try {
-			console.log("test", id , updatedAddress)
+			console.log("test", id, updatedAddress)
 			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
@@ -228,76 +232,164 @@ export default function ProfileWithLabTabs() {
 	const sortedAddresses = addressdata.sort((a, b) => b.isDefault - a.isDefault)
 
 	//Cards
+
 	const ValidateCardForm = () => {
 		const newErrors = {}
-		if (!cardData.cardholderName.trim())
-			newErrors.cardholderName = <Translate text="Cardholder Name is required." />
-		if (!cardData.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required." />
-		if (!/^\d{16}$/.test(cardData.cardNumber))
+		console.log(cards)
+		// if (!cards.cardholderName.trim())
+		// 	newErrors.cardholderName = <Translate text="Cardholder Name is required." />
+		if (!cards.cardNumber.trim()) newErrors.cardNumber = <Translate text="Card Number is required." />
+		if (!/^\d{16}$/.test(cards.cardNumber))
 			newErrors.cardNumber = <Translate text="Card Number must be 16 digits." />
-		if (!cardData.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required." />
-		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardData.expiryDate))
+		if (!cards.expiryDate.trim()) newErrors.expiryDate = <Translate text="Expiry Date is required." />
+		if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cards.expiryDate))
 			newErrors.expiryDate = <Translate text="Expiry Date must be in MM/YY format." />
-		if (!cardData.cvv.trim()) newErrors.cvv = <Translate text="CVV is required." />
-		if (!/^\d{3}$/.test(cardData.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits." />
+		if (!cards.cvv.trim()) newErrors.cvv = <Translate text="CVV is required." />
+		if (!/^\d{3}$/.test(cards.cvv)) newErrors.cvv = <Translate text="CVV must be 3 digits." />
 
 		setErrors(newErrors) // อัปเดตสถานะข้อผิดพลาด
 		return Object.keys(newErrors).length === 0 // คืนค่า true ถ้าข้อผิดพลาดเป็นค่าว่าง
 	}
 
-	const handleCardModalOpen = (editing = false, data = null) => {
+	const handleCardModalOpen = (editing = false, data) => {
 		if (!editing && cards.length > 0) {
 			alert("You can only add one card. Please edit the existing card.")
 			return
 		}
 		setIsEditingCard(editing)
-		setCardData(data || { cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
+		setCardData(data || { cardNumber: "", expiryDate: "", cvv: "" })
 		setCardFormOpen(true)
 	}
 
 	// Close modal
 	const handleCardModalClose = () => {
 		setCardFormOpen(false)
-		setCardData({ cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
+		//setCardData(card{ cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
 	}
 
-	// Save card data
-	const handleCardSave = () => {
-		if (!ValidateCardForm()) {
-			// หยุดการบันทึกหากฟอร์มไม่ผ่านการตรวจสอบ
-			return
-		}
+	const handleCardSave = async (cards) => {
+		console.log("hellow", cards)
+		if (!ValidateCardForm(cards)) return
 
-		if (isEditingCard) {
-			// แก้ไขบัตรที่มีอยู่
-			setCards((prevCards) =>
-				prevCards.map((card) => (card.id === cardData.id ? { ...card, ...cardData } : card)),
-			)
+		if (isEditingCard == true) {
+			updateCardToApi(cards.id, cards)
 		} else {
-			if (cards.length === 0) {
-				setCards([{ ...cardData, id: Date.now() }])
-			} else {
-				alert("You can only add one card.")
-			}
+			saveCardToApi(cards)
 		}
-
-		// ปิดฟอร์มและล้างข้อมูล
 		handleCardModalClose()
 	}
+	// Save card data
+	// const handleCardSave = () => {
+	// 	if (!ValidateCardForm()) {
+	// 		// หยุดการบันทึกหากฟอร์มไม่ผ่านการตรวจสอบ
+	// 		return
+	// 	}
+
+	// 	if (isEditingCard) {
+	// 		// แก้ไขบัตรที่มีอยู่
+	// 		setCards((prevCards) =>
+	// 			prevCards.map((cards) => (cards.id === cardData.id ? { ...cards, ...cardData } : cards)),
+	// 		)
+	// 	} else {
+	// 		if (cards.length === 0) {
+	// 			setCards([{ ...cardData, id: Date.now() }])
+	// 		} else {
+	// 			alert("You can only add one card.")
+	// 		}
+	// 	}
+
+	// 	// ปิดฟอร์มและล้างข้อมูล
+	// 	handleCardModalClose()
+	// }
 
 	const [cardFormOpen, setCardFormOpen] = useState(false)
 	const [isEditingCard, setIsEditingCard] = useState(false)
-	const [cardData, setCardData] = useState({
-		cardholderName: "",
-		cardNumber: "",
-		expiryDate: "",
-		cvv: "",
-	})
-	const [cards, setCards] = useState([])
-	const handleDeleteCard = (id) => {
-		setCards((prev) => prev.filter((card) => card.id !== id))
+	// const [cardData, setCardData] = useState({
+	// 	cardholderName: "",
+	// 	cardNumber: "",
+	// 	expiryDate: "",
+	// 	cvv: "",
+	// })
+
+	const cardData = async () => {
+		try {
+			const userId = localStorage.getItem("userId")
+			const response = await fetch(`http://chawit.thddns.net:9790/api/cards/${userId}`)
+			if (!response.ok) throw new Error("Failed to get address")
+			const data = await response.json()
+			console.log(data)
+			setCardData(data) // Update state with fetched data
+			console.log(data)
+		} catch (error) {
+			console.error("Error loading address:", error.message)
+			setErrors((prev) => ({
+				...prev,
+				address: "Failed to load address from the server.",
+			}))
+		}
 	}
-	const sortedCards = [...cards].sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0))
+
+	useEffect(() => {
+		cardData()
+	}, [])
+
+	const [cards, setCardData] = useState([])
+	const handleDeleteCard = async (id) => {
+		try {
+			const response = await fetch(`http://chawit.thddns.net:9790/api/cards/delete-card/${id}`, {
+				method: "DELETE",
+			})
+			if (!response.ok) throw new Error("Failed to delete card")
+			cardData() // Refresh address list
+		} catch (error) {
+			console.error("Error deleting card:", error.message)
+		}
+	}
+	const sortedCards = cards
+
+	const saveCardToApi = async () => {
+		try {
+			// Retrieve userId from localStorage
+			const userId = parseInt(localStorage.getItem("userId"), 10)
+
+			if (!userId) {
+				throw new Error("User ID is not available in localStorage")
+			}
+
+			// Add userId to the newAddress object
+			const requestBody = { ...cards, userId }
+
+			console.log(requestBody) // Log the final request body
+
+			// Send the request
+			const response = await fetch("http://chawit.thddns.net:9790/api/cards/add-card", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(requestBody), // Include userId in the body
+			})
+
+			if (!response.ok) throw new Error("Failed to save card")
+
+			cardData() // Refresh address list
+		} catch (error) {
+			console.error("Error saving card:", error.message)
+		}
+	}
+
+	const updateCardToApi = async (id, updatedCard) => {
+		try {
+			console.log("test", id, updatedCard)
+			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(updatedCard),
+			})
+			if (!response.ok) throw new Error("Failed to update card")
+			cardData() // Refresh address list
+		} catch (error) {
+			console.error("Error updating card:", error.message)
+		}
+	}
 
 	//Change password
 	const [passwordData, setPasswordData] = useState({
@@ -359,19 +451,21 @@ export default function ProfileWithLabTabs() {
 		alert(`Privacy Settings saved. Share information: ${accept ? "Yes" : "No"}`)
 	}*/
 
-	const handleDeleteAccount = () => {
+	const handleDeleteAccount = async () => {
 		// ฟังก์ชันลบข้อมูลบัญชี
-		alert("Your account will be deleted.")
+		alert("Your account has been deleted.")
 		// Reset data including formData
-		setFormData({
-			username: "",
-			name: "",
-			email: "",
-			phone: "",
-			gender: "",
-			dob: null,
-			photo: null,
-		})
+		try {
+			const userId = localStorage.getItem("userId")
+			const response = await fetch(`http://chawit.thddns.net:9790/api/users/${userId}`, {
+				method: "DELETE",
+			})
+			if (!response.ok) throw new Error("Failed to delete account")
+			dispatch(logout()) // Refresh address list
+			navigate("/")
+		} catch (error) {
+			console.error("Error deleting account:", error.message)
+		}
 	}
 
 	return (
@@ -548,9 +642,9 @@ export default function ProfileWithLabTabs() {
 
 							{/* Display Saved Cards */}
 							{sortedCards.length > 0 ? (
-								sortedCards.map((card) => (
+								sortedCards.map((cards) => (
 									<Box
-										key={card.id} // Use card.id as the unique key
+										key={cards.id} // Use card.id as the unique key
 										sx={{
 											display: "flex",
 											justifyContent: "space-between",
@@ -569,12 +663,12 @@ export default function ProfileWithLabTabs() {
 											/>
 										</Box>
 
-										<Typography sx={{ flexGrow: 1 }}>**** **** **** {card.cardNumber.slice(-4)}</Typography>
+										<Typography sx={{ flexGrow: 1 }}>**** **** **** {cards.cardNumber.slice(-4)}</Typography>
 										<Box>
-											<IconButton onClick={() => handleCardModalOpen(true, card)}>
+											<IconButton onClick={() => handleCardModalOpen(true, cards)}>
 												<Edit />
 											</IconButton>
-											<IconButton onClick={() => handleDeleteCard(card.id)} color="error">
+											<IconButton onClick={() => handleDeleteCard(cards.id)} color="error">
 												<Delete />
 											</IconButton>
 										</Box>
@@ -608,7 +702,7 @@ export default function ProfileWithLabTabs() {
 							</DialogTitle>
 
 							<DialogContent>
-								<TextField
+								{/* <TextField
 									label={<Translate text="Cardholder Name" />}
 									fullWidth
 									margin="normal"
@@ -616,13 +710,13 @@ export default function ProfileWithLabTabs() {
 									onChange={(e) => setCardData({ ...cardData, cardholderName: e.target.value })}
 									error={!!errors.cardholderName}
 									helperText={errors.cardholderName}
-								/>
+								/> */}
 								<TextField
 									label={<Translate text="Card Number" />}
 									fullWidth
 									margin="normal"
-									value={cardData.cardNumber}
-									onChange={(e) => setCardData({ ...cardData, cardNumber: e.target.value })}
+									value={cards.cardNumber}
+									onChange={(e) => setCardData({ ...cards, cardNumber: e.target.value })}
 									error={!!errors.cardNumber}
 									helperText={errors.cardNumber}
 								/>
@@ -630,8 +724,8 @@ export default function ProfileWithLabTabs() {
 									label={<Translate text="Expiry Date (MM/YY)" />}
 									fullWidth
 									margin="normal"
-									value={cardData.expiryDate}
-									onChange={(e) => setCardData({ ...cardData, expiryDate: e.target.value })}
+									value={cards.expiryDate}
+									onChange={(e) => setCardData({ ...cards, expiryDate: e.target.value })}
 									error={!!errors.expiryDate}
 									helperText={errors.expiryDate}
 								/>
@@ -639,8 +733,8 @@ export default function ProfileWithLabTabs() {
 									label={<Translate text="CVV" />}
 									fullWidth
 									margin="normal"
-									value={cardData.cvv}
-									onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+									value={cards.cvv}
+									onChange={(e) => setCardData({ ...cards, cvv: e.target.value })}
 									error={!!errors.cvv}
 									helperText={errors.cvv}
 								/>
@@ -866,6 +960,16 @@ export default function ProfileWithLabTabs() {
 								control={<Checkbox checked={accept} onChange={handleAcceptChange} />}
 								label={<Translate text="Accept" />}
 							/>
+						</Box>
+
+						{/* Verify Button */}
+						<Box sx={{ mt: 4 }}>
+							<Typography variant="h6">
+								<Translate text="Verify Your Account" />
+							</Typography>
+							<Button variant="contained" color="primary">
+								{<Translate text="Verify Account" />}
+							</Button>
 						</Box>
 
 						{/* Request Account Deletion */}

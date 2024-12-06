@@ -90,9 +90,28 @@ export default function MyPosts() {
 		const fetchAllPost = async () => {
 			try {
 				const userId = localStorage.getItem("userId")
-				const response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
+				let response
+				if (category === "forSale") {
+					console.log("This is for sale")
+					response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
+				} else {
+					console.log("This is for buy")
+					response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
+				}
 				if (!response.ok) throw new Error("Failed to fetch liked post")
 				const data = await response.json()
+				if (Array.isArray(data)) {
+					// Update status for each post in the array
+					data.forEach((post) => {
+						console.log(post.status)
+						post.status = post.status === "COMPLETE" ? "closed" : "ongoing"
+						post.category = "forSale" // Fix typo here
+					})
+				} else if (data.status) {
+					// Update status for a single object
+					data.status = data.status === "COMPLETE" ? "closed" : "ongoing"
+				}
+
 				setPosts(data) // Set fetched data
 				console.log(data)
 				setLoading(false) // Mark loading as false after successful fetch
@@ -103,7 +122,7 @@ export default function MyPosts() {
 				return false // Indicate failure
 			}
 		}
-	
+
 		// Try fetching data and retry if it fails
 		const retryFetch = () => {
 			let attempts = 0
@@ -114,7 +133,7 @@ export default function MyPosts() {
 					setLoading(false) // Stop loading if max attempts reached
 					return
 				}
-				
+
 				const success = await fetchAllPost()
 				if (success) {
 					clearInterval(intervalId) // Stop retrying after success
@@ -123,14 +142,13 @@ export default function MyPosts() {
 				}
 			}, 1000) // Retry every 1 second
 		}
-	
+
 		retryFetch()
-	
+
 		return () => {
 			setLoading(false) // Cleanup
 		}
-	}, [])
-	
+	}, [category, status])
 
 	// if (error) {
 	// 	return (
@@ -156,8 +174,6 @@ export default function MyPosts() {
 	const handleStatusChange = (event) => {
 		setStatus(event.target.value)
 	}
-
-	const navigate = useNavigate()
 
 	if (loading) {
 		return (
@@ -236,12 +252,12 @@ export default function MyPosts() {
 							<FormControlLabel
 								value="forSale"
 								control={<Radio />}
-								label=<Translate text="catergories_sell" />
+								label={<Translate text="catergories_sell" />}
 							/>
 							<FormControlLabel
 								value="lookingToBuy"
 								control={<Radio />}
-								label=<Translate text="categories_buy" />
+								label={<Translate text="categories_buy" />}
 							/>
 						</RadioGroup>
 					</FormControl>
@@ -251,8 +267,16 @@ export default function MyPosts() {
 							<Translate text="Status" />{" "}
 						</Typography>
 						<RadioGroup row value={status} onChange={handleStatusChange}>
-							<FormControlLabel value="ongoing" control={<Radio />} label=<Translate text="Status_Open" /> />
-							<FormControlLabel value="closed" control={<Radio />} label=<Translate text="Status_Close" /> />
+							<FormControlLabel
+								value="ongoing"
+								control={<Radio />}
+								label={<Translate text="Status_Open" />}
+							/>
+							<FormControlLabel
+								value="closed"
+								control={<Radio />}
+								label={<Translate text="Status_Close" />}
+							/>
 						</RadioGroup>
 					</FormControl>
 				</Box>

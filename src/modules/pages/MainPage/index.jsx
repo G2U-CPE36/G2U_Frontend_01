@@ -8,33 +8,82 @@ import SearchIcon from "@mui/icons-material/Search"
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder"
 import FavoriteIcon from "@mui/icons-material/Favorite"
 import axios from "axios"
+import { CircularProgress } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import Translate from "@/components/Translate"
+import { debounce } from "lodash"
 
 export default function MainPage() {
 	const [category, setCategory] = useState("")
 	const [maxPrice, setMaxPrice] = useState("")
 	const [province, setProvince] = useState("")
+	const [typeOfPost, setTypeOfPost] = useState("sellPost")
 	const [searchQuery, setSearchQuery] = useState("")
 	const [products, setProducts] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
 	const [error, setError] = useState("")
 	const navigate = useNavigate()
+	const [loading, setLoading] = useState(true)
 
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
 	const handleProvinceChange = (event) => setProvince(event.target.value)
-	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
+	const handleSearchChange = (event) => {
+		const value = event.target.value.toLowerCase()
+		setSearchQuery(value)
+		debouncedFetchSearchResults(value)
+	}
+
+	// Debounced search API call
+	const debouncedFetchSearchResults = debounce(async (query) => {
+		if (query.trim() === "" && products.length) {
+			setFilteredProducts(products)
+			return
+		}
+
+		try {
+			const response = await fetch(
+				`http://chawit.thddns.net:9790/api/mainproduct/search?search=${query}&page=1&limit=10`,
+			)
+			if (!response.ok) throw new Error("Failed to fetch search results")
+
+			const data = await response.json()
+			console.log("Search Results:", data)
+
+			// Process the API response to match your data structure
+			const searchedProducts = data.map((product) => {
+				// Process product image if it exists
+				if (product.picture && product.picture[0]?.data) {
+					const blob = new Blob([Uint8Array.from(product.picture[0].data)], {
+						type: "image/png",
+					})
+					product.picture = URL.createObjectURL(blob)
+				}
+				return product
+			})
+
+			setFilteredProducts(searchedProducts)
+		} catch (error) {
+			console.error("Error during search:", error.message)
+			setError("Failed to fetch search results. Please try again later.")
+		}
+	}, 300) // Debounce delay in milliseconds
+	const handleTypeChange = (event) => setTypeOfPost(event.target.value)
 
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
 		try {
 			const userId = parseInt(localStorage.getItem("userId"), 10) // Replace with actual userId logic
+			if (!userId) {
+				alert("you need to login first")
+				return false
+			}
 			const response = await axios.post("http://chawit.thddns.net:9790/api/users/like", {
 				productId,
 				userId,
 			})
 			console.log("Product marked as favorite:", response.data)
+			return true
 		} catch (error) {
 			console.error("Error marking product as favorite:", error)
 		}
@@ -48,12 +97,16 @@ export default function MainPage() {
 		const fetchData = async () => {
 			try {
 				// Wait for liked products to be fetched
-				await fetchLikedProducts()
+				const userId = localStorage.getItem("userId")
+				if (userId) {
+					await fetchLikedProducts()
+				}
 
 				// Then fetch all products
 				const fetchAllProducts = async () => {
 					try {
 						// Fetch the liked list from local storage and parse it as JSON
+						setLoading(true) 
 						let userLikeList = JSON.parse(localStorage.getItem("userLikeList")) || []
 
 						// Ensure userLikeList is an array
@@ -61,9 +114,15 @@ export default function MainPage() {
 							console.warn("userLikeList is not an array. Resetting to an empty array.")
 							userLikeList = []
 						}
-
-						const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
-						if (!response.ok) throw new Error("Failed to fetch products")
+						let response
+						if (typeOfPost === "sellPost") {
+							response = await fetch("http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=8")
+							console.log("This is from sell post")
+						} else {
+							response = await fetch("http://chawit.thddns.net:9790/api/openorders/get/1-20")
+							console.log("This is from buy post")
+						}
+						
 
 						const data = await response.json()
 						console.log(data)
@@ -77,19 +136,25 @@ export default function MainPage() {
 							// Add isLiked field based on userLikeList
 							product.isLiked = userLikeList.includes(product.productId)
 
-							// Process product image if it exists
-							if (product.productImage[0] && product.productImage[0].data) {
-								const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+							// Check if product.picture is an array and process the first picture if it exists
+							if (Array.isArray(product.picture) && product.picture[0] && product.picture[0].data) {
+								const blob = new Blob([Uint8Array.from(product.picture[0].data)], {
 									type: "image/png",
 								})
-								product.productImage = URL.createObjectURL(blob)
+								product.picture = URL.createObjectURL(blob)
+							} else {
+								const blob = new Blob([Uint8Array.from(product.picture.data)], {
+									type: "image/png",
+								})
+								product.picture = URL.createObjectURL(blob)
 							}
 
 							return product
 						})
-
+						
 						setProducts(productsWithImages)
 						setFilteredProducts(productsWithImages)
+						setLoading(false) 
 					} catch (error) {
 						console.error("Error fetching products:", error.message)
 						setError("Failed to load products from the server. Using mock data.")
@@ -104,6 +169,12 @@ export default function MainPage() {
 		}
 
 		fetchData()
+	}, [typeOfPost])
+
+	useEffect(() => {
+		return () => {
+			debouncedFetchSearchResults.cancel()
+		}
 	}, [])
 
 	useEffect(() => {
@@ -124,7 +195,8 @@ export default function MainPage() {
 					})()
 				: true
 			const matchesProvince = province ? product.province.toLowerCase() === province.toLowerCase() : true
-			const matchesSearchQuery = searchQuery ? product.productName.toLowerCase().includes(searchQuery) : true
+			const matchesSearchQuery = searchQuery ? new RegExp(searchQuery, "i").test(product.productName) : true
+
 			return matchesCategory && matchesMaxPrice && matchesProvince && matchesSearchQuery
 		})
 		setFilteredProducts(filtered)
@@ -140,7 +212,7 @@ export default function MainPage() {
 				if (result.message === "No liked products found") {
 					localStorage.removeItem("userLikeList")
 				} else {
-					alert("Failed to fetch liked products")
+					console.log("error", result)
 				}
 				return true
 			}
@@ -155,6 +227,37 @@ export default function MainPage() {
 			setError("Failed to load pages. Please try again later.")
 			return false // Indicate failure
 		}
+	}
+	if (loading) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<CircularProgress />
+			</Box>
+		)
+	}
+
+	if (error) {
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}
+			>
+				<Typography variant="h6" color="error">
+					{error}
+				</Typography>
+			</Box>
+		)
 	}
 
 	return (
@@ -277,7 +380,7 @@ export default function MainPage() {
 					</FormControl>
 				</Box>
 
-				<Box sx={{ width: "100%", mr: 4 }}>
+				<Box sx={{ width: "100%" }}>
 					<FormControl fullWidth>
 						<InputLabel id="province-select-label" sx={{ color: "#FFFFFF" }}>
 							<Translate text="Province" />
@@ -302,9 +405,36 @@ export default function MainPage() {
 								<Translate text="Any" />
 							</MenuItem>
 							<MenuItem value="bangkok">Bangkok</MenuItem>
-							<MenuItem value="chiangmai">Chiang Mai</MenuItem>
+							<MenuItem value="chiang Mai">Chiang Mai</MenuItem>
 							<MenuItem value="phuket">Phuket</MenuItem>
-							<MenuItem value="khonkaen">Khon Kaen</MenuItem>
+							<MenuItem value="khon kaen">Khon Kaen</MenuItem>
+						</Select>
+					</FormControl>
+				</Box>
+
+				<Box sx={{ width: "100%", mr: 4 }}>
+					<FormControl fullWidth>
+						<InputLabel id="Type-select-label" sx={{ color: "#FFFFFF" }}>
+							<Translate text="Type" />
+						</InputLabel>
+						<Select
+							labelId="Type-select-label"
+							id="Type-select"
+							value={typeOfPost}
+							label="Type"
+							onChange={handleTypeChange}
+							sx={{
+								backgroundColor: "#333652", // Dropdown background color
+								color: "#FFFFFF", // Dropdown text color
+								height: "52px",
+								borderRadius: "6px",
+								"& .MuiSvgIcon-root": {
+									color: "#FFFFFF", // Arrow dropdown color
+								},
+							}}
+						>
+							<MenuItem value="buyPost">Buying Product</MenuItem>
+							<MenuItem value="sellPost">Selling Product</MenuItem>
 						</Select>
 					</FormControl>
 				</Box>
@@ -389,7 +519,7 @@ export default function MainPage() {
 							}}
 						>
 							<img
-								src={product.productImage}
+								src={product.picture}
 								alt={product.productName}
 								style={{
 									width: "100%",
@@ -433,26 +563,30 @@ export default function MainPage() {
 								{product.isLiked ? (
 									<FavoriteIcon
 										onClick={async (e) => {
-											e.stopPropagation();
+											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
 												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											setProducts(updatedProducts)
-											await markAsFavorite(product.productId)
+											const getFav = await markAsFavorite(product.productId)
+											if (getFav) {
+												setProducts(updatedProducts)
+											}
 										}} // Optionally disable un-liking
 										sx={{ color: "#ff1744", fontSize: "2.5rem", cursor: "pointer" }} // Filled heart with red color
 									/>
 								) : (
 									<FavoriteBorderIcon
 										onClick={async (e) => {
-											e.stopPropagation();
+											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
 												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											setProducts(updatedProducts)
-											await markAsFavorite(product.productId)
+											const getFav = await markAsFavorite(product.productId)
+											if (getFav) {
+												setProducts(updatedProducts)
+											}
 										}} // Optionally disable un-liking
 										sx={{ color: "#333", fontSize: "2.5rem", cursor: "pointer" }} // Outlined heart
 									/>

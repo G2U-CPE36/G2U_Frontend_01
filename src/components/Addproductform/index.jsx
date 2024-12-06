@@ -26,21 +26,19 @@ const VisuallyHiddenInput = styled("input")({
 })
 
 const categories = [
-	"electronic",
-	"pets",
-	"watch",
-	"fashion",
-	"music",
-	"shoes",
-	"sports",
-	"camera",
-	"bags",
-	"mom&kid",
-	"education",
-	"game",
+	"Electronics",
+	"Books",
+	"Clothing",
+	"Home",
+	"Sports",
+	"Beauty",
+	"Toys",
+	"Groceries",
+	"Furniture",
+	"Automotive",
 ]
 
-const productTag = ["First-hand", "Second-hand", "Any"]
+const productTag = ["First-hand", "Second-hand"]
 
 export default function AddProductForm({ formType, data }) {
 	const { register, handleSubmit } = useForm()
@@ -82,11 +80,45 @@ export default function AddProductForm({ formType, data }) {
 
 	const onSubmit = async (data) => {
 		const userId = localStorage.getItem("userId")
-		const categoryId = 2 // Adjust dynamically if needed
-		const condition = "new"
+		let categoryId = "1"
 		const productImage = document.querySelector('input[type="file"]').files[0] // Get the file
+		if (formData.category === "Electronics") {
+			// Category 1
+			categoryId = "1"
+		} else if (formData.category === "Books") {
+			// Category 2
+			categoryId = "2"
+		} else if (formData.category === "Clothing") {
+			// Category 3
+			categoryId = "3"
+		} else if (formData.category === "Home") {
+			// Category 4
+			categoryId = "4"
+		} else if (formData.category === "Sports") {
+			// Category 5
+			categoryId = "5"
+		} else if (formData.category === "Beauty") {
+			// Category 6
+			categoryId = "6"
+		} else if (formData.category === "Toys") {
+			// Category 7
+			categoryId = "7"
+		} else if (formData.category === "Groceries") {
+			// Category 8
+			categoryId = "8"
+		} else if (formData.category === "Furniture") {
+			// Category 9
+			categoryId = "9"
+		} else if (formData.category === "Automotive") {
+			// Category 10
+			categoryId = "10"
+		} else {
+			// Unknown category
+			console.log("Category not found")
+			return
+		}
 
-		console.log(productImage)
+		console.log(data.categories)
 
 		if (!productImage) {
 			console.error("No image file selected.")
@@ -100,14 +132,14 @@ export default function AddProductForm({ formType, data }) {
 			formDataToSend.append("categoryId", categoryId)
 			formDataToSend.append("productDescription", data.productDetails)
 			formDataToSend.append("price", data.priceRange)
-			formDataToSend.append("condition", condition)
+			formDataToSend.append("condition", data.productTag)
 			images.forEach((image, index) => {
-				formDataToSend.append(`productImage`, image); // Same key for all images
-			  });
+				formDataToSend.append(`productImage`, image) // Same key for all images
+			})
 
 			if ((formType = "wtb")) {
 				const response = await axios.post(
-					"http://chawit.thddns.net:9790/api/products/create",
+					"http://chawit.thddns.net:9790/api/openorders/create",
 					formDataToSend,
 					{
 						headers: {
