@@ -28,7 +28,6 @@ import { useNavigate } from "react-router-dom"
 import { logout } from "@/modules/Login/authSlice"
 import { useDispatch } from "react-redux"
 
-
 export default function ProfileWithLabTabs() {
 	const dispatch = useDispatch()
 	const navigate = useNavigate()
@@ -91,10 +90,10 @@ export default function ProfileWithLabTabs() {
 		if (!newAddress.district.trim()) newErrors.district = <Translate text="District is required." />
 		//if (!newAddress.subdistrict.trim()) newErrors.subdistrict = "Subdistrict is required.";
 		if (!newAddress.postcode.trim()) newErrors.postcode = <Translate text="Postcode is required." />
-		else if (!/^\d{5}$/.test(newAddress.postcode)) newErrors.postcode = "Postcode must be 5 digits.";
+		else if (!/^\d{5}$/.test(newAddress.postcode)) newErrors.postcode = "Postcode must be 5 digits."
 		if (!newAddress.address.trim()) newErrors.address = <Translate text="address is required." />
 		if (!newAddress.phone.trim()) newErrors.phone = <Translate text="phone is required." />
-		else if (!/^\d{10}$/.test(newAddress.phone)) newErrors.phone = "phone Number must be 10 digits.";
+		else if (!/^\d{10}$/.test(newAddress.phone)) newErrors.phone = "phone Number must be 10 digits."
 
 		setErrors(newErrors)
 		return Object.keys(newErrors).length === 0
@@ -126,36 +125,35 @@ export default function ProfileWithLabTabs() {
 	const saveAddressToApi = async (newAddress) => {
 		try {
 			// Retrieve userId from localStorage
-			const userId = localStorage.getItem("userId");
-			
+			const userId = localStorage.getItem("userId")
+
 			if (!userId) {
-				throw new Error("User ID is not available in localStorage");
+				throw new Error("User ID is not available in localStorage")
 			}
-	
+
 			// Add userId to the newAddress object
-			const requestBody = { ...newAddress, userId };
-			
-			console.log(requestBody); // Log the final request body
-			
+			const requestBody = { ...newAddress, userId }
+
+			console.log(requestBody) // Log the final request body
+
 			// Send the request
 			const response = await fetch("http://chawit.thddns.net:9790/api/address/create", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(requestBody), // Include userId in the body
-			});
-			
-			if (!response.ok) throw new Error("Failed to save address");
-			
-			addresses(); // Refresh address list
+			})
+
+			if (!response.ok) throw new Error("Failed to save address")
+
+			addresses() // Refresh address list
 		} catch (error) {
-			console.error("Error saving address:", error.message);
+			console.error("Error saving address:", error.message)
 		}
-	};
-	
+	}
 
 	const updateAddressToApi = async (id, updatedAddress) => {
 		try {
-			console.log("test", id , updatedAddress)
+			console.log("test", id, updatedAddress)
 			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
@@ -235,7 +233,6 @@ export default function ProfileWithLabTabs() {
 
 	//Cards
 
-	
 	const ValidateCardForm = () => {
 		const newErrors = {}
 		console.log(cards)
@@ -270,8 +267,8 @@ export default function ProfileWithLabTabs() {
 		//setCardData(card{ cardholderName: "", cardNumber: "", expiryDate: "", cvv: "" })
 	}
 
-	const handleCardSave = async(cards) => {
-		console.log("hellow",cards)
+	const handleCardSave = async (cards) => {
+		console.log("hellow", cards)
 		if (!ValidateCardForm(cards)) return
 
 		if (isEditingCard == true) {
@@ -313,8 +310,7 @@ export default function ProfileWithLabTabs() {
 	// 	expiryDate: "",
 	// 	cvv: "",
 	// })
-	
-	
+
 	const cardData = async () => {
 		try {
 			const userId = localStorage.getItem("userId")
@@ -336,9 +332,9 @@ export default function ProfileWithLabTabs() {
 	useEffect(() => {
 		cardData()
 	}, [])
-	
+
 	const [cards, setCardData] = useState([])
-	const handleDeleteCard = async(id) => {
+	const handleDeleteCard = async (id) => {
 		try {
 			const response = await fetch(`http://chawit.thddns.net:9790/api/cards/delete-card/${id}`, {
 				method: "DELETE",
@@ -351,40 +347,38 @@ export default function ProfileWithLabTabs() {
 	}
 	const sortedCards = cards
 
-	const saveCardToApi = async() => {
+	const saveCardToApi = async () => {
 		try {
 			// Retrieve userId from localStorage
-			const userId = parseInt(localStorage.getItem("userId"), 10);
+			const userId = parseInt(localStorage.getItem("userId"), 10)
 
-			
 			if (!userId) {
-				throw new Error("User ID is not available in localStorage");
+				throw new Error("User ID is not available in localStorage")
 			}
-	
+
 			// Add userId to the newAddress object
-			const requestBody = { ...cards, userId };
-			
-			console.log(requestBody); // Log the final request body
-			
+			const requestBody = { ...cards, userId }
+
+			console.log(requestBody) // Log the final request body
+
 			// Send the request
 			const response = await fetch("http://chawit.thddns.net:9790/api/cards/add-card", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(requestBody), // Include userId in the body
-			});
-			
-			if (!response.ok) throw new Error("Failed to save card");
-			
-			cardData(); // Refresh address list
+			})
+
+			if (!response.ok) throw new Error("Failed to save card")
+
+			cardData() // Refresh address list
 		} catch (error) {
-			console.error("Error saving card:", error.message);
+			console.error("Error saving card:", error.message)
 		}
-	};
-	
+	}
 
 	const updateCardToApi = async (id, updatedCard) => {
 		try {
-			console.log("test", id , updatedCard)
+			console.log("test", id, updatedCard)
 			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
@@ -396,7 +390,6 @@ export default function ProfileWithLabTabs() {
 			console.error("Error updating card:", error.message)
 		}
 	}
-
 
 	//Change password
 	const [passwordData, setPasswordData] = useState({
@@ -458,7 +451,7 @@ export default function ProfileWithLabTabs() {
 		alert(`Privacy Settings saved. Share information: ${accept ? "Yes" : "No"}`)
 	}*/
 
-	const handleDeleteAccount = async() => {
+	const handleDeleteAccount = async () => {
 		// ฟังก์ชันลบข้อมูลบัญชี
 		alert("Your account has been deleted.")
 		// Reset data including formData
@@ -473,7 +466,6 @@ export default function ProfileWithLabTabs() {
 		} catch (error) {
 			console.error("Error deleting account:", error.message)
 		}
-		
 	}
 
 	return (
@@ -968,6 +960,16 @@ export default function ProfileWithLabTabs() {
 								control={<Checkbox checked={accept} onChange={handleAcceptChange} />}
 								label={<Translate text="Accept" />}
 							/>
+						</Box>
+
+						{/* Verify Button */}
+						<Box sx={{ mt: 4 }}>
+							<Typography variant="h6">
+								<Translate text="Verify Your Account" />
+							</Typography>
+							<Button variant="contained" color="primary">
+								{<Translate text="Verify Account" />}
+							</Button>
 						</Box>
 
 						{/* Request Account Deletion */}

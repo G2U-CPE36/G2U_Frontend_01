@@ -103,12 +103,13 @@ export default function MyPosts() {
 				if (Array.isArray(data)) {
 					// Update status for each post in the array
 					data.forEach((post) => {
-						post.status = post.status === "DONE" ? "closed" : "ongoing"
+						console.log(post.status)
+						post.status = post.status === "COMPLETE" ? "closed" : "ongoing"
 						post.category = "forSale" // Fix typo here
 					})
 				} else if (data.status) {
 					// Update status for a single object
-					data.status = data.status === "DONE" ? "closed" : "ongoing"
+					data.status = data.status === "COMPLETE" ? "closed" : "ongoing"
 				}
 
 				setPosts(data) // Set fetched data
