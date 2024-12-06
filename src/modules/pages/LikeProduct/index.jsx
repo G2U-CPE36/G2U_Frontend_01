@@ -190,7 +190,7 @@ export default function LikeProductPages() {
 								color="primary"
 								onClick={(e) => {
 									e.stopPropagation() // Prevent click from bubbling up
-									navigate(`/buy/${product.productId}`)
+									navigate(`/product/${product.productId}`)
 								}}
 								sx={{ minWidth: "100px", justifySelf: "end", alignSelf: "center", marginRight: 8 }}
 							>
