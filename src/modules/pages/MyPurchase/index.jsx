@@ -1,6 +1,6 @@
 import { Box, Typography, Button, CircularProgress, Grid } from "@mui/material"
 import Translate from "@/components/Translate"
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -9,22 +9,6 @@ export default function MyPurchasePages() {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 	const navigate = useNavigate()
-
-	const handleConfirmButton = async() => {
-
-		// Reset data including formData
-		try {
-			const userId = localStorage.getItem("userId")
-			const response = await fetch(`http://chawit.thddns.net:9790/api/users/${userId}`, {
-				method: "DELETE",
-			})
-			if (!response.ok) throw new Error("Failed to delete account")
-
-		} catch (error) {
-			console.error("Error deleting account:", error.message)
-		}
-		
-	}
 
 	useEffect(() => {
 		const fetchMyPurchase = async () => {
@@ -64,6 +48,10 @@ export default function MyPurchasePages() {
 		fetchMyPurchase() // Fetch only once when the component mounts
 	}, [])
 
+	// Log state updates to verify
+	useEffect(() => {
+		console.log("Updated myPurchase:", myPurchase)
+	}, [myPurchase])
 
 	if (loading) {
 		return (
@@ -100,7 +88,7 @@ export default function MyPurchasePages() {
 				>
 					<Grid container alignItems="center" justifyContent="space-between">
 						<Grid item xs={6} container alignItems="center">
-							<ReceiptLongIcon sx={{ fontSize: "2rem", mr: 1 , mt:1}} />
+							<ReceiptLongIcon sx={{ fontSize: "2rem", mr: 1, mt: 1 }} />
 							<Typography variant="h4" fontWeight="bold" color="#1b1b1b">
 								<Translate text="mypurchase_Header" />
 							</Typography>
@@ -121,42 +109,56 @@ export default function MyPurchasePages() {
 				<Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
 					{myPurchase.map((product) => (
 						<Box
-							key={product.id}
+							key={product.orderId} // Adjusted to match your API response
 							sx={{
 								display: "grid",
-								gridTemplateColumns: "120px 0.73fr 100px 0.62fr 10px", // Adjust columns widths
+								gridTemplateColumns: "120px 0.73fr 100px 0.62fr 10px", // Adjust column widths
 								alignItems: "center",
 								border: "1px solid #ddd",
 								borderRadius: "8px",
-								padding: "16px", // Adjust padding for better spacing
+								padding: "16px",
 								backgroundColor: "#fff",
 								gap: 2,
 								height: "200px",
-								width: "100%", // Ensure it takes up full width of the container
+								width: "100%",
 							}}
 						>
 							{/* Product Image */}
 							<Box sx={{ width: "140px", height: "140px" }}>
 								<img
-									src={product.image}
-									alt={product.name}
+									src={product.productImage || "default-image-url"}
+									alt={product.Product?.productName || "Product"}
+									onError={(e) => {
+										e.target.src = "default-image-url" // Fallback image if the URL fails
+									}}
 									style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
 								/>
 							</Box>
 
 							{/* Product Details */}
-							<Box sx={{ flex: 1, overflow: "hidden", textAlign: "left", alignSelf: "start", mt: 1, ml: 3 }}>
+							<Box
+								sx={{
+									flex: 1,
+									overflow: "hidden",
+									textAlign: "left",
+									alignSelf: "start",
+									mt: 1,
+									ml: 3,
+								}}
+							>
 								<Typography variant="h6" fontWeight="medium">
-									{product.name.length > 30 ? `${product.name.substring(0, 30)}...` : product.name}
+									{product.Product?.productName?.length > 30
+										? `${product.Product.productName.substring(0, 30)}...`
+										: product.Product?.productName}
 								</Typography>
 								<Typography
 									variant="body2"
 									color="text.secondary"
 									sx={{ whiteSpace: "pre-wrap", lineHeight: 1.5, mr: 10 }}
 								>
-									{product.description.length > 200
-										? `${product.description.substring(0, 200)}...`
-										: product.description}
+									{product.Product?.productDescription?.length > 80
+										? `${product.Product.productDescription.substring(0, 80)}...`
+										: product.Product?.productDescription}
 								</Typography>
 							</Box>
 
@@ -167,12 +169,12 @@ export default function MyPurchasePages() {
 								color="#333"
 								sx={{ textAlign: "center", alignSelf: "center" }}
 							>
-								{product.status === "Deliverd" ? (
+								{product.orderStatus === "SHIPPED" ? (
 									<Translate text="mypurchase_Delivered" />
-								) : product.status === "In_Progress" ? (
+								) : product.orderStatus === "IN_PROGRESS" ? (
 									<Translate text="mypurchase_InProgress" />
 								) : (
-									<Translate text={product.status} />
+									<Translate text={product.orderStatus} />
 								)}
 							</Typography>
 
@@ -185,15 +187,14 @@ export default function MyPurchasePages() {
 									alignSelf: "center",
 								}}
 							>
-								{product.status === "Deliverd" ? (
+								{product.orderStatus === "SHIPPED" ? (
 									<>
 										<Button
 											variant="contained"
 											color="primary"
 											onClick={(e) => {
 												e.stopPropagation()
-												handleConfirmButton
-												//navigate(`/buy/${product.id}`)
+												navigate(`/buy/${product.Product?.productId}`) // Adjusted for nested data
 											}}
 											sx={{ minWidth: "100px" }}
 										>
@@ -204,7 +205,7 @@ export default function MyPurchasePages() {
 											color="error"
 											onClick={(e) => {
 												e.stopPropagation()
-												console.log(`Rejected product with id: ${product.id}`)
+												console.log(`Rejected product with id: ${product.Product?.productId}`) // Adjusted for nested data
 											}}
 											sx={{ minWidth: "100px" }}
 										>
