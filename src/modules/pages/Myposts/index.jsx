@@ -93,6 +93,20 @@ export default function MyPosts() {
 				const response = await fetch(`http://chawit.thddns.net:9790/api/users/myPost/${userId}`)
 				if (!response.ok) throw new Error("Failed to fetch liked post")
 				const data = await response.json()
+				if (Array.isArray(data)) {
+					// Update status for each post in the array
+					data.forEach((post) => {
+						if (post.status === "DONE") {
+							post.status = "closed"
+						} else {
+							post.status = "ongoing"
+						}
+					})
+				} else if (data.status) {
+					// Update status for a single object
+					data.status = data.status === "DONE" ? "closed" : "ongoing"
+				}
+
 				setPosts(data) // Set fetched data
 				console.log(data)
 				setLoading(false) // Mark loading as false after successful fetch
@@ -103,7 +117,7 @@ export default function MyPosts() {
 				return false // Indicate failure
 			}
 		}
-	
+
 		// Try fetching data and retry if it fails
 		const retryFetch = () => {
 			let attempts = 0
@@ -114,7 +128,7 @@ export default function MyPosts() {
 					setLoading(false) // Stop loading if max attempts reached
 					return
 				}
-				
+
 				const success = await fetchAllPost()
 				if (success) {
 					clearInterval(intervalId) // Stop retrying after success
@@ -123,14 +137,13 @@ export default function MyPosts() {
 				}
 			}, 1000) // Retry every 1 second
 		}
-	
+
 		retryFetch()
-	
+
 		return () => {
 			setLoading(false) // Cleanup
 		}
 	}, [])
-	
 
 	// if (error) {
 	// 	return (

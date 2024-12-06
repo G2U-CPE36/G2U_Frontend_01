@@ -17,7 +17,7 @@ export default function ProductDetail() {
 
 	const puchasehandle = async () => {
 		try {
-			const userId = localStorage.getItem("userId")
+			const userId = parseInt(localStorage.getItem("userId"), 10);
 			const response = await fetch(`http://chawit.thddns.net:9790/api/address/${userId}`)
 			if (!response.ok) throw new Error("Failed to get address")
 			const data = await response.json()
@@ -25,15 +25,28 @@ export default function ProductDetail() {
 
 			// Check if data is not null or empty
 			if (data && data.length > 0) {
-				console.log("Address data:", data);
-				navigate(`/checkout/${productID}`)
+				console.log("Address data:", data)
+				const response2 = await fetch(`http://chawit.thddns.net:9790/api/cards/${userId}`)
+				if (!response2.ok) throw new Error("Failed to get card")
+				const data2 = await response2.json()
+				console.log(data2)
+
+				// Check if data is not null or empty
+				if (data2 && data2.length > 0) {
+					console.log("Card data:", data2)
+					navigate(`/checkout/${productID}`)
+					// Perform actions with the data
+				} else {
+					console.warn("No card data found")
+					alert("Please, verify your card first.")
+					navigate("/edit-profile")
+				}
 				// Perform actions with the data
 			} else {
-				console.warn("No address data found");
-				alert("Please, verify your address first.");
+				console.warn("No address data found")
+				alert("Please, verify your address first.")
 				navigate("/edit-profile")
 			}
-			
 		} catch (error) {
 			console.error("Error loading address:", error.message)
 			setError("Failed to load address from the server.")
@@ -50,7 +63,7 @@ export default function ProductDetail() {
 				}
 				const response = await fetch(`http://chawit.thddns.net:9790/api/products/${productID}`)
 				if (!response.ok) throw new Error("Failed to fetch product")
-					const productData = await response.json()
+				const productData = await response.json()
 				console.log(productData)
 
 				if (Array.isArray(productData.productImage)) {
