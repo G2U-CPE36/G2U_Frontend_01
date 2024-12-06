@@ -139,7 +139,7 @@ export default function AddProductForm({ formType, data }) {
 
 			if ((formType = "wtb")) {
 				const response = await axios.post(
-					"http://chawit.thddns.net:9790/api/products/create",
+					"http://chawit.thddns.net:9790/api/openorders/create",
 					formDataToSend,
 					{
 						headers: {
