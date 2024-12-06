@@ -70,7 +70,9 @@ export default function MainPage() {
 							userLikeList = []
 						}
 
-						const response = await fetch("http://chawit.thddns.net:9790/api/products/getproducts")
+						const response = await fetch(
+							"http://chawit.thddns.net:9790/api/mainproduct/products?page=1&limit=12",
+						)
 						if (!response.ok) throw new Error("Failed to fetch products")
 
 						const data = await response.json()
@@ -83,14 +85,14 @@ export default function MainPage() {
 
 						const productsWithImages = data.map((product) => {
 							// Add isLiked field based on userLikeList
-							product.isLiked = userLikeList.includes(product.productId)
+							product.isLiked = userLikeList.includes(product.id)
 
 							// Process product image if it exists
-							if (product.productImage[0] && product.productImage[0].data) {
-								const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+							if (product.picture[0] && product.picture[0].data) {
+								const blob = new Blob([Uint8Array.from(product.picture[0].data)], {
 									type: "image/png",
 								})
-								product.productImage = URL.createObjectURL(blob)
+								product.picture = URL.createObjectURL(blob)
 							}
 
 							return product
@@ -154,7 +156,7 @@ export default function MainPage() {
 			}
 
 			// Save product IDs as a JSON array
-			const productIds = result.likedProducts.map((product) => product.productId)
+			const productIds = result.likedProducts.map((product) => product.id)
 			localStorage.setItem("userLikeList", JSON.stringify(productIds)) // Save as JSON array
 
 			return true // Indicate success
@@ -367,7 +369,7 @@ export default function MainPage() {
 			>
 				{filteredProducts.map((product) => (
 					<Box
-						key={product.productId}
+						key={product.id}
 						sx={{
 							backgroundColor: "#ffffff",
 							padding: 2,
@@ -381,7 +383,7 @@ export default function MainPage() {
 							width: "100%",
 							cursor: "pointer",
 						}}
-						onClick={() => navigate(`/product/${product.productId}`)}
+						onClick={() => navigate(`/product/${product.id}`)}
 					>
 						{/* Product Image */}
 						<Box
@@ -397,7 +399,7 @@ export default function MainPage() {
 							}}
 						>
 							<img
-								src={product.productImage}
+								src={product.picture}
 								alt={product.productName}
 								style={{
 									width: "100%",
@@ -443,11 +445,13 @@ export default function MainPage() {
 										onClick={async (e) => {
 											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
-												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
+												p.productId === product.id ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											const getFav = await markAsFavorite(product.productId)
-											if(getFav) {setProducts(updatedProducts)}
+											const getFav = await markAsFavorite(product.id)
+											if (getFav) {
+												setProducts(updatedProducts)
+											}
 										}} // Optionally disable un-liking
 										sx={{ color: "#ff1744", fontSize: "2.5rem", cursor: "pointer" }} // Filled heart with red color
 									/>
@@ -456,11 +460,13 @@ export default function MainPage() {
 										onClick={async (e) => {
 											e.stopPropagation()
 											const updatedProducts = products.map((p) =>
-												p.productId === product.productId ? { ...p, isLiked: !product.isLiked } : p,
+												p.productId === product.id ? { ...p, isLiked: !product.isLiked } : p,
 											)
 
-											const getFav = await markAsFavorite(product.productId)
-											if(getFav) {setProducts(updatedProducts)}
+											const getFav = await markAsFavorite(product.id)
+											if (getFav) {
+												setProducts(updatedProducts)
+											}
 										}} // Optionally disable un-liking
 										sx={{ color: "#333", fontSize: "2.5rem", cursor: "pointer" }} // Outlined heart
 									/>

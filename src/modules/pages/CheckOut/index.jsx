@@ -12,7 +12,8 @@ import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined"
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined"
 import Translate from "@/components/Translate"
-import {CircularProgress} from "@mui/material"
+import { CircularProgress } from "@mui/material"
+import axios from "axios"
 import { useParams, useNavigate } from "react-router-dom"
 
 const mockproduct = {
@@ -55,14 +56,33 @@ export default function VirtualReceipt() {
 			setIsDisabled(true) // Disable the button to prevent multiple clicks
 			setButtonLabel("Processing...")
 
-			// Simulate API call
-			await axios.post("/api/order", { productId: product.productId })
+			const userId = parseInt(localStorage.getItem("userId"))
+			if (!userId || !productID || !productfinal) {
+				setButtonLabel("Invalid Order Details")
+				setIsDisabled(false)
+				return
+			}
+			const productId = parseInt(productID)
+			const sellerId = parseInt(productfinal.userId)
+			const addressId = parseInt(productfinal.addressId)
 
-			setButtonLabel("Thank You for Your Purchase!")
+			console.log(productId,userId,sellerId,addressId)
+			// Send POST request
+			const response = await axios.post("http://chawit.thddns.net:9790/api/order/orders", {
+				productId,
+				userId,
+				sellerId,
+				addressId,
+			})
+
+			console.log("Order Response:", response.data) // Debugging API response
+			navigate("/mypurchase")
 		} catch (error) {
 			console.error("Error placing order:", error)
-			setButtonLabel("Place Order") // Revert if there's an error
+			setButtonLabel("Place Order") // Revert button state
 			setIsDisabled(false)
+		} finally {
+			setIsDisabled(false) // Ensure button is re-enabled
 		}
 	}
 
@@ -85,11 +105,27 @@ export default function VirtualReceipt() {
 					})
 					setImage(imageUrls[0])
 					productData.images = imageUrls
-					
 				} else {
 					productData.images = []
 				}
-				setProduct(productData)
+				const userId = localStorage.getItem("userId")
+				const response2 = await fetch(`http://chawit.thddns.net:9790/api/address/${userId}`)
+				if (!response2.ok) throw new Error("Failed to get address")
+				const data2 = await response2.json()
+
+				const response3 = await fetch(`http://chawit.thddns.net:9790/api/cards/${userId}`)
+				if (!response3.ok) throw new Error("Failed to get address")
+				const data3 = await response3.json()
+				//console.log(data2[0].address); // Should print the address value
+				const newproduct = {
+					...productData,
+					address: data2[0].address,
+					cardNumber: data3[0].cardNumber,
+					addressId: data2[0].addressId
+				}
+
+				console.log("new", newproduct)
+				setProduct(newproduct)
 				setLoading(false)
 			} catch (error) {
 				console.error(error.message)
@@ -106,7 +142,6 @@ export default function VirtualReceipt() {
 			</Box>
 		)
 	}
-
 
 	return (
 		<Container
@@ -142,7 +177,7 @@ export default function VirtualReceipt() {
 					mb: 2,
 				}}
 			>
-				{mockdata.address.substring(0, 70)}...
+				{productfinal.address.substring(0, 70)}...
 			</Typography>
 
 			{/* Product Card */}
@@ -156,7 +191,7 @@ export default function VirtualReceipt() {
 					border: "1px solid #eee",
 					borderRadius: "8px",
 				}}
-				onClick={() => navigate(`/product/${mockproduct.productId}`)}
+				onClick={() => navigate(`/product/${productID}`)}
 			>
 				<CardMedia
 					component="img"
@@ -166,8 +201,8 @@ export default function VirtualReceipt() {
 						objectFit: "fill",
 						borderRadius: "8px 0 0 8px",
 					}}
-					image={productfinal.images}
-					alt={productfinal.images}
+					image={productfinal.images[0]}
+					alt={productfinal.images[0]}
 				/>
 				<CardContent sx={{ flex: 1 }}>
 					<Typography variant="h6">{productfinal.productName}</Typography>
@@ -198,7 +233,7 @@ export default function VirtualReceipt() {
 			<Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
 				<CreditCardOutlinedIcon sx={{ mr: 1 }} />
 				<Typography variant="body1">
-					<Translate text="CreditCard" />
+					<Translate text="CreditCard" />: **** **** **** {productfinal.cardNumber.slice(-4)}
 				</Typography>
 			</Box>
 
