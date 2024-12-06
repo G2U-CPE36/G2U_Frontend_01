@@ -10,6 +10,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import Translate from "@/components/Translate"
+import { debounce } from "lodash"
 
 export default function MainPage() {
 	const [category, setCategory] = useState("")
@@ -24,7 +25,46 @@ export default function MainPage() {
 	const handleCategoryChange = (event) => setCategory(event.target.value)
 	const handleMaxPriceChange = (event) => setMaxPrice(event.target.value)
 	const handleProvinceChange = (event) => setProvince(event.target.value)
-	const handleSearchChange = (event) => setSearchQuery(event.target.value.toLowerCase())
+	const handleSearchChange = (event) => {
+		const value = event.target.value.toLowerCase()
+		setSearchQuery(value)
+		debouncedFetchSearchResults(value)
+	}
+
+	// Debounced search API call
+	const debouncedFetchSearchResults = debounce(async (query) => {
+		if (query.trim() === "") {
+			setFilteredProducts(products) // Reset to all products if search is cleared
+			return
+		}
+
+		try {
+			const response = await fetch(
+				`http://chawit.thddns.net:9790/api/mainproduct/search?search=${query}&page=1&limit=10`,
+			)
+			if (!response.ok) throw new Error("Failed to fetch search results")
+
+			const data = await response.json()
+			console.log("Search Results:", data)
+
+			// Process the API response to match your data structure
+			const searchedProducts = data.map((product) => {
+				// Process product image if it exists
+				if (product.productImage && product.productImage[0]?.data) {
+					const blob = new Blob([Uint8Array.from(product.productImage[0].data)], {
+						type: "image/png",
+					})
+					product.productImage = URL.createObjectURL(blob)
+				}
+				return product
+			})
+
+			setFilteredProducts(searchedProducts)
+		} catch (error) {
+			console.error("Error during search:", error.message)
+			setError("Failed to fetch search results. Please try again later.")
+		}
+	}, 300) // Debounce delay in milliseconds
 
 	// Function to mark a product as favorite
 	const markAsFavorite = async (productId) => {
