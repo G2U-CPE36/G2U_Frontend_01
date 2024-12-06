@@ -15,7 +15,7 @@ export default function MainPage() {
 	const [category, setCategory] = useState("")
 	const [maxPrice, setMaxPrice] = useState("")
 	const [province, setProvince] = useState("")
-	const [typeOfPost, setTypeOfPost] = useState("sellPost")
+	const [typeOfPost, setTypeOfPost] = useState("")
 	const [searchQuery, setSearchQuery] = useState("")
 	const [products, setProducts] = useState([])
 	const [filteredProducts, setFilteredProducts] = useState([])
