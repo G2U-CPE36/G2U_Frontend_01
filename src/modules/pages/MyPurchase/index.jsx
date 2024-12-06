@@ -29,59 +29,41 @@ export default function MyPurchasePages() {
 	useEffect(() => {
 		const fetchMyPurchase = async () => {
 			try {
-				// const response = await fetch("/api/liked-products")
-				// if (!response.ok) throw new Error("Failed to fetch liked products")
-				// const data = await response.json()
-				const data = [
-					{
-						id: 1,
-						name: "Sample Product 1",
-						description: "test",
-						image: "/images/sample1.jpg",
-						status: "Deliverd",
-					},
-					{
-						id: 2,
-						name: "Sample Product 2",
-						description: "test",
-						image: "/images/sample2.jpg",
-						status: "In_Progress",
-					},
-					{
-						id: 3,
-						name: "Sample Product 3",
-						description: "test",
-						image: "/images/sample3.jpg",
-						status: "In_Progress",
-					},
-				]
-				setMyPurchase(data)
-				setLoading(false)
+				const userId = parseInt(localStorage.getItem("userId"), 10)
+				const response = await fetch(`http://chawit.thddns.net:9790/api/order/user/${userId}`)
+				if (!response.ok) throw new Error("Failed to fetch purchases")
+				const data = await response.json()
+				console.log("Fetched Data:", data.orders) // Ensure this logs correctly
+
+				const productsWithImages = data.orders.map((product) => {
+					// Process product image if it exists
+					if (product.Product.productImage[0] && product.Product.productImage[0].data) {
+						const blob = new Blob([Uint8Array.from(product.Product.productImage[0].data)], {
+							type: "image/png",
+						})
+						product.productImage = URL.createObjectURL(blob)
+					}
+
+					// Update orderStatus if not "SHIPPED"
+					if (product.orderStatus !== "SHIPPED") {
+						product.orderStatus = "IN_PROGRESS"
+					}
+
+					return product
+				})
+
+				setMyPurchase(productsWithImages) // Update state with fetched data
+				setLoading(false) // Set loading to false only after success
 			} catch (error) {
-				console.error("Error fetching liked products:", error)
+				console.error("Error fetching purchases:", error)
 				setError("Failed to load pages. Please try again later.")
+				setLoading(false) // Stop loading on error
 			}
 		}
 
-		// Try fetching data and retry if it fails
-		const retryFetch = () => {
-			let attempts = 0
-			const maxAttempts = 10 // 10 attempts, 1 per second
-			const intervalId = setInterval(() => {
-				if (attempts < maxAttempts) {
-					fetchMyPurchase()
-					attempts += 1
-				} else {
-					clearInterval(intervalId)
-					setLoading(false)
-				}
-			}, 1000) // Retry every 1 second
-		}
-
-		retryFetch()
-
-		return () => clearInterval(retryFetch) // Cleanup on unmount
+		fetchMyPurchase() // Fetch only once when the component mounts
 	}, [])
+
 
 	if (loading) {
 		return (
